@@ -12,7 +12,8 @@ import java.util.*;
 public class FileChannelRepository implements ChannelRepository {
 
     private final Map<UUID,Channel> channelList = new HashMap<>();
-    private final File channerFile = new File("data/channel.ser");
+    private final File channelFile = new File("src/main/java/com/sprint/mission/discodeit/service/data/channel.ser");
+
 
     private static final FileChannelRepository instance = new FileChannelRepository();
 
@@ -25,8 +26,8 @@ public class FileChannelRepository implements ChannelRepository {
     }
 
     private void loadFromFile() {
-        if (!channerFile.exists()) return;
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(channerFile))) {
+        if (!channelFile.exists()) return;
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(channelFile))) {
         Map<UUID,Channel> list = (Map<UUID,Channel>) ois.readObject();
         channelList.putAll(list);
     } catch (Exception e) {}
@@ -66,11 +67,10 @@ public class FileChannelRepository implements ChannelRepository {
     }
 
     private void saveFile() {
-        try (FileOutputStream fos = new FileOutputStream("data/channel.ser");
+        try (FileOutputStream fos = new FileOutputStream(channelFile);
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(channelList);
         } catch (IOException e) {
-            System.out.println();
         }
     }
 

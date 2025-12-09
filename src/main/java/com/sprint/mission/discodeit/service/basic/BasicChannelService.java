@@ -19,7 +19,6 @@ import java.util.UUID;
 public class BasicChannelService implements ChannelService {
 
     private static BasicChannelService instance;
-   // private JCFChannelRepository channelRepository;
     private ChannelRepository channelRepository;
 
     private BasicChannelService(ChannelRepository channelRepository) {

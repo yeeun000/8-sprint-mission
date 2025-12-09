@@ -42,7 +42,7 @@ public class JavaApplication {
         // 셋업
      //   User user = setupUser(userService);
         Channel channel = setupChannel(channelService);
-        System.out.println(channelRepository.findAll());
+        System.out.println(channelService.findAll());
 
 
         // 테스트
