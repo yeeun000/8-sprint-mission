@@ -1,20 +1,14 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
 import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.entity.Message;
-import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
-import com.sprint.mission.discodeit.service.Data;
 
-import java.util.List;
-import java.util.UUID;
-
-import static com.sprint.mission.discodeit.service.Data.channelList;
-import static com.sprint.mission.discodeit.service.Data.messageList;
+import java.util.*;
 
 
 public class JCFChannelRepository implements ChannelRepository {
 
+    private final Map<UUID,Channel> channelList = new HashMap<>();
     private static final JCFChannelRepository instance = new JCFChannelRepository();
 
     private JCFChannelRepository() {}
@@ -23,37 +17,33 @@ public class JCFChannelRepository implements ChannelRepository {
         return instance;
     }
 
-    public void addChannel(Channel channel) {
-        channelList.add(channel);
+    @Override
+    public void add(Channel channel) {
+        channelList.put(channel.getId(),channel);
     }
 
-    public void removeChannel(Channel channel) {
-        channelList.remove(channel);
-    }
-    public void addUser(Channel channel, User user) {
-        channel.addUsers(user);
-        channel.setUpdateAt();
-    }
-
-
-    public void removeUser(Channel channel, User user) {
-        channel.deleteUsers(user);
-    }
-
+    @Override
     public List<Channel> findAll() {
-        return channelList;
-    }
-    public void update(String channelName, Channel channel) {
-        channel.setChannelName(channelName);
-        channel.setUpdateAt();
+        return channelList.values().stream().toList();
     }
 
-    public Channel readId(UUID id){
-        for(Channel channel : channelList){
-            if(channel.getId().equals(id)){
-                return channel;
-            }
-        }
+    @Override
+    public Channel save(Channel channel){
+        channelList.put(channel.getId(),channel);
         return null;
     }
+
+    @Override
+    public Channel findId(UUID channelId){
+        boolean find = channelList.containsKey(channelId);
+        if(find)
+            return channelList.get(channelId);
+        else return null;
+    }
+
+    @Override
+    public void remove(UUID channelId) {
+        channelList.remove(channelId);
+    }
+
 }

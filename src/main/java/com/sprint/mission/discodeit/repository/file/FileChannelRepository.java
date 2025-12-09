@@ -1,62 +1,72 @@
 package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
-import com.sprint.mission.discodeit.repository.jcf.JCFChannelRepository;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.List;
-import java.util.UUID;
+import java.io.*;
+import java.util.*;
 
-import static com.sprint.mission.discodeit.service.Data.channelList;
 
 public class FileChannelRepository implements ChannelRepository {
 
+    private final Map<UUID,Channel> channelList = new HashMap<>();
+    private final File channerFile = new File("data/channel.ser");
+
     private static final FileChannelRepository instance = new FileChannelRepository();
 
-    private FileChannelRepository() {}
+    private FileChannelRepository() {
+        loadFromFile();
+    }
 
     public static FileChannelRepository getInstance() {
         return instance;
     }
 
-    public void addChannel(Channel channel) {
-        channelList.add(channel);
-        save();
-    }
+    private void loadFromFile() {
+        if (!channerFile.exists()) return;
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(channerFile))) {
+        Map<UUID,Channel> list = (Map<UUID,Channel>) ois.readObject();
+        channelList.putAll(list);
+    } catch (Exception e) {}
+}
 
-    public void removeChannel(Channel channel) {
-        channelList.remove(channel);
-        save();
+    @Override
+    public void add(Channel channel) {
+        channelList.put(channel.getId(),channel);
+        saveFile();
     }
-
-    public void addUser(Channel channel, User user) {
-        channel.addUsers(user);
-        channel.setUpdateAt();
-        save();
-    }
-
-
-    public void removeUser(Channel channel, User user) {
-        channel.deleteUsers(user);
-        save();
-    }
+    @Override
     public List<Channel> findAll() {
-        return channelList;
+        return channelList.values().stream().toList();
     }
 
-    public void update(String channelName, Channel channel) {
-        channel.setChannelName(channelName);
-        channel.setUpdateAt();
-        save();
+    @Override
+    public Channel save(Channel channel){
+        channelList.put(channel.getId(),channel);
+        saveFile();
+        return null;
     }
 
+    @Override
+    public Channel findId(UUID channelId){
+        boolean find = channelList.containsKey(channelId);
+        if(find) {
+            saveFile();
+            return channelList.get(channelId);
+        }
+        else return null;
+    }
 
-    private void save() {
-        try (FileOutputStream fos = new FileOutputStream("channel.ser");
+    @Override
+    public void remove(UUID channelId) {
+        channelList.remove(channelId);
+        saveFile();
+    }
+
+    private void saveFile() {
+        try (FileOutputStream fos = new FileOutputStream("data/channel.ser");
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(channelList);
         } catch (IOException e) {
@@ -64,12 +74,4 @@ public class FileChannelRepository implements ChannelRepository {
         }
     }
 
-    public Channel readId(UUID id){
-        for(Channel channel : channelList){
-            if(channel.getId().equals(id)){
-                return channel;
-            }
-        }
-        return null;
-    }
 }
