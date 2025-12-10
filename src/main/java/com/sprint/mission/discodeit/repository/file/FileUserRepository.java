@@ -2,18 +2,15 @@ package com.sprint.mission.discodeit.repository.file;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
 
-import java.io.*;
 import java.util.*;
 
-public class FileUserRepository implements UserRepository {
+public class FileUserRepository extends FileRepository<User> implements UserRepository {
 
-    private final Map<UUID, User> userList = new HashMap<>();
-    private final File userFile = new File("src/main/java/com/sprint/mission/discodeit/service/data/user.ser");
 
     private static FileUserRepository instance = new FileUserRepository();
 
     private FileUserRepository() {
-        loadFromFile();
+        super("src/main/java/com/sprint/mission/discodeit/service/data/user.ser");
     }
 
     public static FileUserRepository getInstance()
@@ -21,44 +18,29 @@ public class FileUserRepository implements UserRepository {
         return instance;
     }
 
-    private void loadFromFile() {
-        if (!userFile.exists()) return;
 
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(userFile))) {
-            Map<UUID, User> list = (Map<UUID,User>) ois.readObject();
-            userList.putAll(list);
-        } catch (Exception e) {}
-    }
 
     public void add(User user) {
-        userList.put(user.getId(),user);
+        getFile().put(user.getId(),user);
         saveFile();
     }
 
     public List<User> findAll() {
-        return userList.values().stream().toList();
+        return getFile().values().stream().toList();
     }
 
     public User findId(UUID userid){
-        boolean find = userList.containsKey(userid);
+        boolean find = getFile().containsKey(userid);
         if(find) {
             saveFile();
-            return userList.get(userid);
+            return getFile().get(userid);
         }
         else return null;
     }
 
     public void remove(UUID userId) {
-        userList.remove(userId);
+        getFile().remove(userId);
         saveFile();
     }
 
-    private void saveFile() {
-        try (FileOutputStream fos = new FileOutputStream(userFile);
-             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
-            oos.writeObject(userList);
-        } catch (IOException e) {
-            System.out.println();
-        }
-    }
 }

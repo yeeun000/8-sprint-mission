@@ -14,7 +14,7 @@ public class Message implements Serializable {
     private Long createAt;
     private Long updateAt;
 
-    public Message(String messageContents, UUID userId, UUID channeld) {
+    public Message(String contents, UUID userId, UUID channeld) {
         this.id = UUID.randomUUID();
         this.createAt = System.currentTimeMillis();
         this.updateAt = System.currentTimeMillis();
