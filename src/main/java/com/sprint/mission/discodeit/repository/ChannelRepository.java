@@ -10,7 +10,6 @@ public interface ChannelRepository {
 
     void add(Channel channel);
     List<Channel> findAll();
-    Channel save(Channel channel);
     Channel findId(UUID channelId);
     void remove(UUID channelId);
 }

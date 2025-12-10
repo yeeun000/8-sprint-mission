@@ -27,10 +27,6 @@ public class JCFChannelRepository implements ChannelRepository {
         return channelList.values().stream().toList();
     }
 
-    @Override
-    public Channel save(Channel channel){
-        return channelList.put(channel.getId(),channel);
-    }
 
     @Override
     public Channel findId(UUID channelId){
@@ -39,6 +35,7 @@ public class JCFChannelRepository implements ChannelRepository {
             return channelList.get(channelId);
         else return null;
     }
+
 
     @Override
     public void remove(UUID channelId) {

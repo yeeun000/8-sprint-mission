@@ -39,6 +39,12 @@ public class User implements Serializable {
         return email;
     }
 
+    public void update(String name, String nickName, String email){
+        this.name=name;
+        this.nickName=nickName;
+        this.email=email;
+    }
+
     @Override
     public String toString() {
         return "User{" +

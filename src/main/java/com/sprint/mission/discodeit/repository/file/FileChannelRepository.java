@@ -1,8 +1,6 @@
 package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.entity.Message;
-import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 
 import java.io.*;
@@ -38,17 +36,12 @@ public class FileChannelRepository implements ChannelRepository {
         channelList.put(channel.getId(),channel);
         saveFile();
     }
+
     @Override
     public List<Channel> findAll() {
         return channelList.values().stream().toList();
     }
 
-    @Override
-    public Channel save(Channel channel){
-        channelList.put(channel.getId(),channel);
-        saveFile();
-        return null;
-    }
 
     @Override
     public Channel findId(UUID channelId){

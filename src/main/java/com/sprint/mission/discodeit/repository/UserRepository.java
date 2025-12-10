@@ -7,12 +7,9 @@ import java.util.UUID;
 
 
 public interface UserRepository {
-    void addUser(User user);
-    void removeUser(User user);
-    List<User> findAll();
-    void updateName(User user, String name);
-    void updateNickname(User user, String nickname);
-    void updateEmail(User user, String email);
 
-    User readId(UUID id);
+    void add(User user);
+    List<User> findAll();
+    User findId(UUID id);
+    void remove(UUID userId);
 }
