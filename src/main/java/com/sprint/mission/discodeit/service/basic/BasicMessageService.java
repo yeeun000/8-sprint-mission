@@ -8,6 +8,7 @@ import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.MessageService;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 
@@ -47,18 +48,24 @@ public class BasicMessageService implements MessageService {
 
     @Override
     public void delete(UUID messageId) {
+        if(messageRepository.findId(messageId)==null)
+            throw new NoSuchElementException(messageId + "를 찾을 수 없습니다.");
         messageRepository.remove(messageId);
     }
 
     @Override
     public Message update(UUID messageId, String content) {
         Message message = findId(messageId);
+        if(message==null)
+            throw new NoSuchElementException(messageId + "를 찾을 수 없습니다.");
         message.update(content);
         return message;
     }
 
     @Override
     public Message findId(UUID messageId) {
+        if(messageRepository.findId(messageId)==null)
+            throw new NoSuchElementException(messageId + "를 찾을 수 없습니다.");
         return messageRepository.findId(messageId);
     }
 }

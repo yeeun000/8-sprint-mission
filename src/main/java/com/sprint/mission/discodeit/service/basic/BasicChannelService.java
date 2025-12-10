@@ -6,6 +6,7 @@ import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 
@@ -39,18 +40,24 @@ public class BasicChannelService implements ChannelService {
 
     @Override
     public void delete(UUID channelId) {
+        if(channelRepository.findId(channelId)==null)
+            throw new NoSuchElementException(channelId + "를 찾을 수 없습니다.");
         channelRepository.remove(channelId);
     }
 
     @Override
     public Channel update(UUID channelId, String name, String description) {
         Channel channel = findId(channelId);
+        if(channel==null)
+            throw new NoSuchElementException(channelId + "를 찾을 수 없습니다.");
         channel.update(name, description);
         return channel;
     }
 
 
     public Channel findId(UUID channelId) {
+        if(channelRepository.findId(channelId)==null)
+            throw new NoSuchElementException(channelId + "를 찾을 수 없습니다.");
         return channelRepository.findId(channelId);
     }
 }
