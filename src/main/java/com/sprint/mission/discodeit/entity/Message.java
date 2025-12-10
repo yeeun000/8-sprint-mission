@@ -8,7 +8,7 @@ public class Message implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private UUID id;
-    private String messageContents;
+    private String contents;
     private UUID channeld;
     private UUID userId;
     private Long createAt;
@@ -18,7 +18,7 @@ public class Message implements Serializable {
         this.id = UUID.randomUUID();
         this.createAt = System.currentTimeMillis();
         this.updateAt = System.currentTimeMillis();
-        this.messageContents = messageContents;
+        this.contents = contents;
         this.userId = userId;
         this.channeld = channeld;
     }
@@ -27,8 +27,8 @@ public class Message implements Serializable {
         return id;
     }
 
-    public String getMessageContents() {
-        return messageContents;
+    public String getContents() {
+        return contents;
     }
 
     public UUID getUserId() {
@@ -47,4 +47,20 @@ public class Message implements Serializable {
         return updateAt;
     }
 
+    public void update(String content){
+        this.contents=contents;
+        this.updateAt = System.currentTimeMillis();
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "id=" + id +
+                ", contents='" + contents + '\'' +
+                ", channeld=" + channeld +
+                ", userId=" + userId +
+                ", createAt=" + createAt +
+                ", updateAt=" + updateAt +
+                '}';
+    }
 }

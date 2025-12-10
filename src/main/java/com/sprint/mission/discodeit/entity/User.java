@@ -43,6 +43,7 @@ public class User implements Serializable {
         this.name=name;
         this.nickName=nickName;
         this.email=email;
+        this.updateAt = System.currentTimeMillis();
     }
 
     @Override

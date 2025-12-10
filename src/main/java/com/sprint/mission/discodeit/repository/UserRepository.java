@@ -10,6 +10,6 @@ public interface UserRepository {
 
     void add(User user);
     List<User> findAll();
-    User findId(UUID id);
+    User findId(UUID userId);
     void remove(UUID userId);
 }
