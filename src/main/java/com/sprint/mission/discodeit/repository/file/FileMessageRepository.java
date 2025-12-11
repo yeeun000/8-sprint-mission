@@ -2,13 +2,14 @@ package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.MessageRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-
+@Repository
 public class FileMessageRepository extends FileRepository<Message> implements MessageRepository {
 
     private static FileMessageRepository instance = new FileMessageRepository();

@@ -1,10 +1,13 @@
 package com.sprint.mission.discodeit.repository.file;
 
+import org.springframework.stereotype.Repository;
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Repository
 public abstract class FileRepository<T> {
     private Map<UUID, T> duplication = new HashMap<>();
     private File file;

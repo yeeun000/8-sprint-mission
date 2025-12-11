@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.entity;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.UUID;
 
 public class User implements Serializable {
@@ -11,13 +12,13 @@ public class User implements Serializable {
     private String name;
     private String nickName;
     private String email;
-    private Long createAt;
-    private Long updateAt;
+    private Instant createAt;
+    private Instant updateAt;
 
     public User(String name, String nickName, String email) {
         this.id = UUID.randomUUID();
-        this.createAt = System.currentTimeMillis();
-        this.updateAt = System.currentTimeMillis();
+        this.createAt = Instant.now();
+        this.updateAt =  Instant.now();
         this.name = name;
         this.nickName = nickName;
         this.email = email;
@@ -43,7 +44,7 @@ public class User implements Serializable {
         this.name=name;
         this.nickName=nickName;
         this.email=email;
-        this.updateAt = System.currentTimeMillis();
+        this.updateAt =  Instant.now();
     }
 
     @Override

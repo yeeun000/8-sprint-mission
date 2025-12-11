@@ -1,6 +1,8 @@
 package com.sprint.mission.discodeit.entity;
 
 import java.io.Serializable;
+import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 public class Message implements Serializable {
@@ -11,13 +13,14 @@ public class Message implements Serializable {
     private String contents;
     private UUID channeld;
     private UUID userId;
-    private Long createAt;
-    private Long updateAt;
+    private Instant createAt;
+    private Instant updateAt;
+    private List<UUID> attachmentlds;
 
     public Message(String contents, UUID userId, UUID channeld) {
         this.id = UUID.randomUUID();
-        this.createAt = System.currentTimeMillis();
-        this.updateAt = System.currentTimeMillis();
+        this.createAt = Instant.now();
+        this.updateAt = Instant.now();
         this.contents = contents;
         this.userId = userId;
         this.channeld = channeld;
@@ -39,17 +42,9 @@ public class Message implements Serializable {
         return channeld;
     }
 
-    public Long getCreateAt() {
-        return createAt;
-    }
-
-    public Long getUpdateAt() {
-        return updateAt;
-    }
-
     public void update(String content){
         this.contents=contents;
-        this.updateAt = System.currentTimeMillis();
+        this.updateAt = Instant.now();
     }
 
     @Override
