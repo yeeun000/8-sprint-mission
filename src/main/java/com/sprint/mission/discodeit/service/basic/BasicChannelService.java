@@ -41,7 +41,7 @@ public class BasicChannelService implements ChannelService {
 
     @Override
     public void delete(UUID channelId) {
-        if(channelRepository.findId(channelId)==null)
+        if (channelRepository.findId(channelId) == null)
             throw new NoSuchElementException(channelId + "를 찾을 수 없습니다.");
         channelRepository.remove(channelId);
     }
@@ -49,7 +49,7 @@ public class BasicChannelService implements ChannelService {
     @Override
     public Channel update(UUID channelId, String name, String description) {
         Channel channel = findId(channelId);
-        if(channel==null)
+        if (channel == null)
             throw new NoSuchElementException(channelId + "를 찾을 수 없습니다.");
         channel.update(name, description);
         return channel;
@@ -57,7 +57,7 @@ public class BasicChannelService implements ChannelService {
 
 
     public Channel findId(UUID channelId) {
-        if(channelRepository.findId(channelId)==null)
+        if (channelRepository.findId(channelId) == null)
             throw new NoSuchElementException(channelId + "를 찾을 수 없습니다.");
         return channelRepository.findId(channelId);
     }

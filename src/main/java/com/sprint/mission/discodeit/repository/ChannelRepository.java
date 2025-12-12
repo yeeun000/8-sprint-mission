@@ -8,7 +8,10 @@ import java.util.UUID;
 public interface ChannelRepository {
 
     void add(Channel channel);
+
     List<Channel> findAll();
+
     Channel findId(UUID channelId);
+
     void remove(UUID channelId);
 }

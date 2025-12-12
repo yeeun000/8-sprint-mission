@@ -10,8 +10,12 @@ import java.util.UUID;
 public interface UserService {
 
     User create(UserDTO userCreateDTO);
+
     List<UserStatusDTO> findAll();
+
     void delete(UUID userId);
+
     User update(UserDTO userDTO);
+
     UserStatusDTO findId(UUID userId);
 }

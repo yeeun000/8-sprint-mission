@@ -49,7 +49,7 @@ public class BasicMessageService implements MessageService {
 
     @Override
     public void delete(UUID messageId) {
-        if(messageRepository.findId(messageId)==null)
+        if (messageRepository.findId(messageId) == null)
             throw new NoSuchElementException(messageId + "를 찾을 수 없습니다.");
         messageRepository.remove(messageId);
     }
@@ -57,7 +57,7 @@ public class BasicMessageService implements MessageService {
     @Override
     public Message update(UUID messageId, String content) {
         Message message = findId(messageId);
-        if(message==null)
+        if (message == null)
             throw new NoSuchElementException(messageId + "를 찾을 수 없습니다.");
         message.update(content);
         return message;
@@ -65,7 +65,7 @@ public class BasicMessageService implements MessageService {
 
     @Override
     public Message findId(UUID messageId) {
-        if(messageRepository.findId(messageId)==null)
+        if (messageRepository.findId(messageId) == null)
             throw new NoSuchElementException(messageId + "를 찾을 수 없습니다.");
         return messageRepository.findId(messageId);
     }

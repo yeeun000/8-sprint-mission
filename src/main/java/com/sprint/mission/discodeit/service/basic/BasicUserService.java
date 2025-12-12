@@ -34,16 +34,16 @@ public class BasicUserService implements UserService {
 
     @Override
     public User create(UserDTO userDTO) {
-        if(userRepository.existsName(userDTO.name())){
-            throw new IllegalArgumentException(userDTO.name()+"이 이미 있습니다.");
+        if (userRepository.existsName(userDTO.name())) {
+            throw new IllegalArgumentException(userDTO.name() + "이 이미 있습니다.");
         }
-        if(userRepository.existsEmail(userDTO.email())){
-            throw new IllegalArgumentException(userDTO.email()+"이 이미 있습니다.");
+        if (userRepository.existsEmail(userDTO.email())) {
+            throw new IllegalArgumentException(userDTO.email() + "이 이미 있습니다.");
         }
 
-        User user = new User(userDTO.name(), userDTO.password(), userDTO.email(),userDTO.profileImage());
-        if(userDTO.profileImage().isPresent()) {
-            BinaryContent content= new BinaryContent(userDTO.id(),userDTO.profileImage().get().fileName(),userDTO.profileImage().get().filePath());
+        User user = new User(userDTO.name(), userDTO.password(), userDTO.email(), userDTO.profileImage());
+        if (userDTO.profileImage().isPresent()) {
+            BinaryContent content = new BinaryContent(userDTO.id(), userDTO.profileImage().get().fileName(), userDTO.profileImage().get().filePath());
             binaryContentRepository.add(content);
         }
         UserStatus status = new UserStatus(userDTO.id());
@@ -55,12 +55,12 @@ public class BasicUserService implements UserService {
 
     @Override
     public List<UserStatusDTO> findAll() {
-        List<User> users =  userRepository.findAll();
-        List<UserStatusDTO>  userStatus= new ArrayList<>();
+        List<User> users = userRepository.findAll();
+        List<UserStatusDTO> userStatus = new ArrayList<>();
 
-        for(User user : users){
+        for (User user : users) {
             boolean online = userStatusRepository.onlineStatus(user.getId());
-            UserStatusDTO userStatusDTO = new UserStatusDTO(user.getId(),user.getName(),online);
+            UserStatusDTO userStatusDTO = new UserStatusDTO(user.getId(), user.getName(), online);
             userStatus.add(userStatusDTO);
         }
         return userStatus;
@@ -68,7 +68,7 @@ public class BasicUserService implements UserService {
 
     @Override
     public void delete(UUID userId) {
-        if(userRepository.findId(userId)==null)
+        if (userRepository.findId(userId) == null)
             throw new NoSuchElementException(userId + "를 찾을 수 없습니다.");
         userRepository.remove(userId);
         userStatusRepository.remove(userId);
@@ -78,21 +78,21 @@ public class BasicUserService implements UserService {
     @Override
     public User update(UserDTO userDTO) {
         User user = userRepository.findId(userDTO.id());
-        if(user==null)
+        if (user == null)
             throw new NoSuchElementException(userDTO.id() + "를 찾을 수 없습니다.");
-        user.update(userDTO.name(), userDTO.password(), userDTO.email(),userDTO.profileImage());
+        user.update(userDTO.name(), userDTO.password(), userDTO.email(), userDTO.profileImage());
         return user;
     }
 
     @Override
     public UserStatusDTO findId(UUID userId) {
-        if(userRepository.findId(userId)==null)
+        if (userRepository.findId(userId) == null)
             throw new NoSuchElementException(userId + "를 찾을 수 없습니다.");
 
-        User user=userRepository.findId(userId);
+        User user = userRepository.findId(userId);
 
         boolean online = userStatusRepository.onlineStatus(user.getId());
-        UserStatusDTO userStatusDTO = new UserStatusDTO(user.getId(),user.getName(),online);
+        UserStatusDTO userStatusDTO = new UserStatusDTO(user.getId(), user.getName(), online);
         return userStatusDTO;
     }
 

@@ -8,10 +8,11 @@ import java.util.*;
 
 public class JCFChannelRepository implements ChannelRepository {
 
-    private final Map<UUID,Channel> channelList = new HashMap<>();
+    private final Map<UUID, Channel> channelList = new HashMap<>();
     private static final JCFChannelRepository instance = new JCFChannelRepository();
 
-    private JCFChannelRepository() {}
+    private JCFChannelRepository() {
+    }
 
     public static JCFChannelRepository getInstance() {
         return instance;
@@ -19,7 +20,7 @@ public class JCFChannelRepository implements ChannelRepository {
 
     @Override
     public void add(Channel channel) {
-        channelList.put(channel.getId(),channel);
+        channelList.put(channel.getId(), channel);
     }
 
     @Override
@@ -29,9 +30,9 @@ public class JCFChannelRepository implements ChannelRepository {
 
 
     @Override
-    public Channel findId(UUID channelId){
+    public Channel findId(UUID channelId) {
         boolean find = channelList.containsKey(channelId);
-        if(find)
+        if (find)
             return channelList.get(channelId);
         else return null;
     }

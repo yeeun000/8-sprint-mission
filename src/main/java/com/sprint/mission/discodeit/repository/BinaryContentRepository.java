@@ -6,5 +6,6 @@ import java.util.UUID;
 
 public interface BinaryContentRepository {
     void add(BinaryContent binaryContent);
+
     void remove(UUID id);
 }

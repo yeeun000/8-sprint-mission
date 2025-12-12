@@ -10,9 +10,13 @@ import java.util.UUID;
 
 public interface ChannelService {
     Channel create(Channel.ChannelType type, String name, String description);
+
     List<Channel> findAll();
+
     void delete(UUID channelId);
+
     Channel update(UUID channelId, String name, String description);
+
     Channel findId(UUID channelId);
 }
 

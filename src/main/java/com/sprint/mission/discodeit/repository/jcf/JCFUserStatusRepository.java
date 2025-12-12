@@ -10,22 +10,23 @@ import java.util.UUID;
 
 public class JCFUserStatusRepository implements UserStatusRepository {
 
-    private JCFUserRepository  userRepository = JCFUserRepository.getInstance();
+    private JCFUserRepository userRepository = JCFUserRepository.getInstance();
     private Map<UUID, UserStatus> statusList = new HashMap<>();
 
-    public JCFUserStatusRepository(){}
+    public JCFUserStatusRepository() {
+    }
 
-    public boolean onlineStatus(UUID id){
+    public boolean onlineStatus(UUID id) {
         User findId = userRepository.findId(id);
         UserStatus status = new UserStatus(findId.getId());
         return status.accessTime();
     }
 
-    public void add(UserStatus status){
-        statusList.put(status.getId(),status);
+    public void add(UserStatus status) {
+        statusList.put(status.getId(), status);
     }
 
-    public void remove(UUID userId){
+    public void remove(UUID userId) {
         statusList.remove(userId);
     }
 
