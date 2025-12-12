@@ -12,4 +12,6 @@ public interface UserRepository {
     List<User> findAll();
     User findId(UUID userId);
     void remove(UUID userId);
+    boolean existsName(String name);
+    boolean existsEmail(String name);
 }

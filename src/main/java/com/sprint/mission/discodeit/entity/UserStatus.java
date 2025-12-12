@@ -36,9 +36,10 @@ public class UserStatus {
         return online;
     }
 
-    public void accessTime(){
+    public boolean accessTime(){
         Instant after=lastCome.plusSeconds(300);
         online=Instant.now().isBefore(after);
+        return online;
     }
 
     @Override

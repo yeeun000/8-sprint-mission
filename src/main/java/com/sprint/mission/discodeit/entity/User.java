@@ -1,7 +1,10 @@
 package com.sprint.mission.discodeit.entity;
 
+import com.sprint.mission.discodeit.dto.Profile;
+
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 public class User implements Serializable {
@@ -10,18 +13,21 @@ public class User implements Serializable {
 
     private UUID id;
     private String name;
-    private String nickName;
+    private String password;
     private String email;
     private Instant createAt;
     private Instant updateAt;
+    private Profile profileImage;
 
-    public User(String name, String nickName, String email) {
+    public User(String name, String password, String email, Optional<Profile> profileImage) {
         this.id = UUID.randomUUID();
         this.createAt = Instant.now();
         this.updateAt =  Instant.now();
         this.name = name;
-        this.nickName = nickName;
+        this.password = password;
         this.email = email;
+        if(profileImage.isPresent())
+            this.profileImage=profileImage.get();
     }
 
     public UUID getId() {
@@ -32,18 +38,24 @@ public class User implements Serializable {
         return name;
     }
 
-    public String getNickName() {
-        return nickName;
+    public String getPassword() {
+        return password;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void update(String name, String nickName, String email){
+    public Profile getProfileImage() {
+        return profileImage;
+    }
+
+    public void update(String name, String password, String email, Optional<Profile> profileImage){
         this.name=name;
-        this.nickName=nickName;
+        this.password=password;
         this.email=email;
+        if(profileImage.isPresent())
+            this.profileImage=profileImage.get();
         this.updateAt =  Instant.now();
     }
 
@@ -52,7 +64,7 @@ public class User implements Serializable {
         return "User{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", nickName='" + nickName + '\'' +
+                ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", createAt=" + createAt +
                 ", updateAt=" + updateAt +

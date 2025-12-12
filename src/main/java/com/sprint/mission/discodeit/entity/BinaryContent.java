@@ -12,10 +12,17 @@ public class BinaryContent {
     private String fileName;
     private String filePath;
 
-    public BinaryContent(UUID userId, UUID messageId, String fileName, String filePath){
-        this.id=id;
+    public BinaryContent(UUID userId, String fileName, String filePath){
+        this.id= UUID.randomUUID();
         this.createdAt=Instant.now();
         this.userId=userId;
+        this.fileName=fileName;
+        this.filePath=filePath;
+    }
+
+    public BinaryContent( UUID messageId, String fileName, String filePath, boolean t){
+        this.id= UUID.randomUUID();
+        this.createdAt=Instant.now();
         this.messageId=messageId;
         this.fileName=fileName;
         this.filePath=filePath;
