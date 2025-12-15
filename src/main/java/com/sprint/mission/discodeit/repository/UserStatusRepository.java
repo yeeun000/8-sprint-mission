@@ -11,6 +11,7 @@ public interface UserStatusRepository {
     void add(UserStatus status);
 
     UserStatus find(UUID id);
+
     List<UserStatus> findAll();
 
     void remove(UUID userId);

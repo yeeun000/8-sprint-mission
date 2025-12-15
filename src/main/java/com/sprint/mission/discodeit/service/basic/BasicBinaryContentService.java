@@ -11,20 +11,20 @@ import java.util.UUID;
 public class BasicBinaryContentService implements BinaryContentService {
     private BinaryContentRepository binaryContentRepository;
 
-    public void create(BinaryContentDTO binaryContentDTO){
-        BinaryContent content = new BinaryContent(binaryContentDTO.id(),binaryContentDTO.fileName(),binaryContentDTO.filePath());
+    public void create(BinaryContentDTO binaryContentDTO) {
+        BinaryContent content = new BinaryContent(binaryContentDTO.id(), binaryContentDTO.fileName(), binaryContentDTO.filePath());
         binaryContentRepository.add(content);
     }
 
-    public BinaryContent find(UUID id){
+    public BinaryContent find(UUID id) {
         return binaryContentRepository.find(id);
     }
 
-    public List<BinaryContent> findAllByIdIn(List<UUID> ids){
+    public List<BinaryContent> findAllByIdIn(List<UUID> ids) {
         return binaryContentRepository.findAll(ids);
     }
 
-    public void delete(UUID id){
+    public void delete(UUID id) {
         binaryContentRepository.remove(id);
     }
 }

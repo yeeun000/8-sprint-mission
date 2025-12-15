@@ -22,12 +22,12 @@ public class User implements Serializable {
     public User(String name, String password, String email, Optional<BinaryContentDTO> profileImage) {
         this.id = UUID.randomUUID();
         this.createAt = Instant.now();
-        this.updateAt =  Instant.now();
+        this.updateAt = Instant.now();
         this.name = name;
         this.password = password;
         this.email = email;
-        if(profileImage.isPresent())
-            this.profileImage=profileImage.get();
+        if (profileImage.isPresent())
+            this.profileImage = profileImage.get();
     }
 
     public UUID getId() {
@@ -50,13 +50,13 @@ public class User implements Serializable {
         return profileImage;
     }
 
-    public void update(String name, String password, String email, Optional<BinaryContentDTO> profileImage){
-        this.name=name;
-        this.password=password;
-        this.email=email;
-        if(profileImage.isPresent())
-            this.profileImage=profileImage.get();
-        this.updateAt =  Instant.now();
+    public void update(String name, String password, String email, Optional<BinaryContentDTO> profileImage) {
+        this.name = name;
+        this.password = password;
+        this.email = email;
+        if (profileImage.isPresent())
+            this.profileImage = profileImage.get();
+        this.updateAt = Instant.now();
     }
 
     @Override

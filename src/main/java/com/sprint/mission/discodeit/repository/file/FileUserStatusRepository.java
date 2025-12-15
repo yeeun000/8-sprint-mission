@@ -1,21 +1,21 @@
-package com.sprint.mission.discodeit.repository.jcf;
+package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
+import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-public class JCFUserStatusRepository implements UserStatusRepository {
+public class FileUserStatusRepository extends FileRepository<UserStatus> implements UserStatusRepository {
 
-    private JCFUserRepository userRepository = JCFUserRepository.getInstance();
-    private Map<UUID, UserStatus> statusList = new HashMap<>();
+    private UserRepository userRepository;
 
-    public JCFUserStatusRepository() {
+    private FileUserStatusRepository() {
+        super("src/main/java/com/sprint/mission/discodeit/service/data/UserStatus.ser");
     }
+
 
     public boolean onlineStatus(UUID id) {
         User findId = userRepository.findId(id);
@@ -24,20 +24,18 @@ public class JCFUserStatusRepository implements UserStatusRepository {
     }
 
     public void add(UserStatus status) {
-        statusList.put(status.getId(), status);
+        getFile().put(status.getId(), status);
     }
 
     public UserStatus find(UUID id) {
-        return statusList.get(id);
+        return getFile().get(id);
     }
 
     public List<UserStatus> findAll() {
-        return statusList.values().stream().toList();
+        return getFile().values().stream().toList();
     }
 
     public void remove(UUID userId) {
-        statusList.remove(userId);
+        getFile().remove(userId);
     }
-
-
 }

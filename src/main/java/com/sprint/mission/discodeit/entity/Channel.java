@@ -57,13 +57,13 @@ public class Channel implements Serializable {
         return users;
     }
 
-    public void update(String channelName, String description){
-        this.channelName=channelName;
-        this.description=description;
+    public void update(String channelName, String description) {
+        this.channelName = channelName;
+        this.description = description;
         this.updateAt = Instant.now();
     }
 
-    public boolean containUser(UUID userId){
+    public boolean containUser(UUID userId) {
         return type == ChannelType.PRIVATE
                 && users != null
                 && users.contains(userId);

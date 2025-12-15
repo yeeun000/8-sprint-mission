@@ -12,12 +12,12 @@ public class UserStatus {
     private Instant lastCome;
     private boolean online;
 
-    public UserStatus(UUID userId){
-        this.id=UUID.randomUUID();
+    public UserStatus(UUID userId) {
+        this.id = UUID.randomUUID();
         this.createAt = Instant.now();
         this.updateAt = Instant.now();
-        this.userId=userId;
-        this.lastCome= Instant.now();
+        this.userId = userId;
+        this.lastCome = Instant.now();
     }
 
     public UUID getId() {
@@ -36,9 +36,9 @@ public class UserStatus {
         return online;
     }
 
-    public boolean accessTime(){
-        Instant after=lastCome.plusSeconds(300);
-        online=Instant.now().isBefore(after);
+    public boolean accessTime() {
+        Instant after = lastCome.plusSeconds(300);
+        online = Instant.now().isBefore(after);
         return online;
     }
 

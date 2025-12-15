@@ -6,7 +6,6 @@ import com.sprint.mission.discodeit.dto.BinaryContentDTO;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public class Message implements Serializable {
@@ -28,8 +27,8 @@ public class Message implements Serializable {
         this.contents = contents;
         this.userId = userId;
         this.channeld = channeld;
-        if(files != null && !files.isEmpty())
-            this.attachmentlds=files.stream().map(BinaryContentDTO::id).toList();
+        if (files != null && !files.isEmpty())
+            this.attachmentlds = files.stream().map(BinaryContentDTO::id).toList();
     }
 
     public UUID getId() {
@@ -52,10 +51,10 @@ public class Message implements Serializable {
         return attachmentlds;
     }
 
-    public void update(String contents, List<UUID> attachmentlds){
-        this.contents=contents;
-        if(attachmentlds != null){
-           this.attachmentlds=attachmentlds;
+    public void update(String contents, List<UUID> attachmentlds) {
+        this.contents = contents;
+        if (attachmentlds != null) {
+            this.attachmentlds = attachmentlds;
         }
         this.updateAt = Instant.now();
     }

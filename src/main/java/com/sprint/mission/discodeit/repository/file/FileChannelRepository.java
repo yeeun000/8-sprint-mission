@@ -4,7 +4,8 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class FileChannelRepository extends FileRepository<Channel> implements ChannelRepository {
@@ -23,7 +24,7 @@ public class FileChannelRepository extends FileRepository<Channel> implements Ch
 
     @Override
     public void add(Channel channel) {
-        getFile().put(channel.getId(),channel);
+        getFile().put(channel.getId(), channel);
         saveFile();
     }
 
@@ -34,13 +35,12 @@ public class FileChannelRepository extends FileRepository<Channel> implements Ch
 
 
     @Override
-    public Channel findId(UUID channelId){
+    public Channel findId(UUID channelId) {
         boolean find = getFile().containsKey(channelId);
-        if(find) {
+        if (find) {
             saveFile();
             return getFile().get(channelId);
-        }
-        else return null;
+        } else return null;
     }
 
     @Override

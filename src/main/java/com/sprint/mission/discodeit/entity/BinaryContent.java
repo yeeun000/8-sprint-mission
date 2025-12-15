@@ -13,21 +13,21 @@ public class BinaryContent {
     private String fileName;
     private String filePath;
 
-    public BinaryContent(UUID userId, String fileName, String filePath){
-        this.id= UUID.randomUUID();
-        this.createdAt=Instant.now();
-        this.userId=userId;
-        this.fileName=fileName;
-        this.filePath=filePath;
+    public BinaryContent(UUID userId, String fileName, String filePath) {
+        this.id = UUID.randomUUID();
+        this.createdAt = Instant.now();
+        this.userId = userId;
+        this.fileName = fileName;
+        this.filePath = filePath;
     }
 
-    public BinaryContent(UUID userId, UUID channelId, String fileName,  String filePath){
-        this.id= UUID.randomUUID();
-        this.createdAt=Instant.now();
-        this.userId=userId;
-        this.channelId=channelId;
-        this.fileName=fileName;
-        this.filePath=filePath;
+    public BinaryContent(UUID userId, UUID channelId, String fileName, String filePath) {
+        this.id = UUID.randomUUID();
+        this.createdAt = Instant.now();
+        this.userId = userId;
+        this.channelId = channelId;
+        this.fileName = fileName;
+        this.filePath = filePath;
     }
 
 

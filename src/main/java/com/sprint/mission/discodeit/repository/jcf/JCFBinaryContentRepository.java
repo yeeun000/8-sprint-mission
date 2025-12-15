@@ -16,7 +16,7 @@ public class JCFBinaryContentRepository implements BinaryContentRepository {
         contentList.remove(id);
     }
 
-    public BinaryContent find(UUID id){
+    public BinaryContent find(UUID id) {
         return contentList.get(id);
     }
 

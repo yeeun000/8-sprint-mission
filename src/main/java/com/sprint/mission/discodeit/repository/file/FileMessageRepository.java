@@ -5,9 +5,7 @@ import com.sprint.mission.discodeit.repository.MessageRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Repository
@@ -38,13 +36,14 @@ public class FileMessageRepository extends FileRepository<Message> implements Me
             return getFile().get(messageId);
         else return null;
     }
+
     public void remove(UUID messageId) {
         getFile().remove(messageId);
         saveFile();
     }
 
-    public Instant last(UUID channelId){
-        Instant a=Instant.now();
+    public Instant last(UUID channelId) {
+        Instant a = Instant.now();
         return a;
     }
 

@@ -12,13 +12,13 @@ public class ReadStatus {
     private UUID channelId;
     private Instant lastRead;
 
-    public ReadStatus(UUID userId, UUID channelId){
-        this.id=UUID.randomUUID();
+    public ReadStatus(UUID userId, UUID channelId) {
+        this.id = UUID.randomUUID();
         this.createAt = Instant.now();
         this.updateAt = Instant.now();
-        this.userId=userId;
-        this.channelId= channelId;
-        this.lastRead= Instant.now();
+        this.userId = userId;
+        this.channelId = channelId;
+        this.lastRead = Instant.now();
     }
 
     public UUID getId() {

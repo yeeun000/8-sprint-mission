@@ -12,7 +12,6 @@ import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.MessageService;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -45,10 +44,10 @@ public class BasicMessageService implements MessageService {
     @Override
     public Message create(MessageDTO messageDTO) {
         Message message = new Message(messageDTO.content(), messageDTO.userId(), messageDTO.channelId(), messageDTO.files());
-        if(messageDTO.files()!=null && !messageDTO.files().isEmpty()){
+        if (messageDTO.files() != null && !messageDTO.files().isEmpty()) {
             List<BinaryContentDTO> files = messageDTO.files();
-            for(BinaryContentDTO file : files){
-                BinaryContent binaryContent = new BinaryContent(messageDTO.userId(),messageDTO.channelId(),file.fileName(), file.filePath());
+            for (BinaryContentDTO file : files) {
+                BinaryContent binaryContent = new BinaryContent(messageDTO.userId(), messageDTO.channelId(), file.fileName(), file.filePath());
                 binaryContentRepository.add(binaryContent);
             }
         }
@@ -59,8 +58,8 @@ public class BasicMessageService implements MessageService {
     @Override
     public List<Message> findallByChannelId(UUID channelId) {
         List<Message> find = new ArrayList<>();
-        for(Message message :  messageRepository.findAll()){
-            if(channelId.equals(message.getChanneld())){
+        for (Message message : messageRepository.findAll()) {
+            if (channelId.equals(message.getChanneld())) {
                 find.add(message);
             }
         }
@@ -82,23 +81,22 @@ public class BasicMessageService implements MessageService {
             throw new NoSuchElementException(messageDTO.id() + "를 찾을 수 없습니다.");
 
         List<BinaryContentDTO> files = messageDTO.files();
-        List<UUID> newmassageList=new ArrayList<>();
+        List<UUID> newmassageList = new ArrayList<>();
 
-        if(files != null){
-            if(!files.isEmpty()){
-              for(BinaryContentDTO dto : files){
-                  BinaryContent binaryContent = new BinaryContent(messageDTO.userId(),messageDTO.channelId(),dto.fileName(), dto.filePath());
-                  binaryContentRepository.add(binaryContent);
-                  newmassageList.add(binaryContent.getId());
-              }
+        if (files != null) {
+            if (!files.isEmpty()) {
+                for (BinaryContentDTO dto : files) {
+                    BinaryContent binaryContent = new BinaryContent(messageDTO.userId(), messageDTO.channelId(), dto.fileName(), dto.filePath());
+                    binaryContentRepository.add(binaryContent);
+                    newmassageList.add(binaryContent.getId());
+                }
+            } else {
+                newmassageList = List.of();
             }
-            else{
-                newmassageList=List.of();
-            }
-        }else{
-            newmassageList=message.getAttachmentlds();
+        } else {
+            newmassageList = message.getAttachmentlds();
         }
-        message.update(messageDTO.content(),newmassageList);
+        message.update(messageDTO.content(), newmassageList);
         return message;
     }
 

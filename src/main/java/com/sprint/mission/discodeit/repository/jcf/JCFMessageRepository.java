@@ -41,8 +41,8 @@ public class JCFMessageRepository implements MessageRepository {
         messageList.remove(messageId);
     }
 
-    public Instant last(UUID channelId){
-        Instant a=Instant.now();
+    public Instant last(UUID channelId) {
+        Instant a = Instant.now();
         return a;
     }
 

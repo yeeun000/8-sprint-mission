@@ -1,12 +1,11 @@
 package com.sprint.mission.discodeit.service.basic;
 
 
+import com.sprint.mission.discodeit.dto.ChannelDTO;
 import com.sprint.mission.discodeit.dto.FindChannelDTO;
-import com.sprint.mission.discodeit.dto.PrivateChannelDTO;
 import com.sprint.mission.discodeit.dto.PublicChannelDTO;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ReadStatus;
-import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
@@ -41,18 +40,21 @@ public class BasicChannelService implements ChannelService {
         return instance;
     }
 
-    public Channel createPublic(PublicChannelDTO dto) {
-        Channel channel = new Channel(PUBLIC, dto.name(), dto.description(), null);
-        channelRepository.add(channel);
-        return channel;
-    }
+    public Channel create(ChannelDTO dto) {
+        Channel channel;
 
-    public Channel createPrivate(PrivateChannelDTO dto) {
-        Channel channel = new Channel(PRIVATE, null, null, dto.users());
-        for (UUID userId : dto.users()) {
-            ReadStatus readStatus = new ReadStatus(userId, channel.getId());
-            readStatusRepository.add(readStatus);
+        if (dto.type() == Channel.ChannelType.PUBLIC) {
+            channel = new Channel(PUBLIC, dto.name(), dto.description(), null);
+        } else {
+            channel = new Channel(PRIVATE, null, null, dto.users());
+
+            for (UUID userId : dto.users()) {
+                ReadStatus readStatus = new ReadStatus(userId, channel.getId());
+                readStatusRepository.add(readStatus);
+            }
         }
+
+        channelRepository.add(channel);
         return channel;
     }
 

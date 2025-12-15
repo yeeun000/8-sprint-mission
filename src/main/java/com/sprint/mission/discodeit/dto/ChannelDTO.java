@@ -2,13 +2,13 @@ package com.sprint.mission.discodeit.dto;
 
 import com.sprint.mission.discodeit.entity.Channel;
 
-import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
-public record PublicChannelDTO(
-        UUID id,
+public record ChannelDTO(
+        Channel.ChannelType type,
         String name,
         String description,
-        Channel.ChannelType PUBLIC
+        List<UUID> users
 ) {
 }

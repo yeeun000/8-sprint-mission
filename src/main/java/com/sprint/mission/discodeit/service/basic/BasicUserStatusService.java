@@ -17,22 +17,22 @@ public class BasicUserStatusService implements UserStatusService {
     private UserRepository userRepository;
 
 
-    public void create(UserStatusDTO userStatusDTO){
-        if(userRepository.findId(userStatusDTO.userId())==null)
+    public void create(UserStatusDTO userStatusDTO) {
+        if (userRepository.findId(userStatusDTO.userId()) == null)
             throw new NoSuchElementException(userStatusDTO.userId() + "를 찾을 수 없습니다.");
-        if(userStatusRepository.find(userStatusDTO.userId())!=null)
+        if (userStatusRepository.find(userStatusDTO.userId()) != null)
             throw new IllegalArgumentException(userStatusDTO.userId() + "이 이미 있습니다.");
     }
 
-    public UserStatus find(UUID id){
+    public UserStatus find(UUID id) {
         return userStatusRepository.find(id);
     }
 
-    public void findAll(){
+    public void findAll() {
         userStatusRepository.findAll();
     }
 
-    public void update(UserStatusUpdateDTO userStatusUpdateDTO){
+    public void update(UserStatusUpdateDTO userStatusUpdateDTO) {
         UserStatus status = find(userStatusUpdateDTO.id());
         if (status == null) {
             throw new NoSuchElementException(userStatusUpdateDTO.id() + "를 찾을 수 없습니다.");
@@ -41,7 +41,7 @@ public class BasicUserStatusService implements UserStatusService {
         userStatusRepository.add(status);
     }
 
-    public void updateByUserId(UUID userId){
+    public void updateByUserId(UUID userId) {
         UserStatus status = find(userId);
         if (status == null) {
             throw new NoSuchElementException(userId + "를 찾을 수 없습니다.");
@@ -49,7 +49,7 @@ public class BasicUserStatusService implements UserStatusService {
         status.setLastCome(Instant.now());
     }
 
-    public void delete(UUID id){
+    public void delete(UUID id) {
         userStatusRepository.remove(id);
     }
 

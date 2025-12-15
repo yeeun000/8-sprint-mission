@@ -9,6 +9,7 @@ public interface BinaryContentRepository {
     void add(BinaryContent binaryContent);
 
     void remove(UUID id);
+
     List<BinaryContent> findAll(List<UUID> ids);
 
     BinaryContent find(UUID id);
