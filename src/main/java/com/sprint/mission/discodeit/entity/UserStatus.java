@@ -42,6 +42,10 @@ public class UserStatus {
         return online;
     }
 
+    public void setLastCome(Instant lastCome) {
+        this.lastCome = lastCome;
+    }
+
     @Override
     public String toString() {
         return "UserStatus{" +

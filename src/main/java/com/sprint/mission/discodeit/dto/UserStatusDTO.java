@@ -5,6 +5,6 @@ import java.util.UUID;
 
 public record UserStatusDTO(
         UUID id,
-        String name,
+        UUID userId,
         boolean online) {
 }
