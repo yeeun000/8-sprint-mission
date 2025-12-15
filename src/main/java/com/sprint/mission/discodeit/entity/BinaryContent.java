@@ -9,6 +9,7 @@ public class BinaryContent {
     private Instant createdAt;
     private UUID userId;
     private UUID messageId;
+    private UUID channelId;
     private String fileName;
     private String filePath;
 
@@ -20,13 +21,15 @@ public class BinaryContent {
         this.filePath=filePath;
     }
 
-    public BinaryContent( UUID messageId, String fileName, String filePath, boolean t){
+    public BinaryContent(UUID userId, UUID channelId, String fileName,  String filePath){
         this.id= UUID.randomUUID();
         this.createdAt=Instant.now();
-        this.messageId=messageId;
+        this.userId=userId;
+        this.channelId=channelId;
         this.fileName=fileName;
         this.filePath=filePath;
     }
+
 
     public UUID getId() {
         return id;

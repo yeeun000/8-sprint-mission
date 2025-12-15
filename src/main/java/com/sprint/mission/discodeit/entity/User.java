@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.entity;
 
-import com.sprint.mission.discodeit.dto.Profile;
+import com.sprint.mission.discodeit.dto.FileDTO;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -17,9 +17,9 @@ public class User implements Serializable {
     private String email;
     private Instant createAt;
     private Instant updateAt;
-    private Profile profileImage;
+    private FileDTO profileImage;
 
-    public User(String name, String password, String email, Optional<Profile> profileImage) {
+    public User(String name, String password, String email, Optional<FileDTO> profileImage) {
         this.id = UUID.randomUUID();
         this.createAt = Instant.now();
         this.updateAt =  Instant.now();
@@ -46,11 +46,11 @@ public class User implements Serializable {
         return email;
     }
 
-    public Profile getProfileImage() {
+    public FileDTO getProfileImage() {
         return profileImage;
     }
 
-    public void update(String name, String password, String email, Optional<Profile> profileImage){
+    public void update(String name, String password, String email, Optional<FileDTO> profileImage){
         this.name=name;
         this.password=password;
         this.email=email;
