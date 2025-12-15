@@ -2,6 +2,8 @@ package com.sprint.mission.discodeit.entity;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Channel implements Serializable {
@@ -18,15 +20,21 @@ public class Channel implements Serializable {
     private ChannelType type;
     private Instant createAt;
     private Instant updateAt;
+    private List<UUID> users = new ArrayList<>();
 
 
-    public Channel(ChannelType type, String name, String description) {
+    public Channel(ChannelType type, String name, String description, List<UUID> users) {
         this.id = UUID.randomUUID();
         this.createAt = Instant.now();
         this.updateAt = Instant.now();
         this.type = type;
         this.channelName = name;
         this.description = description;
+        if (type == ChannelType.PRIVATE) {
+            this.users = new ArrayList<>(users);
+        } else {
+            this.users = null;
+        }
     }
 
     public UUID getId() {
@@ -45,11 +53,20 @@ public class Channel implements Serializable {
         return type;
     }
 
+    public List<UUID> getUsers() {
+        return users;
+    }
 
-    public void update(String channelName,String description){
+    public void update(String channelName, String description){
         this.channelName=channelName;
         this.description=description;
         this.updateAt = Instant.now();
+    }
+
+    public boolean containUser(UUID userId){
+        return type == ChannelType.PRIVATE
+                && users != null
+                && users.contains(userId);
     }
 
     @Override

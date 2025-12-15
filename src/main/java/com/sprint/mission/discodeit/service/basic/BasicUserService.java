@@ -86,10 +86,11 @@ public class BasicUserService implements UserService {
 
     @Override
     public UserStatusDTO findId(UUID userId) {
-        if (userRepository.findId(userId) == null)
-            throw new NoSuchElementException(userId + "를 찾을 수 없습니다.");
-
         User user = userRepository.findId(userId);
+
+        if (user == null) {
+            throw new NoSuchElementException(userId + "를 찾을 수 없습니다.");
+        }
 
         boolean online = userStatusRepository.onlineStatus(user.getId());
         UserStatusDTO userStatusDTO = new UserStatusDTO(user.getId(), user.getName(), online);
