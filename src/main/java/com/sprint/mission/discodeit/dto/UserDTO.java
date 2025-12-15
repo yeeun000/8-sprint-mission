@@ -8,5 +8,5 @@ public record UserDTO(
         String name,
         String password,
         String email,
-        Optional<FileDTO> profileImage) {
+        Optional<BinaryContentDTO> profileImage) {
 }

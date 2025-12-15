@@ -60,7 +60,7 @@ public class BasicUserService implements UserService {
 
         for (User user : users) {
             boolean online = userStatusRepository.onlineStatus(user.getId());
-            UserStatusDTO userStatusDTO = new UserStatusDTO(user.getId(), user.getName(), online);
+            UserStatusDTO userStatusDTO = new UserStatusDTO(user.getId(), online);
             userStatus.add(userStatusDTO);
         }
         return userStatus;
@@ -93,7 +93,7 @@ public class BasicUserService implements UserService {
         }
 
         boolean online = userStatusRepository.onlineStatus(user.getId());
-        UserStatusDTO userStatusDTO = new UserStatusDTO(user.getId(), user.getName(), online);
+        UserStatusDTO userStatusDTO = new UserStatusDTO(user.getId(), online);
         return userStatusDTO;
     }
 

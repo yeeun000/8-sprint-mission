@@ -8,6 +8,6 @@ public record MessageDTO(
         UUID userId,
         UUID channelId,
         String content,
-        List<FileDTO> files
+        List<BinaryContentDTO> files
 ) {
 }

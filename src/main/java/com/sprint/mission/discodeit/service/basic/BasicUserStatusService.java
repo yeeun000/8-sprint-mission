@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.UserStatusDTO;
+import com.sprint.mission.discodeit.dto.UserStatusUpdateDTO;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
@@ -31,10 +32,10 @@ public class BasicUserStatusService implements UserStatusService {
         userStatusRepository.findAll();
     }
 
-    public void update(UserStatusDTO userStatusDTO){
-        UserStatus status = find(userStatusDTO.id());
+    public void update(UserStatusUpdateDTO userStatusUpdateDTO){
+        UserStatus status = find(userStatusUpdateDTO.id());
         if (status == null) {
-            throw new NoSuchElementException(userStatusDTO.id() + "를 찾을 수 없습니다.");
+            throw new NoSuchElementException(userStatusUpdateDTO.id() + "를 찾을 수 없습니다.");
         }
         status.setLastCome(Instant.now());
         userStatusRepository.add(status);

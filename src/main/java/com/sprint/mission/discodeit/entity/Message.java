@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.entity;
 
-import com.sprint.mission.discodeit.dto.FileDTO;
+
+import com.sprint.mission.discodeit.dto.BinaryContentDTO;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -20,7 +21,7 @@ public class Message implements Serializable {
     private Instant updateAt;
     private List<UUID> attachmentlds;
 
-    public Message(String contents, UUID userId, UUID channeld, List<FileDTO> files) {
+    public Message(String contents, UUID userId, UUID channeld, List<BinaryContentDTO> files) {
         this.id = UUID.randomUUID();
         this.createAt = Instant.now();
         this.updateAt = Instant.now();
@@ -28,7 +29,7 @@ public class Message implements Serializable {
         this.userId = userId;
         this.channeld = channeld;
         if(files != null && !files.isEmpty())
-            this.attachmentlds=files.stream().map(FileDTO::id).toList();
+            this.attachmentlds=files.stream().map(BinaryContentDTO::id).toList();
     }
 
     public UUID getId() {

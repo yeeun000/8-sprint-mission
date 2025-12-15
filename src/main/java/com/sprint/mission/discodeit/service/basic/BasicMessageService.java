@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
 
-import com.sprint.mission.discodeit.dto.FileDTO;
+import com.sprint.mission.discodeit.dto.BinaryContentDTO;
 import com.sprint.mission.discodeit.dto.MessageDTO;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Message;
@@ -46,8 +46,8 @@ public class BasicMessageService implements MessageService {
     public Message create(MessageDTO messageDTO) {
         Message message = new Message(messageDTO.content(), messageDTO.userId(), messageDTO.channelId(), messageDTO.files());
         if(messageDTO.files()!=null && !messageDTO.files().isEmpty()){
-            List<FileDTO> files = messageDTO.files();
-            for(FileDTO file : files){
+            List<BinaryContentDTO> files = messageDTO.files();
+            for(BinaryContentDTO file : files){
                 BinaryContent binaryContent = new BinaryContent(messageDTO.userId(),messageDTO.channelId(),file.fileName(), file.filePath());
                 binaryContentRepository.add(binaryContent);
             }
@@ -81,12 +81,12 @@ public class BasicMessageService implements MessageService {
         if (message == null)
             throw new NoSuchElementException(messageDTO.id() + "를 찾을 수 없습니다.");
 
-        List<FileDTO> files = messageDTO.files();
+        List<BinaryContentDTO> files = messageDTO.files();
         List<UUID> newmassageList=new ArrayList<>();
 
         if(files != null){
             if(!files.isEmpty()){
-              for(FileDTO dto : files){
+              for(BinaryContentDTO dto : files){
                   BinaryContent binaryContent = new BinaryContent(messageDTO.userId(),messageDTO.channelId(),dto.fileName(), dto.filePath());
                   binaryContentRepository.add(binaryContent);
                   newmassageList.add(binaryContent.getId());
