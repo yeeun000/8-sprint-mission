@@ -37,6 +37,10 @@ public class ReadStatus {
         return lastRead;
     }
 
+    public void setLastRead(Instant lastRead) {
+        this.lastRead = lastRead;
+    }
+
     @Override
     public String toString() {
         return "ReadStatus{" +
