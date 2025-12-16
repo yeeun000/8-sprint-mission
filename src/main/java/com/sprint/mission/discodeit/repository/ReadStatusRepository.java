@@ -12,7 +12,7 @@ public interface ReadStatusRepository {
 
     ReadStatus find(UUID id);
 
-    List<ReadStatus> findALL(UUID userId);
+    List<ReadStatus> findAll(UUID userId);
 
     boolean exists(UUID userId, UUID channelID);
 }

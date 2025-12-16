@@ -31,7 +31,10 @@ public class Channel implements Serializable {
         this.channelName = name;
         this.description = description;
         if (type == ChannelType.PRIVATE) {
-            this.users = new ArrayList<>(users);
+            if (users != null)
+                this.users = new ArrayList<>(users);
+            else
+                this.users = new ArrayList<>();
         } else {
             this.users = null;
         }

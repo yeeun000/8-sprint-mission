@@ -20,5 +20,5 @@ public interface UserRepository {
 
     boolean existsEmail(String email);
 
-    User login(String name);
+    User findName(String name);
 }

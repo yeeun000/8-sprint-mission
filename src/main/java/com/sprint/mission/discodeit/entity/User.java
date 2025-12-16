@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.entity;
 
-import com.sprint.mission.discodeit.dto.BinaryContentDTO;
+import com.sprint.mission.discodeit.dto.binaryContentDTO.ProfileDTO;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -17,9 +17,9 @@ public class User implements Serializable {
     private String email;
     private Instant createAt;
     private Instant updateAt;
-    private BinaryContentDTO profileImage;
+    private ProfileDTO profileImage;
 
-    public User(String name, String password, String email, Optional<BinaryContentDTO> profileImage) {
+    public User(String name, String password, String email, Optional<ProfileDTO> profileImage) {
         this.id = UUID.randomUUID();
         this.createAt = Instant.now();
         this.updateAt = Instant.now();
@@ -46,16 +46,18 @@ public class User implements Serializable {
         return email;
     }
 
-    public BinaryContentDTO getProfileImage() {
+    public ProfileDTO getProfileImage() {
         return profileImage;
     }
 
-    public void update(String name, String password, String email, Optional<BinaryContentDTO> profileImage) {
+    public void setProfileImage(ProfileDTO profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public void update(String name, String password, String email) {
         this.name = name;
         this.password = password;
         this.email = email;
-        if (profileImage.isPresent())
-            this.profileImage = profileImage.get();
         this.updateAt = Instant.now();
     }
 

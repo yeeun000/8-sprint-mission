@@ -1,9 +1,9 @@
-package com.sprint.mission.discodeit.dto;
+package com.sprint.mission.discodeit.dto.readStatusDTO;
 
 import java.time.Instant;
 import java.util.UUID;
 
-public record ReadStatusUpdateDTO(
+public record UpdateReadStatusDTO(
         UUID id,
         Instant lastRead
 ) {

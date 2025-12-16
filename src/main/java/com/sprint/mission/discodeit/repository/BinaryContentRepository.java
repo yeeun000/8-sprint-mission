@@ -10,6 +10,8 @@ public interface BinaryContentRepository {
 
     void remove(UUID id);
 
+    void removeProfile(UUID id);
+
     List<BinaryContent> findAll(List<UUID> ids);
 
     BinaryContent find(UUID id);

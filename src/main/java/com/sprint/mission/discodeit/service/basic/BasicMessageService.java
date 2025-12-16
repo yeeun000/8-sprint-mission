@@ -1,8 +1,9 @@
 package com.sprint.mission.discodeit.service.basic;
 
 
-import com.sprint.mission.discodeit.dto.BinaryContentDTO;
-import com.sprint.mission.discodeit.dto.MessageDTO;
+import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDTO;
+import com.sprint.mission.discodeit.dto.messageDTO.CreateMessageDTO;
+import com.sprint.mission.discodeit.dto.messageDTO.MessageDTO;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
@@ -20,38 +21,31 @@ import java.util.UUID;
 @Service
 public class BasicMessageService implements MessageService {
 
-    private static BasicMessageService instance;
-
     private MessageRepository messageRepository;
-    private UserRepository userRepository;
     private ChannelRepository channelRepository;
+    private UserRepository userRepository;
     private BinaryContentRepository binaryContentRepository;
 
 
-    public BasicMessageService(MessageRepository messageRepository, ChannelRepository channelRepository, UserRepository userRepository) {
+    public BasicMessageService(MessageRepository messageRepository, ChannelRepository channelRepository, UserRepository userRepository, BinaryContentRepository binaryContentRepository) {
         this.messageRepository = messageRepository;
         this.channelRepository = channelRepository;
         this.userRepository = userRepository;
+        this.binaryContentRepository = binaryContentRepository;
     }
 
-    public static BasicMessageService getInstance(MessageRepository messageRepository, ChannelRepository channelRepository, UserRepository userRepository) {
-        if (instance == null) {
-            instance = new BasicMessageService(messageRepository, channelRepository, userRepository);
-        }
-        return instance;
-    }
 
     @Override
-    public Message create(MessageDTO messageDTO) {
-        Message message = new Message(messageDTO.content(), messageDTO.userId(), messageDTO.channelId(), messageDTO.files());
-        if (messageDTO.files() != null && !messageDTO.files().isEmpty()) {
-            List<BinaryContentDTO> files = messageDTO.files();
+    public Message create(CreateMessageDTO createMessageDTO) {
+        Message message = new Message(createMessageDTO.content(), createMessageDTO.userId(), createMessageDTO.channelId(), createMessageDTO.files());
+        messageRepository.add(message);
+        if (createMessageDTO.files() != null && !createMessageDTO.files().isEmpty()) {
+            List<BinaryContentDTO> files = createMessageDTO.files();
             for (BinaryContentDTO file : files) {
-                BinaryContent binaryContent = new BinaryContent(messageDTO.userId(), messageDTO.channelId(), file.fileName(), file.filePath());
+                BinaryContent binaryContent = new BinaryContent(message.getUserId(), message.getChannelId(), message.getId(), file.fileName(), file.filePath());
                 binaryContentRepository.add(binaryContent);
             }
         }
-        messageRepository.add(message);
         return message;
     }
 
@@ -59,7 +53,7 @@ public class BasicMessageService implements MessageService {
     public List<Message> findallByChannelId(UUID channelId) {
         List<Message> find = new ArrayList<>();
         for (Message message : messageRepository.findAll()) {
-            if (channelId.equals(message.getChanneld())) {
+            if (channelId.equals(message.getChannelId())) {
                 find.add(message);
             }
         }
@@ -70,8 +64,8 @@ public class BasicMessageService implements MessageService {
     public void delete(UUID messageId) {
         if (messageRepository.findId(messageId) == null)
             throw new NoSuchElementException(messageId + "를 찾을 수 없습니다.");
-        messageRepository.remove(messageId);
         binaryContentRepository.remove(messageId);
+        messageRepository.remove(messageId);
     }
 
     @Override
@@ -84,14 +78,13 @@ public class BasicMessageService implements MessageService {
         List<UUID> newmassageList = new ArrayList<>();
 
         if (files != null) {
+            binaryContentRepository.remove(message.getId());
             if (!files.isEmpty()) {
                 for (BinaryContentDTO dto : files) {
-                    BinaryContent binaryContent = new BinaryContent(messageDTO.userId(), messageDTO.channelId(), dto.fileName(), dto.filePath());
+                    BinaryContent binaryContent = new BinaryContent(message.getUserId(), message.getChannelId(), message.getId(), dto.fileName(), dto.filePath());
                     binaryContentRepository.add(binaryContent);
                     newmassageList.add(binaryContent.getId());
                 }
-            } else {
-                newmassageList = List.of();
             }
         } else {
             newmassageList = message.getAttachmentlds();

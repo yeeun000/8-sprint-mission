@@ -4,23 +4,28 @@ import com.sprint.mission.discodeit.dto.LoginDTO;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.AuthService;
+import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
 
+@Service
 public class BasicAuthService implements AuthService {
 
     private UserRepository userRepository;
 
-    public User login(String username, String password) {
-        User user = userRepository.login(username);
+    public BasicAuthService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    public User login(LoginDTO loginDTO) {
+        User user = userRepository.findName(loginDTO.username());
         if (user == null)
-            throw new NoSuchElementException(username + "를 찾을 수 없습니다.");
+            throw new NoSuchElementException(loginDTO.username() + "회원 정보가 없습니다..");
 
-        LoginDTO loginDTO = new LoginDTO(user.getName(), user.getPassword());
-
-        if (loginDTO.username().equals(username) && loginDTO.password().equals(password))
+        if (loginDTO.password().equals(user.getPassword()))
             return user;
-        return null;
+        else throw new NoSuchElementException(loginDTO.username() + "비밀번호가 틀렸습니다.");
     }
 
 }

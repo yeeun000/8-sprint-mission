@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.entity;
 
 
-import com.sprint.mission.discodeit.dto.BinaryContentDTO;
+import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDTO;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -14,19 +14,19 @@ public class Message implements Serializable {
 
     private UUID id;
     private String contents;
-    private UUID channeld;
+    private UUID channelId;
     private UUID userId;
     private Instant createAt;
     private Instant updateAt;
     private List<UUID> attachmentlds;
 
-    public Message(String contents, UUID userId, UUID channeld, List<BinaryContentDTO> files) {
+    public Message(String contents, UUID userId, UUID channelId, List<BinaryContentDTO> files) {
         this.id = UUID.randomUUID();
         this.createAt = Instant.now();
         this.updateAt = Instant.now();
         this.contents = contents;
         this.userId = userId;
-        this.channeld = channeld;
+        this.channelId = channelId;
         if (files != null && !files.isEmpty())
             this.attachmentlds = files.stream().map(BinaryContentDTO::id).toList();
     }
@@ -43,13 +43,14 @@ public class Message implements Serializable {
         return userId;
     }
 
-    public UUID getChanneld() {
-        return channeld;
+    public UUID getChannelId() {
+        return channelId;
     }
 
     public List<UUID> getAttachmentlds() {
         return attachmentlds;
     }
+
 
     public void update(String contents, List<UUID> attachmentlds) {
         this.contents = contents;
@@ -64,7 +65,7 @@ public class Message implements Serializable {
         return "Message{" +
                 "id=" + id +
                 ", contents='" + contents + '\'' +
-                ", channeld=" + channeld +
+                ", channelId=" + channelId +
                 ", userId=" + userId +
                 ", createAt=" + createAt +
                 ", updateAt=" + updateAt +

@@ -1,7 +1,9 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.UserDTO;
-import com.sprint.mission.discodeit.dto.UserStatusDTO;
+import com.sprint.mission.discodeit.dto.binaryContentDTO.ProfileDTO;
+import com.sprint.mission.discodeit.dto.userDTO.CreateUserDTO;
+import com.sprint.mission.discodeit.dto.userDTO.FindUserDTO;
+import com.sprint.mission.discodeit.dto.userDTO.UpdateUserDTO;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
@@ -19,24 +21,18 @@ import java.util.UUID;
 @Service
 public class BasicUserService implements UserService {
 
-    private static BasicUserService instance;
     private UserRepository userRepository;
     private UserStatusRepository userStatusRepository;
     private BinaryContentRepository binaryContentRepository;
 
-    private BasicUserService(UserRepository userRepository) {
+    public BasicUserService(UserRepository userRepository, UserStatusRepository userStatusRepository, BinaryContentRepository binaryContentRepository) {
         this.userRepository = userRepository;
-    }
-
-    public static BasicUserService getInstance(UserRepository repository) {
-        if (instance == null) {
-            instance = new BasicUserService(repository);
-        }
-        return instance;
+        this.userStatusRepository = userStatusRepository;
+        this.binaryContentRepository = binaryContentRepository;
     }
 
     @Override
-    public User create(UserDTO userDTO) {
+    public User create(CreateUserDTO userDTO) {
         if (userRepository.existsName(userDTO.name())) {
             throw new IllegalArgumentException(userDTO.name() + "이 이미 있습니다.");
         }
@@ -45,26 +41,27 @@ public class BasicUserService implements UserService {
         }
 
         User user = new User(userDTO.name(), userDTO.password(), userDTO.email(), userDTO.profileImage());
-        if (userDTO.profileImage().isPresent()) {
-            BinaryContent content = new BinaryContent(userDTO.id(), userDTO.profileImage().get().fileName(), userDTO.profileImage().get().filePath());
-            binaryContentRepository.add(content);
-        }
-        UserStatus status = new UserStatus(userDTO.id());
-        userStatusRepository.add(status);
         userRepository.add(user);
 
+        UserStatus status = new UserStatus(user.getId());
+        userStatusRepository.add(status);
+
+        if (userDTO.profileImage().isPresent()) {
+            BinaryContent content = new BinaryContent(user.getId(), userDTO.profileImage().get().fileName(), userDTO.profileImage().get().filePath(), true);
+            binaryContentRepository.add(content);
+        }
         return user;
     }
 
     @Override
-    public List<UserStatusDTO> findAll() {
+    public List<FindUserDTO> findAll() {
         List<User> users = userRepository.findAll();
-        List<UserStatusDTO> userStatus = new ArrayList<>();
+        List<FindUserDTO> userStatus = new ArrayList<>();
 
         for (User user : users) {
             boolean online = userStatusRepository.onlineStatus(user.getId());
-            UserStatusDTO userStatusDTO = new UserStatusDTO(user.getId(), online);
-            userStatus.add(userStatusDTO);
+            FindUserDTO findUserDTO = new FindUserDTO(user.getId(), user.getName(), online);
+            userStatus.add(findUserDTO);
         }
         return userStatus;
     }
@@ -73,22 +70,35 @@ public class BasicUserService implements UserService {
     public void delete(UUID userId) {
         if (userRepository.findId(userId) == null)
             throw new NoSuchElementException(userId + "를 찾을 수 없습니다.");
-        userRepository.remove(userId);
+        binaryContentRepository.removeProfile(userId);
         userStatusRepository.remove(userId);
-        binaryContentRepository.remove(userId);
+        userRepository.remove(userId);
     }
 
     @Override
-    public User update(UserDTO userDTO) {
-        User user = userRepository.findId(userDTO.id());
+    public User update(UpdateUserDTO updateUserDTO) {
+        User user = userRepository.findId(updateUserDTO.id());
         if (user == null)
-            throw new NoSuchElementException(userDTO.id() + "를 찾을 수 없습니다.");
-        user.update(userDTO.name(), userDTO.password(), userDTO.email(), userDTO.profileImage());
+            throw new NoSuchElementException(updateUserDTO.id() + "를 찾을 수 없습니다.");
+
+        if (updateUserDTO.profileImage().isPresent()) {
+            binaryContentRepository.removeProfile(user.getId());
+            BinaryContent content = new BinaryContent(user.getId(), updateUserDTO.profileImage().get().fileName(), updateUserDTO.profileImage().get().filePath(), true);
+            binaryContentRepository.add(content);
+            ProfileDTO dto = new ProfileDTO(user.getId(), updateUserDTO.profileImage().get().fileName(), updateUserDTO.profileImage().get().filePath());
+            user.setProfileImage(dto);
+        } else {
+            if (user.getProfileImage() != null) {
+                user.setProfileImage(null);
+                binaryContentRepository.removeProfile(user.getId());
+            }
+        }
+        user.update(updateUserDTO.name(), updateUserDTO.password(), updateUserDTO.email());
         return user;
     }
 
     @Override
-    public UserStatusDTO findId(UUID userId) {
+    public FindUserDTO findId(UUID userId) {
         User user = userRepository.findId(userId);
 
         if (user == null) {
@@ -96,8 +106,8 @@ public class BasicUserService implements UserService {
         }
 
         boolean online = userStatusRepository.onlineStatus(user.getId());
-        UserStatusDTO userStatusDTO = new UserStatusDTO(user.getId(), online);
-        return userStatusDTO;
+        FindUserDTO dto = new FindUserDTO(user.getId(), user.getName(), online);
+        return dto;
     }
 
 }
