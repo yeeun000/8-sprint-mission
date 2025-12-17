@@ -7,6 +7,7 @@ import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ReadStatusService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -14,17 +15,13 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class BasicReadStatusService implements ReadStatusService {
 
-    private ReadStatusRepository readStatusRepository;
-    private UserRepository userRepository;
-    private ChannelRepository channelRepository;
+    private final ReadStatusRepository readStatusRepository;
+    private final UserRepository userRepository;
+    private final ChannelRepository channelRepository;
 
-    public BasicReadStatusService(ReadStatusRepository readStatusRepository, UserRepository userRepository, ChannelRepository channelRepository) {
-        this.readStatusRepository = readStatusRepository;
-        this.userRepository = userRepository;
-        this.channelRepository = channelRepository;
-    }
 
     @Override
     public void create(ReadStatusDTO readStatusDTO) {

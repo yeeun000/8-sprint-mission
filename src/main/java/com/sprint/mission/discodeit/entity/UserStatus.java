@@ -1,8 +1,11 @@
 package com.sprint.mission.discodeit.entity;
 
+import lombok.Getter;
+
 import java.time.Instant;
 import java.util.UUID;
 
+@Getter
 public class UserStatus {
 
     private UUID id;
@@ -20,21 +23,6 @@ public class UserStatus {
         this.lastCome = Instant.now();
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public Instant getLastCome() {
-        return lastCome;
-    }
-
-    public boolean isOnline() {
-        return online;
-    }
 
     public boolean accessTime() {
         Instant after = lastCome.plusSeconds(300);

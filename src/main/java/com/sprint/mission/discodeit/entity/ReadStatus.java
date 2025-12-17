@@ -1,8 +1,11 @@
 package com.sprint.mission.discodeit.entity;
 
+import lombok.Getter;
+
 import java.time.Instant;
 import java.util.UUID;
 
+@Getter
 public class ReadStatus {
 
     private UUID id;
@@ -21,21 +24,6 @@ public class ReadStatus {
         this.lastRead = Instant.now();
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public UUID getChannelId() {
-        return channelId;
-    }
-
-    public Instant getLastRead() {
-        return lastRead;
-    }
 
     public void setLastRead(Instant lastRead) {
         this.lastRead = lastRead;

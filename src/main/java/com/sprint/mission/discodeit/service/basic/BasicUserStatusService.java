@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserStatusService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -12,16 +13,12 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class BasicUserStatusService implements UserStatusService {
 
-    private UserStatusRepository userStatusRepository;
-    private UserRepository userRepository;
-
-    public BasicUserStatusService(UserStatusRepository userStatusRepository, UserRepository userRepository) {
-        this.userStatusRepository = userStatusRepository;
-        this.userRepository = userRepository;
-    }
-
+    private final  UserStatusRepository userStatusRepository;
+    private final UserRepository userRepository;
+    
     @Override
     public void create(UserStateDTO userStatusDTO) {
         if (userRepository.findId(userStatusDTO.userId()) == null)

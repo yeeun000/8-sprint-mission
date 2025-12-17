@@ -11,6 +11,7 @@ import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,17 +20,13 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class BasicUserService implements UserService {
 
-    private UserRepository userRepository;
-    private UserStatusRepository userStatusRepository;
-    private BinaryContentRepository binaryContentRepository;
+    private final UserRepository userRepository;
+    private final UserStatusRepository userStatusRepository;
+    private final BinaryContentRepository binaryContentRepository;
 
-    public BasicUserService(UserRepository userRepository, UserStatusRepository userStatusRepository, BinaryContentRepository binaryContentRepository) {
-        this.userRepository = userRepository;
-        this.userStatusRepository = userStatusRepository;
-        this.binaryContentRepository = binaryContentRepository;
-    }
 
     @Override
     public User create(CreateUserDTO userDTO) {

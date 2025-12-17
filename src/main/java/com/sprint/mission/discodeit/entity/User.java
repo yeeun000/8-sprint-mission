@@ -1,12 +1,14 @@
 package com.sprint.mission.discodeit.entity;
 
 import com.sprint.mission.discodeit.dto.binaryContentDTO.ProfileDTO;
+import lombok.Getter;
 
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+@Getter
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -30,25 +32,6 @@ public class User implements Serializable {
             this.profileImage = profileImage.get();
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public ProfileDTO getProfileImage() {
-        return profileImage;
-    }
 
     public void setProfileImage(ProfileDTO profileImage) {
         this.profileImage = profileImage;

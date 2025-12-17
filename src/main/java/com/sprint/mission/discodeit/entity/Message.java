@@ -2,12 +2,14 @@ package com.sprint.mission.discodeit.entity;
 
 
 import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDTO;
+import lombok.Getter;
 
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+@Getter
 public class Message implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -31,25 +33,7 @@ public class Message implements Serializable {
             this.attachmentlds = files.stream().map(BinaryContentDTO::id).toList();
     }
 
-    public UUID getId() {
-        return id;
-    }
 
-    public String getContents() {
-        return contents;
-    }
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public UUID getChannelId() {
-        return channelId;
-    }
-
-    public List<UUID> getAttachmentlds() {
-        return attachmentlds;
-    }
 
 
     public void update(String contents, List<UUID> attachmentlds) {

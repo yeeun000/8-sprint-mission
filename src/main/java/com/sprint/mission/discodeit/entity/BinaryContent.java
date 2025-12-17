@@ -1,8 +1,11 @@
 package com.sprint.mission.discodeit.entity;
 
+import lombok.Getter;
+
 import java.time.Instant;
 import java.util.UUID;
 
+@Getter
 public class BinaryContent {
 
     private UUID id;
@@ -33,34 +36,6 @@ public class BinaryContent {
         this.filePath = filePath;
     }
 
-
-    public UUID getId() {
-        return id;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public UUID getMessageId() {
-        return messageId;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public boolean isProfile() {
-        return profile;
-    }
 
     @Override
     public String toString() {

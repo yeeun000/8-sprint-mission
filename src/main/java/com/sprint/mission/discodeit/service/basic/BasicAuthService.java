@@ -4,18 +4,16 @@ import com.sprint.mission.discodeit.dto.LoginDTO;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.AuthService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
 
 @Service
+@RequiredArgsConstructor
 public class BasicAuthService implements AuthService {
 
-    private UserRepository userRepository;
-
-    public BasicAuthService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private  final UserRepository userRepository;
 
     @Override
     public User login(LoginDTO loginDTO) {

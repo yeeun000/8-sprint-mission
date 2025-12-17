@@ -19,9 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.sprint.mission.discodeit.entity.Channel.ChannelType.PRIVATE;
-import static com.sprint.mission.discodeit.entity.Channel.ChannelType.PUBLIC;
-
 @SpringBootApplication
 public class DiscodeitApplication {
 
