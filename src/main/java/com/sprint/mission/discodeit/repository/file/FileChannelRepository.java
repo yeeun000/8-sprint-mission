@@ -7,12 +7,12 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
-@Repository
+//@Repository
 public class FileChannelRepository extends FileRepository<Channel> implements ChannelRepository {
 
 
-    public FileChannelRepository() {
-        super("src/main/java/com/sprint/mission/discodeit/service/data/channel.ser");
+    public FileChannelRepository(String filePath) {
+        super(filePath,"channel.ser");
     }
 
     @Override

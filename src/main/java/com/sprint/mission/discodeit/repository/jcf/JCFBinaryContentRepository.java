@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-@Repository
+//@Repository
 public class JCFBinaryContentRepository implements BinaryContentRepository {
     private Map<UUID, BinaryContent> contentList = new HashMap<>();
 

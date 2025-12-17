@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@Repository
+//@Repository
 public class JCFUserStatusRepository implements UserStatusRepository {
 
     private Map<UUID, UserStatus> statusList = new HashMap<>();

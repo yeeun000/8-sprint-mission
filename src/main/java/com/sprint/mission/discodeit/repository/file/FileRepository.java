@@ -3,22 +3,34 @@ package com.sprint.mission.discodeit.repository.file;
 import org.springframework.stereotype.Repository;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 
 public abstract class FileRepository<T> {
+
+
     private Map<UUID, T> duplication = new HashMap<>();
     private File file;
 
-    public FileRepository(String filePath) {
-        this.file = new File(filePath);
+    public FileRepository(String filePath, String fileName) {
+        this.file = Paths.get(filePath, fileName).toFile();
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }
         loadFromFile();
     }
+
+//    public FileRepository(String filePath) {
+//        this.file = new File(filePath);
+//        if (!file.getParentFile().exists()) {
+//            file.getParentFile().mkdirs();
+//        }
+//        loadFromFile();
+//    }
 
     public void loadFromFile() {
         if (!file.exists()) return;
@@ -26,7 +38,7 @@ public abstract class FileRepository<T> {
             Map<UUID, T> list = (Map<UUID, T>) ois.readObject();
             duplication.putAll(list);
         } catch (Exception e) {
-            System.out.println(" 불러오기 오류");
+            e.printStackTrace();
         }
     }
 
@@ -35,7 +47,7 @@ public abstract class FileRepository<T> {
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(duplication);
         } catch (IOException e) {
-            System.out.println("저장 오류");
+            e.printStackTrace();
         }
     }
 

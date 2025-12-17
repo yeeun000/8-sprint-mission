@@ -8,11 +8,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
-@Repository
+//@Repository
 public class FileUserRepository extends FileRepository<User> implements UserRepository {
 
-    public FileUserRepository() {
-        super("src/main/java/com/sprint/mission/discodeit/service/data/user.ser");
+    public FileUserRepository(String filePath) {
+        super(filePath,"user.ser");
     }
 
     @Override

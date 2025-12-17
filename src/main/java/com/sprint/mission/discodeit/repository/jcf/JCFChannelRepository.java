@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@Repository
+//@Repository
 public class JCFChannelRepository implements ChannelRepository {
 
     private final Map<UUID, Channel> channelList = new HashMap<>();

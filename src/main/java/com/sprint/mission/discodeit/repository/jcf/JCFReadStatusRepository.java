@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-@Repository
+//@Repository
 public class JCFReadStatusRepository implements ReadStatusRepository {
 
     private Map<UUID, ReadStatus> readStatusList = new HashMap<>();

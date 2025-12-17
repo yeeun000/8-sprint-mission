@@ -8,11 +8,11 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-@Repository
+//@Repository
 public class FileMessageRepository extends FileRepository<Message> implements MessageRepository {
 
-    public FileMessageRepository() {
-        super("src/main/java/com/sprint/mission/discodeit/service/data/message.ser");
+    public FileMessageRepository(String filePath) {
+        super(filePath,"message.ser");
     }
 
     @Override

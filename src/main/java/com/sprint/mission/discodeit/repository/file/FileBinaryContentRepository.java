@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Repository
+//@Repository
 public class FileBinaryContentRepository extends FileRepository<BinaryContent> implements BinaryContentRepository {
 
-    public FileBinaryContentRepository() {
-        super("src/main/java/com/sprint/mission/discodeit/service/data/binaryContent.ser");
+    public FileBinaryContentRepository(String filePath) {
+        super(filePath,"binaryContent.ser");
     }
 
     @Override

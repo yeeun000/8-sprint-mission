@@ -10,13 +10,13 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
-@Repository
+//@Repository
 public class FileUserStatusRepository extends FileRepository<UserStatus> implements UserStatusRepository {
 
     private UserRepository userRepository;
 
-    public FileUserStatusRepository(UserRepository userRepository) {
-        super("src/main/java/com/sprint/mission/discodeit/service/data/UserStatus.ser");
+    public FileUserStatusRepository(String filePath, UserRepository userRepository) {
+        super(filePath,"UserStatus.ser");
         this.userRepository = userRepository;
     }
 

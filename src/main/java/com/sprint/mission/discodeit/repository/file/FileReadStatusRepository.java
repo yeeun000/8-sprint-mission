@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Repository
+//@Repository
 public class FileReadStatusRepository extends FileRepository<ReadStatus> implements ReadStatusRepository {
 
-    public FileReadStatusRepository() {
-        super("src/main/java/com/sprint/mission/discodeit/service/data/readStatus.ser");
+    public FileReadStatusRepository(String filePath) {
+        super(filePath,"readStatus.ser");
     }
 
     @Override

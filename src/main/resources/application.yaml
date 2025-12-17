@@ -2,7 +2,8 @@ spring:
   application:
     name: discodeit
 
-# application.yaml
+
 discodeit:
   repository:
-    type: jcf   # jcf | file
+    type: file   # jcf | file
+    file-directory: .discodeit/data
