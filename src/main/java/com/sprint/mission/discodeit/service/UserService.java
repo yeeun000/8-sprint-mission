@@ -14,6 +14,8 @@ public interface UserService {
 
     User create(CreateUserDTO userCreateDTO, BinaryContentDTO binaryContentDTO);
 
+    User create(CreateUserDTO userDTO);
+
     List<UserDTO> findAll();
 
     void delete(UUID id);

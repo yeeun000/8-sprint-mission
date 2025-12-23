@@ -28,6 +28,23 @@ public class BasicUserService implements UserService {
     private final UserStatusRepository userStatusRepository;
     private final BinaryContentRepository binaryContentRepository;
 
+    @Override
+    public User create(CreateUserDTO userDTO) {
+        if (userRepository.existsName(userDTO.name())) {
+            throw new IllegalArgumentException(userDTO.name() + "이 이미 있습니다.");
+        }
+        if (userRepository.existsEmail(userDTO.email())) {
+            throw new IllegalArgumentException(userDTO.email() + "이 이미 있습니다.");
+        }
+        User user = User.create(userDTO.name(), userDTO.email(), userDTO.password());
+        userRepository.save(user);
+
+        Instant now = Instant.now();
+        UserStatus userStatus = new UserStatus(user.getId(), now);
+        userStatusRepository.save(userStatus);
+
+        return user;
+    }
 
     @Override
     public User create(CreateUserDTO userDTO, BinaryContentDTO binaryContentDTO) {
@@ -48,7 +65,7 @@ public class BasicUserService implements UserService {
                 }).orElse(null);
 
 
-        User user = new User(userDTO.name(), userDTO.email(), userDTO.password(),porfileID);
+        User user = User.createProfile(userDTO.name(), userDTO.email(), userDTO.password(), porfileID);
         userRepository.save(user);
 
         Instant now = Instant.now();

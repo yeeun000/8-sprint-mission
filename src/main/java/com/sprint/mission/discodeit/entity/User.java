@@ -38,6 +38,14 @@ public class User implements Serializable {
         this.updatedAt = Instant.now();
     }
 
+    public static User create(String name, String email, String password) {
+        return new User(name, email, password, null);
+    }
+
+    public static User createProfile(String name, String email, String password, UUID profileId) {
+        return new User(name, email, password, profileId);
+    }
+
     @Override
     public String toString() {
         return "User{" +
