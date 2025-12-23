@@ -24,37 +24,46 @@ public class BasicReadStatusService implements ReadStatusService {
 
 
     @Override
-    public void create(ReadStatusDTO readStatusDTO) {
-        if (userRepository.findId(readStatusDTO.userId()) == null)
-            throw new NoSuchElementException(readStatusDTO.userId() + "를 찾을 수 없습니다.");
-        if (channelRepository.findId(readStatusDTO.channelId()) == null)
-            throw new NoSuchElementException(readStatusDTO.channelId() + "를 찾을 수 없습니다.");
+    public ReadStatus create(ReadStatusDTO readStatusDTO) {
+        UUID userId = userRepository.findById(readStatusDTO.userId())
+                .orElseThrow(() -> new NoSuchElementException(" 유저를 찾을 수 없습니다."))
+                .getId();
+        UUID channelId = channelRepository.findById(readStatusDTO.channelId())
+                .orElseThrow(() -> new NoSuchElementException(" 채널을 찾을 수 없습니다."))
+                .getId();
 
-        if (readStatusRepository.exists(readStatusDTO.userId(), readStatusDTO.channelId()))
-            throw new IllegalArgumentException(readStatusDTO.channelId() + "이 이미 있습니다.");
+        if (readStatusRepository.findAllByUserId(userId).stream()
+                .anyMatch(readStatus -> readStatus.getChannelId().equals(channelId))) {
+            throw new IllegalArgumentException("이미 있습니다.");
+        }
+
+        Instant lastReadAt = readStatusDTO.lastRead();
+        ReadStatus readStatus = new ReadStatus(userId, channelId, lastReadAt);
+        return readStatusRepository.save(readStatus);
     }
 
     @Override
     public ReadStatus find(UUID id) {
-        return readStatusRepository.find(id);
+        return readStatusRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(" readStatus를 찾을 수 없습니다."));
     }
 
     @Override
-    public void findALlByUserId(UUID userId) {
-        readStatusRepository.findAll(userId);
+    public void findAllByUserId(UUID userId) {
+        readStatusRepository.findAllByUserId(userId);
     }
 
     @Override
     public void update(UpdateReadStatusDTO readStatusUpdateDTO) {
-        ReadStatus readStatus = readStatusRepository.find(readStatusUpdateDTO.id());
-        if (readStatus == null)
-            throw new NoSuchElementException(readStatusUpdateDTO.id() + "를 찾을 수 없습니다.");
-        readStatus.setLastRead(Instant.now());
-        readStatusRepository.add(readStatus);
+        Instant lastReadAt = readStatusUpdateDTO.lastRead();
+        ReadStatus readStatus = find(readStatusUpdateDTO.id());
+        readStatus.update(lastReadAt);
+        readStatusRepository.save(readStatus);
     }
 
     @Override
     public void delete(UUID id) {
-        readStatusRepository.remove(id);
+        find(id);
+        readStatusRepository.deleteById(id);
     }
 }

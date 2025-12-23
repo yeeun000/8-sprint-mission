@@ -6,4 +6,4 @@ spring:
 discodeit:
   repository:
     type: file   # jcf | file
-    file-directory: src/main/java/com/sprint/mission/discodeit/service/data
+    file-directory: .discodeit

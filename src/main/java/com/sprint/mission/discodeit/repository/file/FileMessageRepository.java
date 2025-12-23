@@ -2,23 +2,29 @@ package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.MessageRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
-import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-//@Repository
+@ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "file")
+@Repository
 public class FileMessageRepository extends FileRepository<Message> implements MessageRepository {
 
-    public FileMessageRepository(String filePath) {
-        super(filePath,"message.ser");
+    public FileMessageRepository(
+            @Value("${discodeit.repository.file-directory}") String filePath
+    ) {
+        super(filePath, "message.ser");
     }
 
     @Override
-    public void add(Message message) {
+    public Message save(Message message) {
         getFile().put(message.getId(), message);
         saveFile();
+        return message;
     }
 
     @Override
@@ -27,23 +33,27 @@ public class FileMessageRepository extends FileRepository<Message> implements Me
     }
 
     @Override
-    public Message findId(UUID messageId) {
-        boolean find = getFile().containsKey(messageId);
-        if (find)
-            return getFile().get(messageId);
-        else return null;
+    public Optional<Message> findById(UUID id) {
+        return Optional.ofNullable(getFile().get(id));
     }
 
     @Override
-    public void remove(UUID messageId) {
-        getFile().remove(messageId);
+    public List<Message> findAllByChannelId(UUID channelId) {
+        return findAll().stream()
+                .filter(message -> message.getChannelId().equals(channelId))
+                .toList();
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        getFile().remove(id);
         saveFile();
     }
 
     @Override
-    public Instant last(UUID channelId) {
-        Instant a = Instant.now();
-        return a;
+    public void deleteAllByChannelId(UUID channelId) {
+        this.findAllByChannelId(channelId)
+                .forEach(message -> deleteById(message.getId()));
     }
 
 }

@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.entity;
 import lombok.Getter;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -11,40 +12,37 @@ public class UserStatus implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private UUID id;
-    private Instant createAt;
-    private Instant updateAt;
+    private Instant createdAt;
+    private Instant updatedAt;
     private UUID userId;
-    private Instant lastCome;
-    private boolean online;
+    private Instant lastActiveAt;
 
-    public UserStatus(UUID userId) {
+    public UserStatus(UUID userId, Instant lastActiveAt) {
         this.id = UUID.randomUUID();
-        this.createAt = Instant.now();
-        this.updateAt = Instant.now();
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
         this.userId = userId;
-        this.lastCome = Instant.now();
+        this.lastActiveAt = lastActiveAt;
     }
 
-
-    public boolean accessTime() {
-        Instant after = lastCome.plusSeconds(300);
-        online = Instant.now().isBefore(after);
-        return online;
+    public void update(Instant lastActiveAt) {
+        this.lastActiveAt = lastActiveAt;
+        this.updatedAt = Instant.now();
     }
 
-    public void setLastCome(Instant lastCome) {
-        this.lastCome = lastCome;
+    public Boolean isOnline() {
+        Instant instantFiveMinutesAgo = Instant.now().minus(Duration.ofMinutes(5));
+        return lastActiveAt.isAfter(instantFiveMinutesAgo);
     }
 
     @Override
     public String toString() {
         return "UserStatus{" +
                 "id=" + id +
-                ", createAt=" + createAt +
-                ", updateAt=" + updateAt +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 ", userId=" + userId +
-                ", lastCome=" + lastCome +
-                ", online=" + online +
+                ", lastActiveAt=" + lastActiveAt +
                 '}';
     }
 }

@@ -16,24 +16,31 @@ import java.util.UUID;
 public class BasicBinaryContentService implements BinaryContentService {
     private final BinaryContentRepository binaryContentRepository;
 
-
-    public void create(BinaryContentDTO binaryContentDTO) {
-        BinaryContent binaryContent = find(binaryContentDTO.id());
-        binaryContentRepository.add(binaryContent);
+    @Override
+    public BinaryContent create(BinaryContentDTO binaryContentDTO) {
+        BinaryContent binaryContent = new BinaryContent(
+                binaryContentDTO.fileName(),
+                (long) binaryContentDTO.bytes().length,
+                binaryContentDTO.type(),
+                binaryContentDTO.bytes()
+        );
+        return binaryContentRepository.save(binaryContent);
     }
 
+    @Override
     public BinaryContent find(UUID id) {
-        BinaryContent bc = binaryContentRepository.find(id);
-        if (bc == null)
-            throw new NoSuchElementException(bc.getFileName() + "를 찾을 수 없습니다.");
-        return bc;
+        return binaryContentRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(" 파일을 찾을 수 없습니다."));
     }
 
-    public List<BinaryContent> findAllByIdIn(List<UUID> ids) {
-        return binaryContentRepository.findAll(ids);
+    @Override
+    public List<BinaryContent> findAllByIdIn(List<UUID> id) {
+        return binaryContentRepository.findAllByIdIn(id);
     }
 
+    @Override
     public void delete(UUID id) {
-        binaryContentRepository.remove(id);
+        find(id);
+        binaryContentRepository.deleteById(id);
     }
 }

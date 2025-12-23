@@ -1,7 +1,6 @@
 package com.sprint.mission.discodeit.entity;
 
 
-import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDTO;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -15,44 +14,37 @@ public class Message implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private UUID id;
-    private String contents;
+    private String content;
     private UUID channelId;
     private UUID userId;
-    private Instant createAt;
-    private Instant updateAt;
-    private List<UUID> attachmentlds;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private List<UUID> attachmentIds;
 
-    public Message(String contents, UUID userId, UUID channelId, List<BinaryContentDTO> files) {
+    public Message(String content, UUID channelId, UUID userId, List<UUID> attachmentIds) {
         this.id = UUID.randomUUID();
-        this.createAt = Instant.now();
-        this.updateAt = Instant.now();
-        this.contents = contents;
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
+        this.content = content;
         this.userId = userId;
         this.channelId = channelId;
-        if (files != null && !files.isEmpty())
-            this.attachmentlds = files.stream().map(BinaryContentDTO::id).toList();
+        this.attachmentIds = attachmentIds;
     }
 
-
-
-
-    public void update(String contents, List<UUID> attachmentlds) {
-        this.contents = contents;
-        if (attachmentlds != null) {
-            this.attachmentlds = attachmentlds;
-        }
-        this.updateAt = Instant.now();
+    public void update(String content) {
+        this.content = content;
+        this.updatedAt = Instant.now();
     }
 
     @Override
     public String toString() {
         return "Message{" +
                 "id=" + id +
-                ", contents='" + contents + '\'' +
+                ", content='" + content + '\'' +
                 ", channelId=" + channelId +
                 ", userId=" + userId +
-                ", createAt=" + createAt +
-                ", updateAt=" + updateAt +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }

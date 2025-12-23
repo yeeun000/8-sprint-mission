@@ -6,10 +6,12 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-public record FindChannelDTO(
+public record ChannelDTO(
         UUID channelId,
         Channel.ChannelType type,
-        Instant lastRead,
-        List<UUID> userId
+        String name,
+        String description,
+        List<UUID> userId,
+        Instant lastRead
 ) {
 }

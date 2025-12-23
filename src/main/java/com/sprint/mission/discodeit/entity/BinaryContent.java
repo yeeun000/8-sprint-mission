@@ -13,42 +13,17 @@ public class BinaryContent implements Serializable {
 
     private UUID id;
     private Instant createdAt;
-    private UUID userId;
-    private UUID messageId;
-    private UUID channelId;
     private String fileName;
-    private String filePath;
-    private boolean profile;
+    private String Type;
+    private byte[] bytes;
+    private Long size;
 
-    public BinaryContent(UUID userId, String fileName, String filePath, boolean profile) {
+    public BinaryContent(String fileName, Long size, String type, byte[] bytes) {
         this.id = UUID.randomUUID();
         this.createdAt = Instant.now();
-        this.userId = userId;
         this.fileName = fileName;
-        this.filePath = filePath;
-        this.profile = profile;
-    }
-
-    public BinaryContent(UUID userId, UUID channelId, UUID messageId, String fileName, String filePath) {
-        this.id = UUID.randomUUID();
-        this.createdAt = Instant.now();
-        this.userId = userId;
-        this.channelId = channelId;
-        this.messageId = messageId;
-        this.fileName = fileName;
-        this.filePath = filePath;
-    }
-
-
-    @Override
-    public String toString() {
-        return "BinaryContent{" +
-                "id=" + id +
-                ", createdAt=" + createdAt +
-                ", userId=" + userId +
-                ", messageId=" + messageId +
-                ", fileName='" + fileName + '\'' +
-                ", filePath='" + filePath + '\'' +
-                '}';
+        this.size = size;
+        this.Type = type;
+        this.bytes = bytes;
     }
 }

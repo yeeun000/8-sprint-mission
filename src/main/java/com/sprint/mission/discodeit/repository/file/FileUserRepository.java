@@ -2,23 +2,29 @@ package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-//@Repository
+@ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "file")
+@Repository
 public class FileUserRepository extends FileRepository<User> implements UserRepository {
 
-    public FileUserRepository(String filePath) {
-        super(filePath,"user.ser");
+    public FileUserRepository(
+            @Value("${discodeit.repository.file-directory}") String filePath
+    ) {
+        super(filePath, "user.ser");
     }
 
     @Override
-    public void add(User user) {
+    public User save(User user) {
         getFile().put(user.getId(), user);
         saveFile();
+        return user;
     }
 
     @Override
@@ -27,45 +33,34 @@ public class FileUserRepository extends FileRepository<User> implements UserRepo
     }
 
     @Override
-    public User findId(UUID userid) {
-        boolean find = getFile().containsKey(userid);
-        if (find) {
-            saveFile();
-            return getFile().get(userid);
-        } else return null;
+    public Optional<User> findById(UUID id) {
+        return Optional.ofNullable(getFile().get(id));
     }
 
     @Override
-    public void remove(UUID userId) {
-        getFile().remove(userId);
+    public Optional<User> findByUsername(String username) {
+        return findAll().stream()
+                .filter(user -> user.getName().equals(username))
+                .findFirst();
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        getFile().remove(id);
         saveFile();
     }
 
     @Override
     public boolean existsName(String name) {
-        for (User user : getFile().values()) {
-            if (name.equals(user.getName()))
-                return true;
-        }
-        return false;
+        return findAll().stream()
+                .anyMatch(user -> user.getName().equals(name));
     }
 
     @Override
     public boolean existsEmail(String email) {
-        for (User user : getFile().values()) {
-            if (email.equals(user.getEmail()))
-                return true;
-        }
-        return false;
+        return findAll().stream()
+                .anyMatch(user -> user.getEmail().equals(email));
     }
 
-    @Override
-    public User findName(String name) {
-        for (User user : getFile().values()) {
-            if (name.equals(user.getName()))
-                return user;
-        }
-        return null;
-    }
 
 }

@@ -16,20 +16,26 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BasicUserStatusService implements UserStatusService {
 
-    private final  UserStatusRepository userStatusRepository;
+    private final UserStatusRepository userStatusRepository;
     private final UserRepository userRepository;
-    
+
     @Override
-    public void create(UserStateDTO userStatusDTO) {
-        if (userRepository.findId(userStatusDTO.userId()) == null)
-            throw new NoSuchElementException(userStatusDTO.userId() + "를 찾을 수 없습니다.");
-        if (userStatusRepository.find(userStatusDTO.userId()) != null)
-            throw new IllegalArgumentException(userStatusDTO.userId() + "이 이미 있습니다.");
+    public UserStatus create(UserStateDTO userStatusDTO) {
+        userRepository.findById(userStatusDTO.userId())
+                .orElseThrow(() -> new NoSuchElementException(" 유저를 찾을 수 없습니다."));
+        if (userStatusRepository.findByUserId(userStatusDTO.userId()).isPresent()) {
+            throw new IllegalArgumentException(" 이미 유저가 있습니다.");
+        }
+
+        Instant lastActiveAt = Instant.now();
+        UserStatus userStatus = new UserStatus(userStatusDTO.userId(), lastActiveAt);
+        return userStatusRepository.save(userStatus);
     }
 
     @Override
     public UserStatus find(UUID id) {
-        return userStatusRepository.find(id);
+        return userStatusRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(" UserStatus를 찾을 수 없습니다."));
     }
 
     @Override
@@ -38,27 +44,25 @@ public class BasicUserStatusService implements UserStatusService {
     }
 
     @Override
-    public void update(UserStateDTO userStateDTO) {
-        UserStatus status = find(userStateDTO.id());
-        if (status == null) {
-            throw new NoSuchElementException(userStateDTO.id() + "를 찾을 수 없습니다.");
-        }
-        status.setLastCome(Instant.now());
-        userStatusRepository.add(status);
+    public UserStatus update(UUID id, UserStateDTO userStateDTO) {
+        Instant newLastActiveAt = userStateDTO.lastActiveAt();
+        UserStatus status = find(id);
+        status.update(newLastActiveAt);
+        return userStatusRepository.save(status);
     }
 
     @Override
-    public void updateByUserId(UUID userId) {
-        UserStatus status = find(userId);
-        if (status == null) {
-            throw new NoSuchElementException(userId + "를 찾을 수 없습니다.");
-        }
-        status.setLastCome(Instant.now());
+    public UserStatus updateByUserId(UserStateDTO userStateDTO) {
+        Instant newLastActiveAt = userStateDTO.lastActiveAt();
+        UserStatus status = find(userStateDTO.userId());
+        status.update(newLastActiveAt);
+        return userStatusRepository.save(status);
     }
 
     @Override
     public void delete(UUID id) {
-        userStatusRepository.remove(id);
+        find(id);
+        userStatusRepository.deleteById(id);
     }
 
 }

@@ -2,53 +2,60 @@ package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-//@Repository
+@ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "file")
+@Repository
 public class FileReadStatusRepository extends FileRepository<ReadStatus> implements ReadStatusRepository {
 
-    public FileReadStatusRepository(String filePath) {
-        super(filePath,"readStatus.ser");
+    public FileReadStatusRepository(
+            @Value("${discodeit.repository.file-directory}") String filePath
+    ) {
+        super(filePath, "readStatus.ser");
     }
 
     @Override
-    public void add(ReadStatus readStatus) {
+    public ReadStatus save(ReadStatus readStatus) {
         getFile().put(readStatus.getId(), readStatus);
         saveFile();
+        return readStatus;
     }
 
     @Override
-    public ReadStatus find(UUID id) {
-        return getFile().get(id);
+    public Optional<ReadStatus> findById(UUID id) {
+        return Optional.ofNullable(getFile().get(id));
+    }
+
+
+    @Override
+    public List<ReadStatus> findAllByUserId(UUID userId) {
+        return getFile().values().stream()
+                .filter(status -> status.getUserId().equals(userId))
+                .toList();
     }
 
     @Override
-    public List<ReadStatus> findAll(UUID userId) {
-        List<ReadStatus> findUser = new ArrayList<>();
-        for (ReadStatus re : getFile().values()) {
-            if (re.getUserId().equals(userId)) {
-                findUser.add(re);
-            }
-        }
-        return findUser;
+    public List<ReadStatus> findAllByChannelId(UUID channelId) {
+        return getFile().values().stream()
+                .filter(status -> status.getChannelId().equals(channelId))
+                .toList();
     }
 
     @Override
-    public void remove(UUID id) {
+    public void deleteById(UUID id) {
         getFile().remove(id);
         saveFile();
     }
 
     @Override
-    public boolean exists(UUID userId, UUID channelId) {
-        for (ReadStatus read : getFile().values()) {
-            if (read.getUserId().equals(userId) && read.getChannelId().equals(channelId))
-                return true;
-        }
-        return false;
+    public void deleteAllByChannelId(UUID channelId) {
+        this.findAllByChannelId(channelId)
+                .forEach(readStatus -> this.deleteById(readStatus.getId()));
     }
 }

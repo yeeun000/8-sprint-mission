@@ -2,60 +2,37 @@ package com.sprint.mission.discodeit.repository.jcf;
 
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-//@Repository
+@ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
+@Repository
 public class JCFBinaryContentRepository implements BinaryContentRepository {
-    private Map<UUID, BinaryContent> contentList = new HashMap<>();
+    private final Map<UUID, BinaryContent> contentList = new HashMap<>();
 
     @Override
-    public void add(BinaryContent binaryContent) {
+    public BinaryContent save(BinaryContent binaryContent) {
         contentList.put(binaryContent.getId(), binaryContent);
+        return binaryContent;
     }
 
     @Override
-    public void removeProfile(UUID userid) {
-        UUID id = null;
-        for (BinaryContent content : contentList.values()) {
-            if (content.getUserId().equals(userid) && content.isProfile()) {
-                id = content.getId();
-                break;
-            }
-        }
-        if (id != null)
-            contentList.remove(id);
+    public void deleteById(UUID id) {
+        contentList.remove(id);
     }
 
     @Override
-    public void remove(UUID messageId) {
-        List<UUID> id = new ArrayList<>();
-        for (BinaryContent content : contentList.values()) {
-            if (content.getMessageId().equals(messageId)) {
-                id.add(content.getId());
-            }
-        }
-        if (!id.isEmpty()) {
-            for (UUID contentid : id) {
-                contentList.remove(contentid);
-            }
-        }
+    public Optional<BinaryContent> findById(UUID id) {
+        return Optional.ofNullable(contentList.get(id));
     }
 
     @Override
-    public BinaryContent find(UUID id) {
-        return contentList.get(id);
-    }
+    public List<BinaryContent> findAllByIdIn(List<UUID> ids) {
+        return contentList.values().stream()
+                .filter(content -> ids.contains(content.getId()))
+                .toList();
 
-    @Override
-    public List<BinaryContent> findAll(List<UUID> ids) {
-        List<BinaryContent> result = new ArrayList<>();
-        for (UUID id : ids) {
-            if (contentList.containsKey(id)) {
-                result.add(contentList.get(id));
-            }
-        }
-        return result;
     }
 }

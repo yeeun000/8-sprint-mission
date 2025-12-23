@@ -7,11 +7,11 @@ import com.sprint.mission.discodeit.entity.ReadStatus;
 import java.util.UUID;
 
 public interface ReadStatusService {
-    void create(ReadStatusDTO readStatusDTO);
+    ReadStatus create(ReadStatusDTO readStatusDTO);
 
     ReadStatus find(UUID id);
 
-    void findALlByUserId(UUID userId);
+    void findAllByUserId(UUID userId);
 
     void update(UpdateReadStatusDTO readStatusUpdateDTO);
 

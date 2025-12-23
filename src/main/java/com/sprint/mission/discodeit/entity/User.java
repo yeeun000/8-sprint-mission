@@ -1,11 +1,9 @@
 package com.sprint.mission.discodeit.entity;
 
-import com.sprint.mission.discodeit.dto.binaryContentDTO.ProfileDTO;
 import lombok.Getter;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Optional;
 import java.util.UUID;
 
 @Getter
@@ -17,31 +15,27 @@ public class User implements Serializable {
     private String name;
     private String password;
     private String email;
-    private Instant createAt;
-    private Instant updateAt;
-    private ProfileDTO profileImage;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private UUID profileId;
 
-    public User(String name, String password, String email, Optional<ProfileDTO> profileImage) {
+    public User(String name, String email, String password, UUID profileId) {
         this.id = UUID.randomUUID();
-        this.createAt = Instant.now();
-        this.updateAt = Instant.now();
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
         this.name = name;
         this.password = password;
         this.email = email;
-        if (profileImage.isPresent())
-            this.profileImage = profileImage.get();
+        this.profileId = profileId;
     }
 
 
-    public void setProfileImage(ProfileDTO profileImage) {
-        this.profileImage = profileImage;
-    }
-
-    public void update(String name, String password, String email) {
+    public void update(String name, String password, String email, UUID profileId) {
         this.name = name;
         this.password = password;
         this.email = email;
-        this.updateAt = Instant.now();
+        this.profileId = profileId;
+        this.updatedAt = Instant.now();
     }
 
     @Override
@@ -51,8 +45,8 @@ public class User implements Serializable {
                 ", name='" + name + '\'' +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
-                ", createAt=" + createAt +
-                ", updateAt=" + updateAt +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }

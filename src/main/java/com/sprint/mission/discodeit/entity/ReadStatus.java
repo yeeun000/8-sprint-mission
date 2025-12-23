@@ -11,32 +11,33 @@ public class ReadStatus implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private UUID id;
-    private Instant createAt;
-    private Instant updateAt;
+    private Instant createdAt;
+    private Instant updatedAt;
     private UUID userId;
     private UUID channelId;
     private Instant lastRead;
 
-    public ReadStatus(UUID userId, UUID channelId) {
+    public ReadStatus(UUID userId, UUID channelId, Instant lastRead) {
         this.id = UUID.randomUUID();
-        this.createAt = Instant.now();
-        this.updateAt = Instant.now();
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
         this.userId = userId;
         this.channelId = channelId;
-        this.lastRead = Instant.now();
+        this.lastRead = lastRead;
     }
 
 
-    public void setLastRead(Instant lastRead) {
-        this.lastRead = lastRead;
+    public void update(Instant newlastRead) {
+        this.lastRead = newlastRead;
+        this.updatedAt = Instant.now();
     }
 
     @Override
     public String toString() {
         return "ReadStatus{" +
                 "id=" + id +
-                ", createAt=" + createAt +
-                ", updateAt=" + updateAt +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 ", userId=" + userId +
                 ", channelId=" + channelId +
                 ", lastRead=" + lastRead +

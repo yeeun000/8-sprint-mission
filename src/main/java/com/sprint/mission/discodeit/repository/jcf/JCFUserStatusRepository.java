@@ -1,17 +1,15 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
-import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
-//@Repository
+@ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
+@Repository
 public class JCFUserStatusRepository implements UserStatusRepository {
 
     private Map<UUID, UserStatus> statusList = new HashMap<>();
@@ -23,23 +21,21 @@ public class JCFUserStatusRepository implements UserStatusRepository {
     }
 
     @Override
-    public boolean onlineStatus(UUID id) {
-        User user = userRepository.findId(id);
-        UserStatus status = statusList.get(id);
-        if (status == null) {
-            return false;
-        }
-        return status.accessTime();
-    }
-
-    @Override
-    public void add(UserStatus status) {
+    public UserStatus save(UserStatus status) {
         statusList.put(status.getId(), status);
+        return status;
     }
 
     @Override
-    public UserStatus find(UUID id) {
-        return statusList.get(id);
+    public Optional<UserStatus> findById(UUID id) {
+        return Optional.ofNullable(statusList.get(id));
+    }
+
+    @Override
+    public Optional<UserStatus> findByUserId(UUID userId) {
+        return findAll().stream()
+                .filter(status -> status.getUserId().equals(userId))
+                .findFirst();
     }
 
     @Override
@@ -48,9 +44,13 @@ public class JCFUserStatusRepository implements UserStatusRepository {
     }
 
     @Override
-    public void remove(UUID userId) {
-        statusList.remove(userId);
+    public void deleteById(UUID id) {
+        statusList.remove(id);
     }
 
+    @Override
+    public void deleteByUserId(UUID userId) {
+        findByUserId(userId).ifPresent(status -> deleteById(status.getId()));
+    }
 
 }

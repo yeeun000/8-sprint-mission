@@ -1,16 +1,13 @@
 package com.sprint.mission.discodeit.repository.file;
 
-import org.springframework.stereotype.Repository;
-
 import java.io.*;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 
-public abstract class FileRepository<T> {
+public abstract class FileRepository<T extends Serializable> {
 
 
     private Map<UUID, T> duplication = new HashMap<>();
@@ -23,14 +20,6 @@ public abstract class FileRepository<T> {
         }
         loadFromFile();
     }
-
-//    public FileRepository(String filePath) {
-//        this.file = new File(filePath);
-//        if (!file.getParentFile().exists()) {
-//            file.getParentFile().mkdirs();
-//        }
-//        loadFromFile();
-//    }
 
     public void loadFromFile() {
         if (!file.exists()) return;

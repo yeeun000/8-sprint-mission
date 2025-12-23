@@ -13,17 +13,16 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class BasicAuthService implements AuthService {
 
-    private  final UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     public User login(LoginDTO loginDTO) {
-        User user = userRepository.findName(loginDTO.username());
-        if (user == null)
-            throw new NoSuchElementException(loginDTO.username() + "회원 정보가 없습니다..");
+        User user = userRepository.findByUsername(loginDTO.username())
+                .orElseThrow(() -> new NoSuchElementException("아이디가 틀렸습니다."));
 
         if (loginDTO.password().equals(user.getPassword()))
             return user;
-        else throw new NoSuchElementException(loginDTO.username() + "비밀번호가 틀렸습니다.");
+        else throw new NoSuchElementException("비밀번호가 틀렸습니다.");
     }
 
 }
