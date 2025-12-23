@@ -55,15 +55,14 @@ public class BasicUserService implements UserService {
             throw new IllegalArgumentException(createUserRequest.email() + "이 이미 있습니다.");
         }
 
-        UUID porfileID = Optional.ofNullable(binaryContentDTO)
-                .map(profile -> {
-                    String fileName = profile.fileName();
-                    String contentType = profile.type();
-                    byte[] bytes = profile.bytes();
-                    BinaryContent content = new BinaryContent(fileName, (long) bytes.length, contentType, bytes);
-                    return binaryContentRepository.save(content).getId();
-                }).orElse(null);
-
+        UUID porfileID =null;
+        if (binaryContentDTO != null) {
+            String fileName = binaryContentDTO.fileName();
+            String contentType = binaryContentDTO.type();
+            byte[] bytes = binaryContentDTO.bytes();
+            BinaryContent content = new BinaryContent(fileName, (long) bytes.length, contentType, bytes);
+            porfileID=  binaryContentRepository.save(content).getId();
+        }
 
         User user = User.createProfile(createUserRequest.name(), createUserRequest.email(), createUserRequest.password(), porfileID);
         userRepository.save(user);
@@ -109,16 +108,14 @@ public class BasicUserService implements UserService {
             throw new IllegalArgumentException("이미 있는 유저 이름입니다.");
         }
 
-        UUID porfileID = Optional.ofNullable(binaryContentDTO)
-                .map(profile -> {
-                    Optional.ofNullable(user.getProfileId())
-                            .ifPresent(binaryContentRepository::deleteById);
-                    String fileName = profile.fileName();
-                    String contentType = profile.type();
-                    byte[] bytes = profile.bytes();
-                    BinaryContent content = new BinaryContent(fileName, (long) bytes.length, contentType, bytes);
-                    return binaryContentRepository.save(content).getId();
-                }).orElse(null);
+        UUID porfileID =null;
+        if (binaryContentDTO != null) {
+            String fileName = binaryContentDTO.fileName();
+            String contentType = binaryContentDTO.type();
+            byte[] bytes = binaryContentDTO.bytes();
+            BinaryContent content = new BinaryContent(fileName, (long) bytes.length, contentType, bytes);
+            porfileID=  binaryContentRepository.save(content).getId();
+        }
 
         user.update(newName, newEmail,  newPassword, porfileID);
         userRepository.save(user);
