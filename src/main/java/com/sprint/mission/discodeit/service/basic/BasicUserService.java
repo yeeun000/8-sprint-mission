@@ -29,14 +29,14 @@ public class BasicUserService implements UserService {
     private final BinaryContentRepository binaryContentRepository;
 
     @Override
-    public User create(CreateUserRequest userDTO) {
-        if (userRepository.existsName(userDTO.name())) {
-            throw new IllegalArgumentException(userDTO.name() + "이 이미 있습니다.");
+    public User create(CreateUserRequest createUserRequest) {
+        if (userRepository.existsName(createUserRequest.name())) {
+            throw new IllegalArgumentException(createUserRequest.name() + "이 이미 있습니다.");
         }
-        if (userRepository.existsEmail(userDTO.email())) {
-            throw new IllegalArgumentException(userDTO.email() + "이 이미 있습니다.");
+        if (userRepository.existsEmail(createUserRequest.email())) {
+            throw new IllegalArgumentException(createUserRequest.email() + "이 이미 있습니다.");
         }
-        User user = User.create(userDTO.name(), userDTO.email(), userDTO.password());
+        User user = User.create(createUserRequest.name(), createUserRequest.email(), createUserRequest.password());
         userRepository.save(user);
 
         Instant now = Instant.now();
@@ -47,12 +47,12 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public User create(CreateUserRequest userDTO, BinaryContentDTO binaryContentDTO) {
-        if (userRepository.existsName(userDTO.name())) {
-            throw new IllegalArgumentException(userDTO.name() + "이 이미 있습니다.");
+    public User create(CreateUserRequest createUserRequest, BinaryContentDTO binaryContentDTO) {
+        if (userRepository.existsName(createUserRequest.name())) {
+            throw new IllegalArgumentException(createUserRequest.name() + "이 이미 있습니다.");
         }
-        if (userRepository.existsEmail(userDTO.email())) {
-            throw new IllegalArgumentException(userDTO.email() + "이 이미 있습니다.");
+        if (userRepository.existsEmail(createUserRequest.email())) {
+            throw new IllegalArgumentException(createUserRequest.email() + "이 이미 있습니다.");
         }
 
         UUID porfileID = Optional.ofNullable(binaryContentDTO)
@@ -65,7 +65,7 @@ public class BasicUserService implements UserService {
                 }).orElse(null);
 
 
-        User user = User.createProfile(userDTO.name(), userDTO.email(), userDTO.password(), porfileID);
+        User user = User.createProfile(createUserRequest.name(), createUserRequest.email(), createUserRequest.password(), porfileID);
         userRepository.save(user);
 
         Instant now = Instant.now();
@@ -94,13 +94,13 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public User update(UpdateUserRequest updateUserDTO, BinaryContentDTO binaryContentDTO) {
-        User user = userRepository.findById(updateUserDTO.id())
+    public User update(UpdateUserRequest updateUserRequest, BinaryContentDTO binaryContentDTO) {
+        User user = userRepository.findById(updateUserRequest.id())
                 .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
 
-        String newName = updateUserDTO.name();
-        String newPassword = updateUserDTO.password();
-        String newEmail = updateUserDTO.email();
+        String newName = updateUserRequest.name();
+        String newPassword = updateUserRequest.password();
+        String newEmail = updateUserRequest.email();
 
         if (userRepository.existsEmail(newEmail)) {
             throw new IllegalArgumentException("이미 있는 이메일입니다.");

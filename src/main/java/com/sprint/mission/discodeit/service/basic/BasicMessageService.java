@@ -29,10 +29,10 @@ public class BasicMessageService implements MessageService {
 
 
     @Override
-    public Message create(CreateMessageRequest createMessageDTO, List<BinaryContentDTO> binaryContentDTO) {
+    public Message create(CreateMessageRequest createMessageRequest, List<BinaryContentDTO> binaryContentDTO) {
 
-        UUID channelId = createMessageDTO.channelId();
-        UUID userId = createMessageDTO.userId();
+        UUID channelId = createMessageRequest.channelId();
+        UUID userId = createMessageRequest.userId();
 
         channelRepository.findById(channelId)
                 .orElseThrow(() -> new NoSuchElementException("채널을 찾을 수 없습니다."));
@@ -50,7 +50,7 @@ public class BasicMessageService implements MessageService {
                     return createdBinaryContent.getId();
                 }).toList();
 
-        String content = createMessageDTO.content();
+        String content = createMessageRequest.content();
         Message message = new Message(
                 content,
                 channelId,
@@ -73,10 +73,10 @@ public class BasicMessageService implements MessageService {
     }
 
     @Override
-    public Message update(UpdateMessageRequest updateMessageDTO) {
-        Message message = messageRepository.findById(updateMessageDTO.id())
+    public Message update(UpdateMessageRequest updateMessageRequest) {
+        Message message = messageRepository.findById(updateMessageRequest.id())
                 .orElseThrow(() -> new NoSuchElementException("메시지를 찾을 수 없습니다."));
-        message.update(updateMessageDTO.newContent());
+        message.update(updateMessageRequest.newContent());
         return messageRepository.save(message);
     }
 

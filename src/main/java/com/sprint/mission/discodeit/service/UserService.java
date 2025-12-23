@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface UserService {
 
-    User create(CreateUserRequest userCreateDTO, BinaryContentDTO binaryContentDTO);
+    User create(CreateUserRequest createUserRequest, BinaryContentDTO binaryContentDTO);
 
     User create(CreateUserRequest userDTO);
 
@@ -19,7 +19,7 @@ public interface UserService {
 
     void delete(UUID id);
 
-    User update(UpdateUserRequest updateUserDTO, BinaryContentDTO binaryContentDTO);
+    User update(UpdateUserRequest updateUserRequest, BinaryContentDTO binaryContentDTO);
 
     UserDTO findId(UUID id);
 }
