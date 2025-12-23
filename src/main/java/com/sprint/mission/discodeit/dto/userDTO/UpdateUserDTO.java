@@ -9,7 +9,6 @@ public record UpdateUserDTO(
         UUID id,
         String name,
         String email,
-        String password,
-        Optional<BinaryContentDTO> profileImage
+        String password
 ) {
 }

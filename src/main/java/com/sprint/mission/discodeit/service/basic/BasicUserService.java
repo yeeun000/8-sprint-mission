@@ -30,7 +30,7 @@ public class BasicUserService implements UserService {
 
 
     @Override
-    public User create(CreateUserDTO userDTO, Optional<BinaryContentDTO> binaryContentDTO) {
+    public User create(CreateUserDTO userDTO, BinaryContentDTO binaryContentDTO) {
         if (userRepository.existsName(userDTO.name())) {
             throw new IllegalArgumentException(userDTO.name() + "이 이미 있습니다.");
         }
@@ -38,7 +38,7 @@ public class BasicUserService implements UserService {
             throw new IllegalArgumentException(userDTO.email() + "이 이미 있습니다.");
         }
 
-        UUID porfileID = binaryContentDTO
+        UUID porfileID = Optional.ofNullable(binaryContentDTO)
                 .map(profile -> {
                     String fileName = profile.fileName();
                     String contentType = profile.type();
@@ -77,7 +77,7 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public User update(UpdateUserDTO updateUserDTO, Optional<BinaryContentDTO> binaryContentDTO) {
+    public User update(UpdateUserDTO updateUserDTO, BinaryContentDTO binaryContentDTO) {
         User user = userRepository.findById(updateUserDTO.id())
                 .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
 
@@ -92,7 +92,7 @@ public class BasicUserService implements UserService {
             throw new IllegalArgumentException("이미 있는 유저 이름입니다.");
         }
 
-        UUID porfileID = binaryContentDTO
+        UUID porfileID = Optional.ofNullable(binaryContentDTO)
                 .map(profile -> {
                     Optional.ofNullable(user.getProfileId())
                             .ifPresent(binaryContentRepository::deleteById);
