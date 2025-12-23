@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -32,8 +33,16 @@ public class Channel implements Serializable {
         this.description = description;
     }
 
+    public static Channel createPrivateChannel(ChannelType type) {
+        return new Channel(type, null, null);
+    }
 
-    public void update(String newchannelName, String newdescription) {
+    public static Channel createPublicChannel(ChannelType type, String name, String description) {
+        return new Channel(type, name, description);
+    }
+
+
+        public void update(String newchannelName, String newdescription) {
         this.channelName = newchannelName;
         this.description = newdescription;
         this.updatedAt = Instant.now();

@@ -31,14 +31,14 @@ public class BasicChannelService implements ChannelService {
 
     @Override
     public Channel create(PublicChannelDTO publicChannelDTO) {
-        Channel channel = new Channel(PUBLIC, publicChannelDTO.name(), publicChannelDTO.description());
+        Channel channel =Channel.createPublicChannel(PUBLIC, publicChannelDTO.name(), publicChannelDTO.description());
         channelRepository.save(channel);
         return channel;
     }
 
     @Override
     public Channel create(PrivateChannelDTO privateChannelDTO) {
-        Channel channel = new Channel(PRIVATE, null, null);
+        Channel channel = Channel.createPrivateChannel(PRIVATE);
         channelRepository.save(channel);
 
         privateChannelDTO.participantIds().stream()

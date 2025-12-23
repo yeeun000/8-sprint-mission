@@ -21,7 +21,7 @@ import java.util.Optional;
 public class DiscodeitApplication {
     static User setupUser(UserService userService) {
         CreateUserDTO request = new CreateUserDTO("woody", "woody@codeit.com", "woody1234");
-        User user = userService.create(request, Optional.empty());
+        User user = userService.create(request);
         return user;
     }
 
