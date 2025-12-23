@@ -2,10 +2,9 @@ package com.sprint.mission.discodeit.service.basic;
 
 
 import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDTO;
-import com.sprint.mission.discodeit.dto.messageDTO.CreateMessageDTO;
-import com.sprint.mission.discodeit.dto.messageDTO.UpdateMessageDTO;
+import com.sprint.mission.discodeit.dto.messageDTO.CreateMessageRequest;
+import com.sprint.mission.discodeit.dto.messageDTO.UpdateMessageRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
-import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
@@ -13,7 +12,6 @@ import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.MessageService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +29,7 @@ public class BasicMessageService implements MessageService {
 
 
     @Override
-    public Message create(CreateMessageDTO createMessageDTO, List<BinaryContentDTO> binaryContentDTO) {
+    public Message create(CreateMessageRequest createMessageDTO, List<BinaryContentDTO> binaryContentDTO) {
 
         UUID channelId = createMessageDTO.channelId();
         UUID userId = createMessageDTO.userId();
@@ -75,7 +73,7 @@ public class BasicMessageService implements MessageService {
     }
 
     @Override
-    public Message update(UpdateMessageDTO updateMessageDTO) {
+    public Message update(UpdateMessageRequest updateMessageDTO) {
         Message message = messageRepository.findById(updateMessageDTO.id())
                 .orElseThrow(() -> new NoSuchElementException("메시지를 찾을 수 없습니다."));
         message.update(updateMessageDTO.newContent());

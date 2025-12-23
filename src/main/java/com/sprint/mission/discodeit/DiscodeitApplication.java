@@ -1,8 +1,8 @@
 package com.sprint.mission.discodeit;
 
 import com.sprint.mission.discodeit.dto.channelDTO.PublicChannelDTO;
-import com.sprint.mission.discodeit.dto.messageDTO.CreateMessageDTO;
-import com.sprint.mission.discodeit.dto.userDTO.CreateUserDTO;
+import com.sprint.mission.discodeit.dto.messageDTO.CreateMessageRequest;
+import com.sprint.mission.discodeit.dto.userDTO.CreateUserRequest;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
@@ -13,14 +13,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
-import java.util.Optional;
 
 @SpringBootApplication
 public class DiscodeitApplication {
     static User setupUser(UserService userService) {
-        CreateUserDTO request = new CreateUserDTO("woody", "woody@codeit.com", "woody1234");
+        CreateUserRequest request = new CreateUserRequest("woody", "woody@codeit.com", "woody1234");
         User user = userService.create(request);
         return user;
     }
@@ -32,7 +30,7 @@ public class DiscodeitApplication {
     }
 
     static void messageCreateTest(MessageService messageService, Channel channel, User author) {
-        CreateMessageDTO request = new CreateMessageDTO("안녕하세요.", channel.getId(), author.getId());
+        CreateMessageRequest request = new CreateMessageRequest("안녕하세요.", channel.getId(), author.getId());
         Message message = messageService.create(request, new ArrayList<>());
         System.out.println("메시지 생성: " + message.getId());
     }

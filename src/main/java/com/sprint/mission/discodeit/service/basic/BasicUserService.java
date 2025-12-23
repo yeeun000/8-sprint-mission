@@ -1,8 +1,8 @@
 package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDTO;
-import com.sprint.mission.discodeit.dto.userDTO.CreateUserDTO;
-import com.sprint.mission.discodeit.dto.userDTO.UpdateUserDTO;
+import com.sprint.mission.discodeit.dto.userDTO.CreateUserRequest;
+import com.sprint.mission.discodeit.dto.userDTO.UpdateUserRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UserDTO;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
@@ -29,7 +29,7 @@ public class BasicUserService implements UserService {
     private final BinaryContentRepository binaryContentRepository;
 
     @Override
-    public User create(CreateUserDTO userDTO) {
+    public User create(CreateUserRequest userDTO) {
         if (userRepository.existsName(userDTO.name())) {
             throw new IllegalArgumentException(userDTO.name() + "이 이미 있습니다.");
         }
@@ -47,7 +47,7 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public User create(CreateUserDTO userDTO, BinaryContentDTO binaryContentDTO) {
+    public User create(CreateUserRequest userDTO, BinaryContentDTO binaryContentDTO) {
         if (userRepository.existsName(userDTO.name())) {
             throw new IllegalArgumentException(userDTO.name() + "이 이미 있습니다.");
         }
@@ -94,7 +94,7 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public User update(UpdateUserDTO updateUserDTO, BinaryContentDTO binaryContentDTO) {
+    public User update(UpdateUserRequest updateUserDTO, BinaryContentDTO binaryContentDTO) {
         User user = userRepository.findById(updateUserDTO.id())
                 .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
 

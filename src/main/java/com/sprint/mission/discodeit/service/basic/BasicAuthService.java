@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.LoginDTO;
+import com.sprint.mission.discodeit.dto.LoginRequest;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.AuthService;
@@ -16,7 +16,7 @@ public class BasicAuthService implements AuthService {
     private final UserRepository userRepository;
 
     @Override
-    public User login(LoginDTO loginDTO) {
+    public User login(LoginRequest loginDTO) {
         User user = userRepository.findByUsername(loginDTO.username())
                 .orElseThrow(() -> new NoSuchElementException("아이디가 틀렸습니다."));
 
