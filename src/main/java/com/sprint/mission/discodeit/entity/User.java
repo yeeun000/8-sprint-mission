@@ -1,49 +1,49 @@
 package com.sprint.mission.discodeit.entity;
 
+import lombok.Getter;
+
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.UUID;
 
+@Getter
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private UUID id;
     private String name;
-    private String nickName;
+    private String password;
     private String email;
-    private Long createAt;
-    private Long updateAt;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private UUID profileId;
 
-    public User(String name, String nickName, String email) {
+    public User(String name, String email, String password, UUID profileId) {
         this.id = UUID.randomUUID();
-        this.createAt = System.currentTimeMillis();
-        this.updateAt = System.currentTimeMillis();
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
         this.name = name;
-        this.nickName = nickName;
+        this.password = password;
         this.email = email;
+        this.profileId = profileId;
     }
 
-    public UUID getId() {
-        return id;
+
+    public void update(String name, String password, String email, UUID profileId) {
+        this.name = name;
+        this.password = password;
+        this.email = email;
+        this.profileId = profileId;
+        this.updatedAt = Instant.now();
     }
 
-    public String getName() {
-        return name;
+    public static User create(String name, String email, String password) {
+        return new User(name, email, password, null);
     }
 
-    public String getNickName() {
-        return nickName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void update(String name, String nickName, String email){
-        this.name=name;
-        this.nickName=nickName;
-        this.email=email;
-        this.updateAt = System.currentTimeMillis();
+    public static User createProfile(String name, String email, String password, UUID profileId) {
+        return new User(name, email, password, profileId);
     }
 
     @Override
@@ -51,10 +51,10 @@ public class User implements Serializable {
         return "User{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", nickName='" + nickName + '\'' +
+                ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
-                ", createAt=" + createAt +
-                ", updateAt=" + updateAt +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }

@@ -2,28 +2,30 @@ package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-
+@ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "file")
+@Repository
 public class FileChannelRepository extends FileRepository<Channel> implements ChannelRepository {
 
 
-    private static final FileChannelRepository instance = new FileChannelRepository();
-
-    private FileChannelRepository() {
-        super("src/main/java/com/sprint/mission/discodeit/service/data/channel.ser");
+    public FileChannelRepository(
+            @Value("${discodeit.repository.file-directory}") String filePath
+    ) {
+        super(filePath, "channel.ser");
     }
-
-    public static FileChannelRepository getInstance() {
-        return instance;
-    }
-
 
     @Override
-    public void add(Channel channel) {
-        getFile().put(channel.getId(),channel);
+    public Channel save(Channel channel) {
+        getFile().put(channel.getId(), channel);
         saveFile();
+        return channel;
     }
 
     @Override
@@ -33,18 +35,13 @@ public class FileChannelRepository extends FileRepository<Channel> implements Ch
 
 
     @Override
-    public Channel findId(UUID channelId){
-        boolean find = getFile().containsKey(channelId);
-        if(find) {
-            saveFile();
-            return getFile().get(channelId);
-        }
-        else return null;
+    public Optional<Channel> findById(UUID id) {
+        return Optional.ofNullable(getFile().get(id));
     }
 
     @Override
-    public void remove(UUID channelId) {
-        getFile().remove(channelId);
+    public void deleteById(UUID id) {
+        getFile().remove(id);
         saveFile();
     }
 

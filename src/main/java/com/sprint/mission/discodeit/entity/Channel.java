@@ -1,8 +1,13 @@
 package com.sprint.mission.discodeit.entity;
 
+import lombok.Getter;
+
 import java.io.Serializable;
+import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
+@Getter
 public class Channel implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -15,48 +20,34 @@ public class Channel implements Serializable {
     private String channelName;
     private String description;
     private ChannelType type;
-    private Long createAt;
-    private Long updateAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 
 
     public Channel(ChannelType type, String name, String description) {
         this.id = UUID.randomUUID();
-        this.createAt = System.currentTimeMillis();
-        this.updateAt = System.currentTimeMillis();
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
         this.type = type;
         this.channelName = name;
         this.description = description;
     }
 
-    public UUID getId() {
-        return id;
+    public static Channel createPrivateChannel(ChannelType type) {
+        return new Channel(type, null, null);
     }
 
-    public String getDescription() {
-        return description;
+    public static Channel createPublicChannel(ChannelType type, String name, String description) {
+        return new Channel(type, name, description);
     }
 
-    public String getChannelName() {
-        return channelName;
+
+        public void update(String newchannelName, String newdescription) {
+        this.channelName = newchannelName;
+        this.description = newdescription;
+        this.updatedAt = Instant.now();
     }
 
-    public ChannelType getType() {
-        return type;
-    }
-
-    public Long getCreateAt() {
-        return createAt;
-    }
-
-    public Long getUpdateAt() {
-        return updateAt;
-    }
-
-    public void update(String channelName,String description){
-        this.channelName=channelName;
-        this.description=description;
-        this.updateAt = System.currentTimeMillis();
-    }
 
     @Override
     public String toString() {
@@ -65,8 +56,8 @@ public class Channel implements Serializable {
                 ", channelName='" + channelName + '\'' +
                 ", description='" + description + '\'' +
                 ", type=" + type +
-                ", createAt=" + createAt +
-                ", updateAt=" + updateAt +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }
