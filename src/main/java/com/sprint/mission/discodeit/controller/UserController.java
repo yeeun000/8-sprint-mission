@@ -9,7 +9,6 @@ import com.sprint.mission.discodeit.dto.userDTO.UserStateDTO;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,12 +23,12 @@ public class UserController {
     private final UserService userService;
     private final UserStatusService userStatusService;
 
-    public UserController(UserService userService,UserStatusService userStatusService) {
+    public UserController(UserService userService, UserStatusService userStatusService) {
         this.userService = userService;
         this.userStatusService = userStatusService;
     }
 
-    @PostMapping(value = "/user", consumes = "multipart/form-data")
+    @RequestMapping(value = "/user", method = RequestMethod.POST, consumes = "multipart/form-data")
     public User register(@RequestPart("createUserRequest") String createUserRequestJson,
                          @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
 
@@ -51,7 +50,7 @@ public class UserController {
 
     @RequestMapping(value = "/user", method = RequestMethod.PUT, consumes = "multipart/form-data")
     public User update(@RequestPart("updateUserRequest") String updateUserRequestJson,
-                       @RequestPart(value = "file", required = false) MultipartFile file) throws IOException{
+                       @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         UpdateUserRequest updateUserRequest =
@@ -71,18 +70,18 @@ public class UserController {
     }
 
     @RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable UUID id){
+    public void delete(@PathVariable UUID id) {
         userService.delete(id);
     }
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
-    public List<UserDTO> findAll(){
+    public List<UserDTO> findAll() {
         return userService.findAll();
     }
 
     @RequestMapping(value = "/user/{id}/online", method = RequestMethod.PUT)
     public void updateOnline(@PathVariable UUID id) {
-        userStatusService.updateByUserId( new UserStateDTO(id, Instant.now()));
+        userStatusService.updateByUserId(new UserStateDTO(id, Instant.now()));
     }
 
 }
