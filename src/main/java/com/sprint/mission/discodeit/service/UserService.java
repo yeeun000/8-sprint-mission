@@ -13,7 +13,7 @@ public interface UserService {
 
     User create(CreateUserRequest createUserRequest, BinaryContentDTO binaryContentDTO);
 
-    User create(CreateUserRequest userDTO);
+    User create(CreateUserRequest createUserRequest);
 
     List<UserDTO> findAll();
 
@@ -22,4 +22,5 @@ public interface UserService {
     User update(UpdateUserRequest updateUserRequest, BinaryContentDTO binaryContentDTO);
 
     UserDTO findId(UUID id);
+
 }

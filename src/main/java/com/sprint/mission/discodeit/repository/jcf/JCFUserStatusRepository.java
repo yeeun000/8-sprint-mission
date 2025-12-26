@@ -23,6 +23,7 @@ public class JCFUserStatusRepository implements UserStatusRepository {
     @Override
     public UserStatus save(UserStatus status) {
         statusList.put(status.getId(), status);
+        System.out.println("저장 후 Map: " + statusList);
         return status;
     }
 
