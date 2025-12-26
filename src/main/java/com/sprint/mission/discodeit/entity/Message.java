@@ -1,10 +1,12 @@
 package com.sprint.mission.discodeit.entity;
 
 
+import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDTO;
 import lombok.Getter;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
