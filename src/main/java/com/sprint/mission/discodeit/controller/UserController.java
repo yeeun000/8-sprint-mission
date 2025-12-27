@@ -4,11 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDTO;
 import com.sprint.mission.discodeit.dto.userDTO.CreateUserRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UpdateUserRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserDTO;
+import com.sprint.mission.discodeit.dto.userDTO.UserDto;
 import com.sprint.mission.discodeit.dto.userDTO.UserStateDTO;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -74,9 +75,10 @@ public class UserController {
         userService.delete(id);
     }
 
-    @RequestMapping(value = "/user", method = RequestMethod.GET)
-    public List<UserDTO> findAll() {
-        return userService.findAll();
+    @RequestMapping(value = "/api/user/findAll", method = RequestMethod.GET)
+    public ResponseEntity<List<UserDto>> findAll() {
+        List<UserDto> users = userService.findAll();
+        return ResponseEntity.ok(users);
     }
 
     @RequestMapping(value = "/user/{id}/online", method = RequestMethod.PUT)

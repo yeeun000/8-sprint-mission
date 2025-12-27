@@ -14,11 +14,11 @@ public class AuthorizationController {
     private final AuthService authService;
 
     public AuthorizationController(AuthService authService) {
-       this.authService=authService;
+        this.authService = authService;
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public User login(@RequestBody LoginRequest loginRequest){
+    public User login(@RequestBody LoginRequest loginRequest) {
         return authService.login(loginRequest);
     }
 }
