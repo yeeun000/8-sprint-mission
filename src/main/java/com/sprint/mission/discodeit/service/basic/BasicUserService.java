@@ -1,5 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import com.sprint.mission.discodeit.controller.EmailRegistException;
+import com.sprint.mission.discodeit.controller.MemberRegistException;
 import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDTO;
 import com.sprint.mission.discodeit.dto.userDTO.CreateUserRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UpdateUserRequest;
@@ -31,10 +33,10 @@ public class BasicUserService implements UserService {
     @Override
     public User create(CreateUserRequest createUserRequest) {
         if (userRepository.existsName(createUserRequest.name())) {
-            throw new IllegalArgumentException(createUserRequest.name() + "이 이미 있습니다.");
+            throw new MemberRegistException(createUserRequest.name());
         }
         if (userRepository.existsEmail(createUserRequest.email())) {
-            throw new IllegalArgumentException(createUserRequest.email() + "이 이미 있습니다.");
+            throw new EmailRegistException(createUserRequest.email());
         }
         User user = User.create(createUserRequest.name(), createUserRequest.email(), createUserRequest.password());
         userRepository.save(user);
@@ -49,10 +51,10 @@ public class BasicUserService implements UserService {
     @Override
     public User create(CreateUserRequest createUserRequest, BinaryContentDTO binaryContentDTO) {
         if (userRepository.existsName(createUserRequest.name())) {
-            throw new IllegalArgumentException(createUserRequest.name() + "이 이미 있습니다.");
+            throw new MemberRegistException(createUserRequest.name());
         }
         if (userRepository.existsEmail(createUserRequest.email())) {
-            throw new IllegalArgumentException(createUserRequest.email() + "이 이미 있습니다.");
+            throw new EmailRegistException(createUserRequest.email());
         }
 
         UUID porfileID =null;

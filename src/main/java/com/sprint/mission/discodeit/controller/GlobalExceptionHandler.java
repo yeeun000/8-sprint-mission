@@ -19,7 +19,10 @@ public class GlobalExceptionHandler {
         return exception.getMessage();
     }
 
-    @ExceptionHandler(MemberRegistException.class)
+    @ExceptionHandler({
+            MemberRegistException.class,
+            EmailRegistException.class
+    })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public String userExceptionHandler(Model model, MemberRegistException exception) {
