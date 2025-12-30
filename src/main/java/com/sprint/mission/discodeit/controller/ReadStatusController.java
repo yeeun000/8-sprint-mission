@@ -9,26 +9,26 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-public class ReceiveMessageController {
+public class ReadStatusController {
 
     private final ReadStatusService readStatusService;
 
-    public ReceiveMessageController(ReadStatusService readStatusService) {
+    public ReadStatusController(ReadStatusService readStatusService) {
         this.readStatusService = readStatusService;
     }
 
-    @RequestMapping(value = "/receiveMessage", method = RequestMethod.POST)
-    public ReadStatus createReceiveMessage(@RequestBody ReadStatusDTO readStatusDTO) {
+    @RequestMapping(value = "/readStatus", method = RequestMethod.POST)
+    public ReadStatus createReadStatus(@RequestBody ReadStatusDTO readStatusDTO) {
         return readStatusService.create(readStatusDTO);
     }
 
-    @RequestMapping(value = "/receiveMessage", method = RequestMethod.PUT)
-    public void updateReceiveMessage(@RequestBody UpdateReadStatusRequest updateReadStatusRequest) {
+    @RequestMapping(value = "/readStatus", method = RequestMethod.PUT)
+    public void updateReadStatus(@RequestBody UpdateReadStatusRequest updateReadStatusRequest) {
         readStatusService.update(updateReadStatusRequest);
     }
 
-    @RequestMapping(value = "/receiveMessage", method = RequestMethod.GET)
-    public void userReceiveMessage(@RequestParam UUID userId) {
+    @RequestMapping(value = "/readStatus", method = RequestMethod.GET)
+    public void userReadStatus(@RequestParam UUID userId) {
         readStatusService.findAllByUserId(userId);
     }
 }
