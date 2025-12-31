@@ -39,7 +39,8 @@ public class UserController {
   }
 
   @PostMapping(consumes = "multipart/form-data")
-  public User register(@RequestPart("createUserRequest") String createUserRequestJson,
+  public ResponseEntity<User> register(
+      @RequestPart("createUserRequest") String createUserRequestJson,
       @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
 
     ObjectMapper objectMapper = new ObjectMapper();
@@ -55,7 +56,8 @@ public class UserController {
       );
     }
 
-    return userService.create(createUserRequest, binaryContentDTO);
+    User user = userService.create(createUserRequest, binaryContentDTO);
+    return ResponseEntity.ok(user);
   }
 
 
@@ -81,8 +83,9 @@ public class UserController {
   }
 
   @DeleteMapping(value = "/{userId}")
-  public void delete(@PathVariable UUID userId) {
+  public ResponseEntity<Void> delete(@PathVariable UUID userId) {
     userService.delete(userId);
+    return ResponseEntity.ok().build();
   }
 
   @GetMapping

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -34,7 +35,8 @@ public class MessageController {
   }
 
   @PostMapping(consumes = "multipart/form-data")
-  public Message send(@RequestPart("createMessageRequest") String createMessageRequestJson,
+  public ResponseEntity<Message> send(
+      @RequestPart("createMessageRequest") String createMessageRequestJson,
       @RequestPart(value = "attachments", required = false) MultipartFile[] attachments)
       throws IOException {
 
@@ -55,22 +57,27 @@ public class MessageController {
       }
     }
 
-    return messageService.create(createMessageRequest, binaryContentDTO);
+    Message message = messageService.create(createMessageRequest, binaryContentDTO);
+
+    return ResponseEntity.ok(message);
   }
 
   @PatchMapping("/{messageId}")
-  public Message update(@PathVariable UUID messageId,
+  public ResponseEntity<Message> update(@PathVariable UUID messageId,
       @RequestBody UpdateMessageRequest updateMessageRequest) {
-    return messageService.update(messageId, updateMessageRequest);
+    Message message = messageService.update(messageId, updateMessageRequest);
+    return ResponseEntity.ok(message);
   }
 
   @DeleteMapping("/{messageId}")
-  public void delete(@PathVariable UUID messageId) {
+  public ResponseEntity<Void> delete(@PathVariable UUID messageId) {
     messageService.delete(messageId);
+    return ResponseEntity.ok().build();
   }
 
   @GetMapping
-  public List<Message> findAllByUserId(@RequestParam UUID channelId) {
-    return messageService.findAllByChannelId(channelId);
+  public ResponseEntity<List<Message>> findAllByUserId(@RequestParam UUID channelId) {
+    List<Message> messages = messageService.findAllByChannelId(channelId);
+    return ResponseEntity.ok(messages);
   }
 }

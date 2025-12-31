@@ -27,14 +27,16 @@ public class ReadStatusController {
   }
 
   @PostMapping
-  public ReadStatus createReadStatus(@RequestBody ReadStatusDTO readStatusDTO) {
-    return readStatusService.create(readStatusDTO);
+  public ResponseEntity<ReadStatus> createReadStatus(@RequestBody ReadStatusDTO readStatusDTO) {
+    ReadStatus readStatus = readStatusService.create(readStatusDTO);
+    return ResponseEntity.ok(readStatus);
   }
 
   @PatchMapping(value = "/{readStatusId}")
-  public ReadStatus updateReadStatus(@PathVariable UUID readStatusId,
+  public ResponseEntity<ReadStatus> updateReadStatus(@PathVariable UUID readStatusId,
       @RequestBody UpdateReadStatusRequest updateReadStatusRequest) {
-    return readStatusService.update(readStatusId, updateReadStatusRequest);
+    ReadStatus readStatus = readStatusService.update(readStatusId, updateReadStatusRequest);
+    return ResponseEntity.ok(readStatus);
   }
 
   @GetMapping
