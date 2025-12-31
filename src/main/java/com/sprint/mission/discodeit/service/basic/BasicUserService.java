@@ -1,9 +1,11 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import com.sprint.mission.discodeit.controller.EmailRegistException;
+import com.sprint.mission.discodeit.controller.MemberRegistException;
 import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDTO;
 import com.sprint.mission.discodeit.dto.userDTO.CreateUserRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UpdateUserRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserDTO;
+import com.sprint.mission.discodeit.dto.userDTO.UserDto;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
@@ -31,10 +33,10 @@ public class BasicUserService implements UserService {
     @Override
     public User create(CreateUserRequest createUserRequest) {
         if (userRepository.existsName(createUserRequest.name())) {
-            throw new IllegalArgumentException(createUserRequest.name() + "이 이미 있습니다.");
+            throw new MemberRegistException(createUserRequest.name());
         }
         if (userRepository.existsEmail(createUserRequest.email())) {
-            throw new IllegalArgumentException(createUserRequest.email() + "이 이미 있습니다.");
+            throw new EmailRegistException(createUserRequest.email());
         }
         User user = User.create(createUserRequest.name(), createUserRequest.email(), createUserRequest.password());
         userRepository.save(user);
@@ -49,10 +51,10 @@ public class BasicUserService implements UserService {
     @Override
     public User create(CreateUserRequest createUserRequest, BinaryContentDTO binaryContentDTO) {
         if (userRepository.existsName(createUserRequest.name())) {
-            throw new IllegalArgumentException(createUserRequest.name() + "이 이미 있습니다.");
+            throw new MemberRegistException(createUserRequest.name());
         }
         if (userRepository.existsEmail(createUserRequest.email())) {
-            throw new IllegalArgumentException(createUserRequest.email() + "이 이미 있습니다.");
+            throw new EmailRegistException(createUserRequest.email());
         }
 
         UUID porfileID =null;
@@ -75,7 +77,7 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public List<UserDTO> findAll() {
+    public List<UserDto> findAll() {
         return userRepository.findAll().stream()
                 .map(this::toDto).toList();
     }
@@ -124,19 +126,18 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public UserDTO findId(UUID id) {
+    public UserDto findId(UUID id) {
         return userRepository.findById(id)
                 .map(this::toDto)
                 .orElseThrow(() -> new NoSuchElementException(" 유저를 찾을 수 없습니다. "));
 
     }
-
-    private UserDTO toDto(User user) {
+    private UserDto toDto(User user) {
         Boolean online = userStatusRepository.findByUserId(user.getId())
                 .map(UserStatus::isOnline)
                 .orElse(null);
 
-        return new UserDTO(
+        return new UserDto(
                 user.getId(),
                 user.getCreatedAt(),
                 user.getUpdatedAt(),

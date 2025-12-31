@@ -3,11 +3,13 @@ package com.sprint.mission.discodeit.repository.jcf;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+@Slf4j
 @ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
 @Repository
 public class JCFUserStatusRepository implements UserStatusRepository {
@@ -23,6 +25,7 @@ public class JCFUserStatusRepository implements UserStatusRepository {
     @Override
     public UserStatus save(UserStatus status) {
         statusList.put(status.getId(), status);
+        log.info("저장 후 Map: " + statusList);
         return status;
     }
 
