@@ -56,7 +56,7 @@ public class BasicReadStatusService implements ReadStatusService {
 
   @Override
   public ReadStatus update(UUID readStatusId, UpdateReadStatusRequest updateReadStatusRequest) {
-    Instant lastReadAt = updateReadStatusRequest.lastRead();
+    Instant lastReadAt = updateReadStatusRequest.lastActiveAt();
     ReadStatus readStatus = find(readStatusId);
     readStatus.update(lastReadAt);
     readStatusRepository.save(readStatus);
