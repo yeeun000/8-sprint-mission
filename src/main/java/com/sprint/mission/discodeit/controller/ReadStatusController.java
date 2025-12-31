@@ -4,31 +4,42 @@ import com.sprint.mission.discodeit.dto.readStatusDTO.ReadStatusDTO;
 import com.sprint.mission.discodeit.dto.readStatusDTO.UpdateReadStatusRequest;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.service.ReadStatusService;
-import org.springframework.web.bind.annotation.*;
-
+import java.util.List;
 import java.util.UUID;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api/readStatuses")
 public class ReadStatusController {
 
-    private final ReadStatusService readStatusService;
+  private final ReadStatusService readStatusService;
 
-    public ReadStatusController(ReadStatusService readStatusService) {
-        this.readStatusService = readStatusService;
-    }
+  public ReadStatusController(ReadStatusService readStatusService) {
+    this.readStatusService = readStatusService;
+  }
 
-    @RequestMapping(value = "/readStatus", method = RequestMethod.POST)
-    public ReadStatus createReadStatus(@RequestBody ReadStatusDTO readStatusDTO) {
-        return readStatusService.create(readStatusDTO);
-    }
+  @PostMapping
+  public ReadStatus createReadStatus(@RequestBody ReadStatusDTO readStatusDTO) {
+    return readStatusService.create(readStatusDTO);
+  }
 
-    @RequestMapping(value = "/readStatus", method = RequestMethod.PUT)
-    public void updateReadStatus(@RequestBody UpdateReadStatusRequest updateReadStatusRequest) {
-        readStatusService.update(updateReadStatusRequest);
-    }
+  @PatchMapping(value = "/{readStatusId}")
+  public ReadStatus updateReadStatus(@PathVariable UUID readStatusId,
+      @RequestBody UpdateReadStatusRequest updateReadStatusRequest) {
+    return readStatusService.update(readStatusId, updateReadStatusRequest);
+  }
 
-    @RequestMapping(value = "/readStatus", method = RequestMethod.GET)
-    public void userReadStatus(@RequestParam UUID userId) {
-        readStatusService.findAllByUserId(userId);
-    }
+  @GetMapping
+  public ResponseEntity<List<ReadStatus>> findAllByUserId(@RequestParam UUID userId) {
+    List<ReadStatus> readStatuses = readStatusService.findAllByUserId(userId);
+    return ResponseEntity.ok(readStatuses);
+  }
 }
