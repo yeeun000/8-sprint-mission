@@ -12,37 +12,35 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(NullPointerException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public String nullPointerExceptionHandler(NullPointerException exception) {
+  @ExceptionHandler(NullPointerException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  public String nullPointerExceptionHandler(NullPointerException exception) {
 
-        log.info("값이 없습니다.");
-        return exception.getMessage();
-    }
+    log.info("값이 없습니다.");
+    return exception.getMessage();
+  }
 
-    @ExceptionHandler({
-            MemberRegistException.class,
-            EmailRegistException.class
-    })
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public String userExceptionHandler(Model model, MemberRegistException exception) {
+  @ExceptionHandler({
+      MemberRegistException.class,
+      EmailRegistException.class
+  })
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  public String userExceptionHandler(MemberRegistException exception) {
 
-        log.info("회원가입 실패");
-        model.addAttribute("exception", exception);
+    log.info("회원가입 실패");
+    return exception.getMessage();
+  }
 
-        return exception.getMessage();
-    }
+  @ExceptionHandler(Exception.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  public String nullPointerExceptionHandler(Exception exception) {
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public String nullPointerExceptionHandler(Exception exception) {
-
-        log.info("오류");
-        return exception.getMessage();
-    }
+    log.info("오류");
+    return exception.getMessage();
+  }
 
 }
 
