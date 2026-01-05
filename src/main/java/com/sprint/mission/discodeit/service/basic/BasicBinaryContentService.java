@@ -14,33 +14,34 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class BasicBinaryContentService implements BinaryContentService {
-    private final BinaryContentRepository binaryContentRepository;
 
-    @Override
-    public BinaryContent create(BinaryContentDTO binaryContentDTO) {
-        BinaryContent binaryContent = new BinaryContent(
-                binaryContentDTO.fileName(),
-                (long) binaryContentDTO.bytes().length,
-                binaryContentDTO.type(),
-                binaryContentDTO.bytes()
-        );
-        return binaryContentRepository.save(binaryContent);
-    }
+  private final BinaryContentRepository binaryContentRepository;
 
-    @Override
-    public BinaryContent find(UUID id) {
-        return binaryContentRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(" 파일을 찾을 수 없습니다."));
-    }
+  @Override
+  public BinaryContent create(BinaryContentDTO binaryContentDTO) {
+    BinaryContent binaryContent = new BinaryContent(
+        binaryContentDTO.fileName(),
+        (long) binaryContentDTO.bytes().length,
+        binaryContentDTO.contentType(),
+        binaryContentDTO.bytes()
+    );
+    return binaryContentRepository.save(binaryContent);
+  }
 
-    @Override
-    public List<BinaryContent> findAllByIdIn(List<UUID> id) {
-        return binaryContentRepository.findAllByIdIn(id);
-    }
+  @Override
+  public BinaryContent find(UUID id) {
+    return binaryContentRepository.findById(id)
+        .orElseThrow(() -> new NoSuchElementException(" 파일을 찾을 수 없습니다."));
+  }
 
-    @Override
-    public void delete(UUID id) {
-        find(id);
-        binaryContentRepository.deleteById(id);
-    }
+  @Override
+  public List<BinaryContent> findAllByIdIn(List<UUID> id) {
+    return binaryContentRepository.findAllByIdIn(id);
+  }
+
+  @Override
+  public void delete(UUID id) {
+    find(id);
+    binaryContentRepository.deleteById(id);
+  }
 }

@@ -43,7 +43,7 @@ public class BasicMessageService implements MessageService {
     List<UUID> attachmentIds = binaryContentDTO.stream()
         .map(file -> {
           String fileName = file.fileName();
-          String contentType = file.type();
+          String contentType = file.contentType();
           byte[] bytes = file.bytes();
           BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length,
               contentType, bytes);

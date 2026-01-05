@@ -3,8 +3,8 @@ package com.sprint.mission.discodeit.service.basic;
 import com.sprint.mission.discodeit.controller.EmailRegistException;
 import com.sprint.mission.discodeit.controller.MemberRegistException;
 import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDTO;
-import com.sprint.mission.discodeit.dto.userDTO.CreateUserRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UpdateUserRequest;
+import com.sprint.mission.discodeit.dto.userDTO.UserCreateRequest;
+import com.sprint.mission.discodeit.dto.userDTO.UserUpdateRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UserDto;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
@@ -31,14 +31,14 @@ public class BasicUserService implements UserService {
   private final BinaryContentRepository binaryContentRepository;
 
   @Override
-  public User create(CreateUserRequest createUserRequest) {
-    if (userRepository.existsName(createUserRequest.name())) {
-      throw new MemberRegistException(createUserRequest.name());
+  public User create(UserCreateRequest createUserRequest) {
+    if (userRepository.existsName(createUserRequest.username())) {
+      throw new MemberRegistException(createUserRequest.username());
     }
     if (userRepository.existsEmail(createUserRequest.email())) {
       throw new EmailRegistException(createUserRequest.email());
     }
-    User user = User.create(createUserRequest.name(), createUserRequest.email(),
+    User user = User.create(createUserRequest.username(), createUserRequest.email(),
         createUserRequest.password());
     userRepository.save(user);
 
@@ -50,25 +50,25 @@ public class BasicUserService implements UserService {
   }
 
   @Override
-  public User create(CreateUserRequest createUserRequest, BinaryContentDTO binaryContentDTO) {
-    if (userRepository.existsName(createUserRequest.name())) {
-      throw new MemberRegistException(createUserRequest.name());
+  public User create(UserCreateRequest createUserRequest, BinaryContentDTO binaryContentDTO) {
+    if (userRepository.existsName(createUserRequest.username())) {
+      throw new MemberRegistException(createUserRequest.username());
     }
     if (userRepository.existsEmail(createUserRequest.email())) {
       throw new EmailRegistException(createUserRequest.email());
     }
 
-    UUID porfileID = null;
+    UUID profileId = null;
     if (binaryContentDTO != null) {
       String fileName = binaryContentDTO.fileName();
-      String contentType = binaryContentDTO.type();
+      String contentType = binaryContentDTO.contentType();
       byte[] bytes = binaryContentDTO.bytes();
       BinaryContent content = new BinaryContent(fileName, (long) bytes.length, contentType, bytes);
-      porfileID = binaryContentRepository.save(content).getId();
+      profileId = binaryContentRepository.save(content).getId();
     }
 
-    User user = User.createProfile(createUserRequest.name(), createUserRequest.email(),
-        createUserRequest.password(), porfileID);
+    User user = User.createProfile(createUserRequest.username(), createUserRequest.email(),
+        createUserRequest.password(), profileId);
     userRepository.save(user);
 
     Instant now = Instant.now();
@@ -96,37 +96,80 @@ public class BasicUserService implements UserService {
     userRepository.deleteById(id);
   }
 
+  //@Override
+//  public User update(UUID userId, UserUpdateRequest updateUserRequest,
+//      BinaryContentDTO binaryContentDTO) {
+//    User user = userRepository.findById(userId)
+//        .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
+//
+//    String newName = updateUserRequest.newUsername();
+//    String newPassword = updateUserRequest.newPassword();
+//    String newEmail = updateUserRequest.newEmail();
+//
+//    if (userRepository.existsEmail(newEmail)) {
+//      throw new IllegalArgumentException("이미 있는 이메일입니다.");
+//    }
+//    if (userRepository.existsName(newName)) {
+//      throw new IllegalArgumentException("이미 있는 유저 이름입니다.");
+//    }
+//
+//    UUID porfileID = null;
+//    if (binaryContentDTO != null) {
+//      String fileName = binaryContentDTO.fileName();
+//      String contentType = binaryContentDTO.contentType();
+//      byte[] bytes = binaryContentDTO.bytes();
+//      BinaryContent content = new BinaryContent(fileName, (long) bytes.length, contentType, bytes);
+//      porfileID = binaryContentRepository.save(content).getId();
+//    }
+//
+//    user.update(newName, newEmail, newPassword, porfileID);
+//    userRepository.save(user);
+//    return user;
+//
+//  }
+
   @Override
-  public User update(UUID userId, UpdateUserRequest updateUserRequest,
+  public User update(UUID userId, UserUpdateRequest updateUserRequest,
       BinaryContentDTO binaryContentDTO) {
+
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
 
-    String newName = updateUserRequest.name();
-    String newPassword = updateUserRequest.password();
-    String newEmail = updateUserRequest.email();
+    // 기존 값과 병합
+    String newName = updateUserRequest.newUsername() != null
+        ? updateUserRequest.newUsername()
+        : user.getName();
+    String newEmail = updateUserRequest.newEmail() != null
+        ? updateUserRequest.newEmail()
+        : user.getEmail();
+    String newPassword = updateUserRequest.newPassword() != null
+        ? updateUserRequest.newPassword()
+        : user.getPassword();
 
-    if (userRepository.existsEmail(newEmail)) {
+    // 이메일/이름 중복 체크
+    if (!newEmail.equals(user.getEmail()) && userRepository.existsEmail(newEmail)) {
       throw new IllegalArgumentException("이미 있는 이메일입니다.");
     }
-    if (userRepository.existsName(newName)) {
+    if (!newName.equals(user.getName()) && userRepository.existsName(newName)) {
       throw new IllegalArgumentException("이미 있는 유저 이름입니다.");
     }
 
-    UUID porfileID = null;
+    // 프로필 처리
+    UUID profileId = user.getProfileId();
     if (binaryContentDTO != null) {
-      String fileName = binaryContentDTO.fileName();
-      String contentType = binaryContentDTO.type();
-      byte[] bytes = binaryContentDTO.bytes();
-      BinaryContent content = new BinaryContent(fileName, (long) bytes.length, contentType, bytes);
-      porfileID = binaryContentRepository.save(content).getId();
+      BinaryContent content = new BinaryContent(
+          binaryContentDTO.fileName(),
+          (long) binaryContentDTO.bytes().length,
+          binaryContentDTO.contentType(),
+          binaryContentDTO.bytes()
+      );
+      profileId = binaryContentRepository.save(content).getId();
     }
 
-    user.update(newName, newEmail, newPassword, porfileID);
-    userRepository.save(user);
-    return user;
-
+    user.update(newName, newEmail, newPassword, profileId);
+    return userRepository.save(user);
   }
+
 
   @Override
   public UserDto findId(UUID id) {
@@ -151,5 +194,4 @@ public class BasicUserService implements UserService {
         online
     );
   }
-
 }
