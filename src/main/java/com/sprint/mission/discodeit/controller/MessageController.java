@@ -36,7 +36,7 @@ public class MessageController {
 
   @PostMapping(consumes = "multipart/form-data")
   public ResponseEntity<Message> send(
-      @RequestPart("createMessageRequest") String createMessageRequestJson,
+      @RequestPart("messageCreateRequest") String createMessageRequestJson,
       @RequestPart(value = "attachments", required = false) MultipartFile[] attachments)
       throws IOException {
 

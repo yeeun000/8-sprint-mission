@@ -33,7 +33,7 @@ public class BasicMessageService implements MessageService {
       List<BinaryContentDTO> binaryContentDTO) {
 
     UUID channelId = createMessageRequest.channelId();
-    UUID userId = createMessageRequest.userId();
+    UUID userId = createMessageRequest.authorId();
 
     channelRepository.findById(channelId)
         .orElseThrow(() -> new NoSuchElementException("채널을 찾을 수 없습니다."));
