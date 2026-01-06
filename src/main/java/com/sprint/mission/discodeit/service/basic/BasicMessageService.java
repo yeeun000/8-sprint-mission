@@ -1,9 +1,9 @@
 package com.sprint.mission.discodeit.service.basic;
 
 
-import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDTO;
-import com.sprint.mission.discodeit.dto.messageDTO.CreateMessageRequest;
-import com.sprint.mission.discodeit.dto.messageDTO.UpdateMessageRequest;
+import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.dto.messageDTO.MessageCreateRequest;
+import com.sprint.mission.discodeit.dto.messageDTO.MessageUpdateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
@@ -11,12 +11,11 @@ import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.MessageService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -29,8 +28,8 @@ public class BasicMessageService implements MessageService {
 
 
   @Override
-  public Message create(CreateMessageRequest createMessageRequest,
-      List<BinaryContentDTO> binaryContentDTO) {
+  public Message create(MessageCreateRequest createMessageRequest,
+      List<BinaryContentCreateRequest> binaryContentDTO) {
 
     UUID channelId = createMessageRequest.channelId();
     UUID userId = createMessageRequest.authorId();
@@ -58,6 +57,7 @@ public class BasicMessageService implements MessageService {
         userId,
         attachmentIds
     );
+
     return messageRepository.save(message);
   }
 
@@ -74,7 +74,7 @@ public class BasicMessageService implements MessageService {
   }
 
   @Override
-  public Message update(UUID messageId, UpdateMessageRequest updateMessageRequest) {
+  public Message update(UUID messageId, MessageUpdateRequest updateMessageRequest) {
     Message message = messageRepository.findById(messageId)
         .orElseThrow(() -> new NoSuchElementException("메시지를 찾을 수 없습니다."));
     message.update(updateMessageRequest.newContent());

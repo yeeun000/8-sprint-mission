@@ -1,19 +1,18 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.readStatusDTO.ReadStatusDTO;
-import com.sprint.mission.discodeit.dto.readStatusDTO.UpdateReadStatusRequest;
+import com.sprint.mission.discodeit.dto.readStatusDTO.ReadStatusCreateRequest;
+import com.sprint.mission.discodeit.dto.readStatusDTO.ReadStatusUpdateRequest;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ReadStatusService;
-import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.time.Instant;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +24,7 @@ public class BasicReadStatusService implements ReadStatusService {
 
 
   @Override
-  public ReadStatus create(ReadStatusDTO readStatusDTO) {
+  public ReadStatus create(ReadStatusCreateRequest readStatusDTO) {
     UUID userId = userRepository.findById(readStatusDTO.userId())
         .orElseThrow(() -> new NoSuchElementException(" 유저를 찾을 수 없습니다."))
         .getId();
@@ -38,7 +37,7 @@ public class BasicReadStatusService implements ReadStatusService {
       throw new IllegalArgumentException("이미 있습니다.");
     }
 
-    Instant lastReadAt = readStatusDTO.lastRead();
+    Instant lastReadAt = readStatusDTO.lastReadAt();
     ReadStatus readStatus = new ReadStatus(userId, channelId, lastReadAt);
     return readStatusRepository.save(readStatus);
   }
@@ -55,8 +54,8 @@ public class BasicReadStatusService implements ReadStatusService {
   }
 
   @Override
-  public ReadStatus update(UUID readStatusId, UpdateReadStatusRequest updateReadStatusRequest) {
-    Instant lastReadAt = updateReadStatusRequest.lastActiveAt();
+  public ReadStatus update(UUID readStatusId, ReadStatusUpdateRequest updateReadStatusRequest) {
+    Instant lastReadAt = updateReadStatusRequest.newLastReadAt();
     ReadStatus readStatus = find(readStatusId);
     readStatus.update(lastReadAt);
     readStatusRepository.save(readStatus);

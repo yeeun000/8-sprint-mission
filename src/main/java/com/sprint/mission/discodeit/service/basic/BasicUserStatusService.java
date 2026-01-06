@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.userDTO.UpdateUserStatusRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserStateDTO;
+import com.sprint.mission.discodeit.dto.userDTO.UserStatusCreateRequest;
+import com.sprint.mission.discodeit.dto.userDTO.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
@@ -20,7 +20,7 @@ public class BasicUserStatusService implements UserStatusService {
   private final UserRepository userRepository;
 
   @Override
-  public UserStatus create(UserStateDTO userStatusDTO) {
+  public UserStatus create(UserStatusCreateRequest userStatusDTO) {
     userRepository.findById(userStatusDTO.userId())
         .orElseThrow(() -> new NoSuchElementException(" 유저를 찾을 수 없습니다."));
     if (userStatusRepository.findByUserId(userStatusDTO.userId()).isPresent()) {
@@ -44,7 +44,7 @@ public class BasicUserStatusService implements UserStatusService {
   }
 
   @Override
-  public UserStatus update(UUID id, UserStateDTO userStateDTO) {
+  public UserStatus update(UUID id, UserStatusCreateRequest userStateDTO) {
     Instant newLastActiveAt = userStateDTO.lastActiveAt();
     UserStatus status = find(id);
     status.update(newLastActiveAt);
@@ -52,7 +52,7 @@ public class BasicUserStatusService implements UserStatusService {
   }
 
   @Override
-  public UserStatus updateByUserId(UUID userId, UpdateUserStatusRequest request) {
+  public UserStatus updateByUserId(UUID userId, UserStatusUpdateRequest request) {
     Instant newLastActiveAt = request.newLastActiveAt();
     UserStatus status = userStatusRepository.findByUserId(userId)
         .orElseThrow(() -> new NoSuchElementException(" UserStatus를 찾을 수 없습니다."));

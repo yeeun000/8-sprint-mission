@@ -1,15 +1,15 @@
 package com.sprint.mission.discodeit.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDTO;
-import com.sprint.mission.discodeit.dto.userDTO.UpdateUserStatusRequest;
+import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UserDto;
+import com.sprint.mission.discodeit.dto.userDTO.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "User", description = "User API")
 public class UserController {
 
   private final UserService userService;
@@ -41,17 +42,13 @@ public class UserController {
   }
 
   @PostMapping(consumes = "multipart/form-data")
-  public ResponseEntity<User> register(
-      @RequestPart("userCreateRequest") String userCreateRequestJson,
+  public ResponseEntity<User> create(
+      @RequestPart("userCreateRequest") UserCreateRequest userCreateRequest,
       @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
 
-    ObjectMapper objectMapper = new ObjectMapper();
-    UserCreateRequest userCreateRequest = objectMapper.readValue(userCreateRequestJson,
-        UserCreateRequest.class);
-
-    BinaryContentDTO binaryContentDTO = null;
+    BinaryContentCreateRequest binaryContentDTO = null;
     if (profile != null && !profile.isEmpty()) {
-      binaryContentDTO = new BinaryContentDTO(
+      binaryContentDTO = new BinaryContentCreateRequest(
           profile.getOriginalFilename(),
           profile.getContentType(),
           profile.getBytes()
@@ -65,21 +62,12 @@ public class UserController {
   @PatchMapping(value = "/{userId}", consumes = "multipart/form-data")
   public ResponseEntity<User> update(
       @PathVariable UUID userId,
-      @RequestPart(value = "updateUserRequest", required = false) String updateUserRequestJson,
+      @RequestPart("userUpdateRequest") UserUpdateRequest userUpdateRequest,
       @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
-    
-    ObjectMapper objectMapper = new ObjectMapper();
-    UserUpdateRequest userUpdateRequest;
 
-    if (updateUserRequestJson != null && !updateUserRequestJson.isBlank()) {
-      userUpdateRequest = objectMapper.readValue(updateUserRequestJson, UserUpdateRequest.class);
-    } else {
-      userUpdateRequest = new UserUpdateRequest(null, null, null);
-    }
-
-    BinaryContentDTO binaryContentDTO = null;
+    BinaryContentCreateRequest binaryContentDTO = null;
     if (profile != null && !profile.isEmpty()) {
-      binaryContentDTO = new BinaryContentDTO(
+      binaryContentDTO = new BinaryContentCreateRequest(
           profile.getOriginalFilename(),
           profile.getContentType(),
           profile.getBytes()
@@ -106,8 +94,8 @@ public class UserController {
   }
 
   @PatchMapping(value = "/{userId}/userStatus")
-  public ResponseEntity<UserStatus> updateUserStatusByUserId(@PathVariable UUID userId,
-      @RequestBody UpdateUserStatusRequest request) {
+  public ResponseEntity<UserStatus> updateStatus(@PathVariable UUID userId,
+      @RequestBody UserStatusUpdateRequest request) {
     UserStatus updatedUserStatus = userStatusService.updateByUserId(userId, request);
     return ResponseEntity
         .status(HttpStatus.OK)

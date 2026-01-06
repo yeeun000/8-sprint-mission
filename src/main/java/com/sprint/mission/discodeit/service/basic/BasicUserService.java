@@ -2,10 +2,10 @@ package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.controller.EmailRegistException;
 import com.sprint.mission.discodeit.controller.MemberRegistException;
-import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDTO;
+import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UserCreateRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserUpdateRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UserDto;
+import com.sprint.mission.discodeit.dto.userDTO.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
@@ -13,14 +13,13 @@ import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +49,8 @@ public class BasicUserService implements UserService {
   }
 
   @Override
-  public User create(UserCreateRequest createUserRequest, BinaryContentDTO binaryContentDTO) {
+  public User create(UserCreateRequest createUserRequest,
+      BinaryContentCreateRequest binaryContentDTO) {
     if (userRepository.existsName(createUserRequest.username())) {
       throw new MemberRegistException(createUserRequest.username());
     }
@@ -96,46 +96,14 @@ public class BasicUserService implements UserService {
     userRepository.deleteById(id);
   }
 
-  //@Override
-//  public User update(UUID userId, UserUpdateRequest updateUserRequest,
-//      BinaryContentDTO binaryContentDTO) {
-//    User user = userRepository.findById(userId)
-//        .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
-//
-//    String newName = updateUserRequest.newUsername();
-//    String newPassword = updateUserRequest.newPassword();
-//    String newEmail = updateUserRequest.newEmail();
-//
-//    if (userRepository.existsEmail(newEmail)) {
-//      throw new IllegalArgumentException("이미 있는 이메일입니다.");
-//    }
-//    if (userRepository.existsName(newName)) {
-//      throw new IllegalArgumentException("이미 있는 유저 이름입니다.");
-//    }
-//
-//    UUID porfileID = null;
-//    if (binaryContentDTO != null) {
-//      String fileName = binaryContentDTO.fileName();
-//      String contentType = binaryContentDTO.contentType();
-//      byte[] bytes = binaryContentDTO.bytes();
-//      BinaryContent content = new BinaryContent(fileName, (long) bytes.length, contentType, bytes);
-//      porfileID = binaryContentRepository.save(content).getId();
-//    }
-//
-//    user.update(newName, newEmail, newPassword, porfileID);
-//    userRepository.save(user);
-//    return user;
-//
-//  }
 
   @Override
   public User update(UUID userId, UserUpdateRequest updateUserRequest,
-      BinaryContentDTO binaryContentDTO) {
+      BinaryContentCreateRequest binaryContentDTO) {
 
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
 
-    // 기존 값과 병합
     String newName = updateUserRequest.newUsername() != null
         ? updateUserRequest.newUsername()
         : user.getName();
@@ -146,7 +114,6 @@ public class BasicUserService implements UserService {
         ? updateUserRequest.newPassword()
         : user.getPassword();
 
-    // 이메일/이름 중복 체크
     if (!newEmail.equals(user.getEmail()) && userRepository.existsEmail(newEmail)) {
       throw new IllegalArgumentException("이미 있는 이메일입니다.");
     }
@@ -154,7 +121,6 @@ public class BasicUserService implements UserService {
       throw new IllegalArgumentException("이미 있는 유저 이름입니다.");
     }
 
-    // 프로필 처리
     UUID profileId = user.getProfileId();
     if (binaryContentDTO != null) {
       BinaryContent content = new BinaryContent(
