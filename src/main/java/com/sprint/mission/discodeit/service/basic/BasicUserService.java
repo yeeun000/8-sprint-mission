@@ -92,7 +92,7 @@ public class BasicUserService implements UserService {
     Optional.ofNullable(user.getProfileId())
         .ifPresent(binaryContentRepository::deleteById);
 
-    userStatusRepository.deleteById(id);
+    userStatusRepository.deleteByUserId(id);
     userRepository.deleteById(id);
   }
 
@@ -122,6 +122,7 @@ public class BasicUserService implements UserService {
     }
 
     UUID profileId = user.getProfileId();
+    UUID oldpofiledId = user.getProfileId();
     if (binaryContentDTO != null) {
       BinaryContent content = new BinaryContent(
           binaryContentDTO.fileName(),
@@ -130,6 +131,7 @@ public class BasicUserService implements UserService {
           binaryContentDTO.bytes()
       );
       profileId = binaryContentRepository.save(content).getId();
+      binaryContentRepository.deleteById(oldpofiledId);
     }
 
     user.update(newName, newEmail, newPassword, profileId);
