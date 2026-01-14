@@ -1,48 +1,48 @@
 package com.sprint.mission.discodeit.entity;
 
-import lombok.Getter;
-
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
+import lombok.Getter;
 
 @Getter
 public class UserStatus implements Serializable {
-    private static final long serialVersionUID = 1L;
 
-    private UUID id;
-    private Instant createdAt;
-    private Instant updatedAt;
-    private UUID userId;
-    private Instant lastActiveAt;
+  private static final long serialVersionUID = 1L;
 
-    public UserStatus(UUID userId, Instant lastActiveAt) {
-        this.id = UUID.randomUUID();
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
-        this.userId = userId;
-        this.lastActiveAt = lastActiveAt;
-    }
+  private UUID id;
+  private Instant createdAt;
+  private Instant updatedAt;
+  private UUID userId;
+  private Instant lastActiveAt;
 
-    public void update(Instant lastActiveAt) {
-        this.lastActiveAt = lastActiveAt;
-        this.updatedAt = Instant.now();
-    }
+  public UserStatus(UUID userId, Instant lastActiveAt) {
+    this.id = UUID.randomUUID();
+    this.createdAt = Instant.now();
+    this.updatedAt = Instant.now();
+    this.userId = userId;
+    this.lastActiveAt = lastActiveAt;
+  }
 
-    public Boolean isOnline() {
-        Instant instantFiveMinutesAgo = Instant.now().minus(Duration.ofMinutes(5));
-        return lastActiveAt.isAfter(instantFiveMinutesAgo);
-    }
+  public void update(Instant lastActiveAt) {
+    this.lastActiveAt = lastActiveAt;
+    this.updatedAt = Instant.now();
+  }
 
-    @Override
-    public String toString() {
-        return "UserStatus{" +
-                "id=" + id +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", userId=" + userId +
-                ", lastActiveAt=" + lastActiveAt +
-                '}';
-    }
+  public Boolean isOnline() {
+    Instant instantFiveMinutesAgo = Instant.now().minus(Duration.ofMinutes(5));
+    return lastActiveAt.isAfter(instantFiveMinutesAgo);
+  }
+
+  @Override
+  public String toString() {
+    return "UserStatus{" +
+        "id=" + id +
+        ", createdAt=" + createdAt +
+        ", updatedAt=" + updatedAt +
+        ", userId=" + userId +
+        ", lastActiveAt=" + lastActiveAt +
+        '}';
+  }
 }
