@@ -1,34 +1,45 @@
 package com.sprint.mission.discodeit.entity;
 
-import java.io.Serializable;
-import java.time.Instant;
-import java.util.UUID;
+import com.sprint.mission.discodeit.entity.base.BaseUpdatableEntity;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "channels")
 @Getter
-public class Channel implements Serializable {
-
-  private static final long serialVersionUID = 1L;
+@NoArgsConstructor
+public class Channel extends BaseUpdatableEntity {
 
   public enum ChannelType {
     PUBLIC,
     PRIVATE
   }
 
-  private UUID id;
-  private String channelName;
-  private String description;
-  private ChannelType type;
-  private Instant createdAt;
-  private Instant updatedAt;
+  @Column(name = "name", length = 100)
+  private String name;
 
+  @Column(name = "description", length = 500)
+  private String description;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "type", nullable = false)
+  private ChannelType type;
+
+  @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Message> messages = new ArrayList<>();
 
   public Channel(ChannelType type, String name, String description) {
-    this.id = UUID.randomUUID();
-    this.createdAt = Instant.now();
-    this.updatedAt = this.createdAt;
     this.type = type;
-    this.channelName = name;
+    this.name = name;
     this.description = description;
   }
 
@@ -41,21 +52,7 @@ public class Channel implements Serializable {
   }
 
   public void update(String newchannelName, String newdescription) {
-    this.channelName = newchannelName;
+    this.name = newchannelName;
     this.description = newdescription;
-    this.updatedAt = Instant.now();
-  }
-
-
-  @Override
-  public String toString() {
-    return "Channel{" +
-        "id=" + id +
-        ", channelName='" + channelName + '\'' +
-        ", description='" + description + '\'' +
-        ", type=" + type +
-        ", createdAt=" + createdAt +
-        ", updatedAt=" + updatedAt +
-        '}';
   }
 }

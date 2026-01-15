@@ -1,33 +1,37 @@
 package com.sprint.mission.discodeit.entity;
 
-import java.io.Serializable;
+import com.sprint.mission.discodeit.entity.base.BaseUpdatableEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.UUID;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "user_statuses")
 @Getter
-public class UserStatus implements Serializable {
+@NoArgsConstructor
+public class UserStatus extends BaseUpdatableEntity {
 
-  private static final long serialVersionUID = 1L;
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", nullable = false, unique = true)
+  private User user;
 
-  private UUID id;
-  private Instant createdAt;
-  private Instant updatedAt;
-  private UUID userId;
+  @Column(name = "last_active_at", nullable = false)
   private Instant lastActiveAt;
 
-  public UserStatus(UUID userId, Instant lastActiveAt) {
-    this.id = UUID.randomUUID();
-    this.createdAt = Instant.now();
-    this.updatedAt = this.createdAt;
-    this.userId = userId;
+  public UserStatus(User user, Instant lastActiveAt) {
+    this.user = user;
     this.lastActiveAt = lastActiveAt;
   }
 
   public void update(Instant lastActiveAt) {
     this.lastActiveAt = lastActiveAt;
-    this.updatedAt = Instant.now();
   }
 
   public Boolean isOnline() {
@@ -35,14 +39,4 @@ public class UserStatus implements Serializable {
     return lastActiveAt.isAfter(instantFiveMinutesAgo);
   }
 
-  @Override
-  public String toString() {
-    return "UserStatus{" +
-        "id=" + id +
-        ", createdAt=" + createdAt +
-        ", updatedAt=" + updatedAt +
-        ", userId=" + userId +
-        ", lastActiveAt=" + lastActiveAt +
-        '}';
-  }
 }

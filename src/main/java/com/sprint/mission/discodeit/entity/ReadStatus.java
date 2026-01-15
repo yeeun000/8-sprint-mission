@@ -1,46 +1,40 @@
 package com.sprint.mission.discodeit.entity;
 
-import java.io.Serializable;
+import com.sprint.mission.discodeit.entity.base.BaseUpdatableEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.time.Instant;
-import java.util.UUID;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "read_statuses")
 @Getter
-public class ReadStatus implements Serializable {
+@NoArgsConstructor
+public class ReadStatus extends BaseUpdatableEntity {
 
-  private static final long serialVersionUID = 1L;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 
-  private UUID id;
-  private Instant createdAt;
-  private Instant updatedAt;
-  private UUID userId;
-  private UUID channelId;
-  private Instant lastRead;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "channel_id", nullable = false)
+  private Channel channel;
 
-  public ReadStatus(UUID userId, UUID channelId, Instant lastRead) {
-    this.id = UUID.randomUUID();
-    this.createdAt = Instant.now();
-    this.updatedAt = this.createdAt;
-    this.userId = userId;
-    this.channelId = channelId;
-    this.lastRead = lastRead;
+  @Column(name = "last_read_at", nullable = false)
+  private Instant lastReadAt;
+
+  public ReadStatus(User user, Channel channel, Instant lastReadAt) {
+    this.user = user;
+    this.channel = channel;
+    this.lastReadAt = lastReadAt;
   }
 
-
-  public void update(Instant newlastRead) {
-    this.lastRead = newlastRead;
-    this.updatedAt = Instant.now();
-  }
-
-  @Override
-  public String toString() {
-    return "ReadStatus{" +
-        "id=" + id +
-        ", createdAt=" + createdAt +
-        ", updatedAt=" + updatedAt +
-        ", userId=" + userId +
-        ", channelId=" + channelId +
-        ", lastRead=" + lastRead +
-        '}';
+  public void update(Instant newlastReadAt) {
+    this.lastReadAt = newlastReadAt;
   }
 }
