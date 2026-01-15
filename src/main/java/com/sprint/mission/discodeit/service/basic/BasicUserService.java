@@ -1,7 +1,5 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.controller.EmailRegistException;
-import com.sprint.mission.discodeit.controller.MemberRegistException;
 import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UserDto;
@@ -32,10 +30,10 @@ public class BasicUserService implements UserService {
   @Override
   public User create(UserCreateRequest createUserRequest) {
     if (userRepository.existsName(createUserRequest.username())) {
-      throw new MemberRegistException(createUserRequest.username());
+      throw new IllegalArgumentException(createUserRequest.username());
     }
     if (userRepository.existsEmail(createUserRequest.email())) {
-      throw new EmailRegistException(createUserRequest.email());
+      throw new IllegalArgumentException(createUserRequest.email());
     }
     User user = User.create(createUserRequest.username(), createUserRequest.email(),
         createUserRequest.password());
@@ -52,10 +50,10 @@ public class BasicUserService implements UserService {
   public User create(UserCreateRequest createUserRequest,
       BinaryContentCreateRequest binaryContentDTO) {
     if (userRepository.existsName(createUserRequest.username())) {
-      throw new MemberRegistException(createUserRequest.username());
+      throw new IllegalArgumentException(createUserRequest.username());
     }
     if (userRepository.existsEmail(createUserRequest.email())) {
-      throw new EmailRegistException(createUserRequest.email());
+      throw new IllegalArgumentException(createUserRequest.email());
     }
 
     UUID profileId = null;
