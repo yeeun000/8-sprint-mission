@@ -32,12 +32,12 @@ public class Channel implements Serializable {
     this.description = description;
   }
 
-  public static Channel createPrivateChannel(ChannelType type) {
-    return new Channel(type, null, null);
+  public static Channel createPrivateChannel() {
+    return new Channel(ChannelType.PRIVATE, null, null);
   }
 
-  public static Channel createPublicChannel(ChannelType type, String name, String description) {
-    return new Channel(type, name, description);
+  public static Channel createPublicChannel(String name, String description) {
+    return new Channel(ChannelType.PUBLIC, name, description);
   }
 
   public void update(String newchannelName, String newdescription) {
