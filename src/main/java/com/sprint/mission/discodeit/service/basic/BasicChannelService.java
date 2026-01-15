@@ -93,7 +93,6 @@ public class BasicChannelService implements ChannelService {
 
   @Override
   public ChannelDto find(UUID id) {
-    System.out.println("채널 조회 성공");
     return channelRepository.findById(id)
         .map(this::toDto)
         .orElseThrow(() -> new NoSuchElementException(" 채널을 찾을 수 없습니다."));
