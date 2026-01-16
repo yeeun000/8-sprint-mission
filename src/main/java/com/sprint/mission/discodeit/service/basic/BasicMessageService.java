@@ -5,7 +5,9 @@ import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentCreateRequ
 import com.sprint.mission.discodeit.dto.messageDTO.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.messageDTO.MessageUpdateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
+import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
@@ -34,27 +36,26 @@ public class BasicMessageService implements MessageService {
     UUID channelId = createMessageRequest.channelId();
     UUID userId = createMessageRequest.authorId();
 
-    channelRepository.findById(channelId)
+    Channel channel = channelRepository.findById(channelId)
         .orElseThrow(() -> new NoSuchElementException("채널을 찾을 수 없습니다."));
-    userRepository.findById(userId)
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
 
-    List<UUID> attachmentIds = binaryContentDTO.stream()
+    List<BinaryContent> attachmentIds = binaryContentDTO.stream()
         .map(file -> {
           String fileName = file.fileName();
           String contentType = file.contentType();
           byte[] bytes = file.bytes();
           BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length,
               contentType, bytes);
-          BinaryContent createdBinaryContent = binaryContentRepository.save(binaryContent);
-          return createdBinaryContent.getId();
+          return binaryContentRepository.save(binaryContent);
         }).toList();
 
     String content = createMessageRequest.content();
     Message message = new Message(
         content,
-        channelId,
-        userId,
+        channel,
+        user,
         attachmentIds
     );
 
@@ -69,7 +70,6 @@ public class BasicMessageService implements MessageService {
   @Override
   public void delete(UUID id) {
     Message message = find(id);
-    message.getAttachmentIds().forEach(binaryContentRepository::deleteById);
     messageRepository.deleteById(id);
   }
 

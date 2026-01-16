@@ -15,11 +15,15 @@ import org.springframework.data.annotation.CreatedDate;
 public abstract class BaseEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(updatable = false, nullable = false)
   private UUID id;
 
   @CreatedDate
   @Column(name = "created_at", updatable = false, nullable = false)
   private Instant createdAt;
 
+  public BaseEntity() {
+    this.id = UUID.randomUUID();
+    this.createdAt = Instant.now();
+  }
 }

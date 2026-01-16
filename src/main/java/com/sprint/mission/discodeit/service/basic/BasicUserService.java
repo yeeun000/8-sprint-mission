@@ -29,18 +29,19 @@ public class BasicUserService implements UserService {
 
   @Override
   public User create(UserCreateRequest createUserRequest) {
-    if (userRepository.existsName(createUserRequest.username())) {
+    if (userRepository.existsByUsername(createUserRequest.username())) {
       throw new IllegalArgumentException(createUserRequest.username());
     }
-    if (userRepository.existsEmail(createUserRequest.email())) {
+    if (userRepository.existsByEmail(createUserRequest.email())) {
       throw new IllegalArgumentException(createUserRequest.email());
     }
+
     User user = User.create(createUserRequest.username(), createUserRequest.email(),
         createUserRequest.password());
     userRepository.save(user);
 
     Instant now = Instant.now();
-    UserStatus userStatus = new UserStatus(user.getId(), now);
+    UserStatus userStatus = new UserStatus(user, now);
     userStatusRepository.save(userStatus);
 
     return user;
@@ -49,28 +50,27 @@ public class BasicUserService implements UserService {
   @Override
   public User create(UserCreateRequest createUserRequest,
       BinaryContentCreateRequest binaryContentDTO) {
-    if (userRepository.existsName(createUserRequest.username())) {
+    if (userRepository.existsByUsername(createUserRequest.username())) {
       throw new IllegalArgumentException(createUserRequest.username());
     }
-    if (userRepository.existsEmail(createUserRequest.email())) {
+    if (userRepository.existsByEmail(createUserRequest.email())) {
       throw new IllegalArgumentException(createUserRequest.email());
     }
-
-    UUID profileId = null;
+    BinaryContent profile = null;
     if (binaryContentDTO != null) {
       String fileName = binaryContentDTO.fileName();
       String contentType = binaryContentDTO.contentType();
       byte[] bytes = binaryContentDTO.bytes();
-      BinaryContent content = new BinaryContent(fileName, (long) bytes.length, contentType, bytes);
-      profileId = binaryContentRepository.save(content).getId();
+      profile = new BinaryContent(fileName, (long) bytes.length, contentType, bytes);
+      profile = binaryContentRepository.save(profile);
     }
 
     User user = User.createProfile(createUserRequest.username(), createUserRequest.email(),
-        createUserRequest.password(), profileId);
+        createUserRequest.password(), profile);
     userRepository.save(user);
 
     Instant now = Instant.now();
-    UserStatus userStatus = new UserStatus(user.getId(), now);
+    UserStatus userStatus = new UserStatus(user, now);
     userStatusRepository.save(userStatus);
 
     return user;
@@ -87,7 +87,8 @@ public class BasicUserService implements UserService {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
 
-    Optional.ofNullable(user.getProfileId())
+    Optional.ofNullable(user.getProfile())
+        .map(BinaryContent::getId)
         .ifPresent(binaryContentRepository::deleteById);
 
     userStatusRepository.deleteByUserId(id);
@@ -104,7 +105,7 @@ public class BasicUserService implements UserService {
 
     String newName = updateUserRequest.newUsername() != null
         ? updateUserRequest.newUsername()
-        : user.getName();
+        : user.getUsername();
     String newEmail = updateUserRequest.newEmail() != null
         ? updateUserRequest.newEmail()
         : user.getEmail();
@@ -112,15 +113,15 @@ public class BasicUserService implements UserService {
         ? updateUserRequest.newPassword()
         : user.getPassword();
 
-    if (!newEmail.equals(user.getEmail()) && userRepository.existsEmail(newEmail)) {
+    if (!newEmail.equals(user.getEmail()) && userRepository.existsByEmail(newEmail)) {
       throw new IllegalArgumentException("이미 있는 이메일입니다.");
     }
-    if (!newName.equals(user.getName()) && userRepository.existsName(newName)) {
+    if (!newName.equals(user.getUsername()) && userRepository.existsByUsername(newName)) {
       throw new IllegalArgumentException("이미 있는 유저 이름입니다.");
     }
 
-    UUID profileId = user.getProfileId();
-    UUID oldpofiledId = user.getProfileId();
+    BinaryContent profile = user.getProfile();
+    BinaryContent oldProfile = user.getProfile();
     if (binaryContentDTO != null) {
       BinaryContent content = new BinaryContent(
           binaryContentDTO.fileName(),
@@ -128,11 +129,13 @@ public class BasicUserService implements UserService {
           binaryContentDTO.contentType(),
           binaryContentDTO.bytes()
       );
-      profileId = binaryContentRepository.save(content).getId();
-      binaryContentRepository.deleteById(oldpofiledId);
+      profile = binaryContentRepository.save(content);
+      if (oldProfile != null) {
+        binaryContentRepository.deleteById(oldProfile.getId());
+      }
     }
 
-    user.update(newName, newEmail, newPassword, profileId);
+    user.update(newName, newEmail, newPassword, profile);
     return userRepository.save(user);
   }
 
@@ -154,9 +157,9 @@ public class BasicUserService implements UserService {
         user.getId(),
         user.getCreatedAt(),
         user.getUpdatedAt(),
-        user.getName(),
+        user.getUsername(),
         user.getEmail(),
-        user.getProfileId(),
+        user.getProfile().getId(),
         online
     );
   }

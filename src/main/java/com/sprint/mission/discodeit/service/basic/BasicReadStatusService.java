@@ -2,7 +2,9 @@ package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.readStatusDTO.ReadStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.readStatusDTO.ReadStatusUpdateRequest;
+import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ReadStatus;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
@@ -25,20 +27,18 @@ public class BasicReadStatusService implements ReadStatusService {
 
   @Override
   public ReadStatus create(ReadStatusCreateRequest readStatusDTO) {
-    UUID userId = userRepository.findById(readStatusDTO.userId())
-        .orElseThrow(() -> new NoSuchElementException(" 유저를 찾을 수 없습니다."))
-        .getId();
-    UUID channelId = channelRepository.findById(readStatusDTO.channelId())
-        .orElseThrow(() -> new NoSuchElementException(" 채널을 찾을 수 없습니다."))
-        .getId();
+    User user = userRepository.findById(readStatusDTO.userId())
+        .orElseThrow(() -> new NoSuchElementException(" 유저를 찾을 수 없습니다."));
+    Channel channel = channelRepository.findById(readStatusDTO.channelId())
+        .orElseThrow(() -> new NoSuchElementException(" 채널을 찾을 수 없습니다."));
 
-    if (readStatusRepository.findAllByUserId(userId).stream()
-        .anyMatch(readStatus -> readStatus.getChannelId().equals(channelId))) {
+    if (readStatusRepository.findAllByUserId(user.getId()).stream()
+        .anyMatch(readStatus -> readStatus.getId().equals(channel.getId()))) {
       throw new IllegalArgumentException("이미 있습니다.");
     }
 
     Instant lastReadAt = readStatusDTO.lastReadAt();
-    ReadStatus readStatus = new ReadStatus(userId, channelId, lastReadAt);
+    ReadStatus readStatus = new ReadStatus(user, channel, lastReadAt);
     return readStatusRepository.save(readStatus);
   }
 

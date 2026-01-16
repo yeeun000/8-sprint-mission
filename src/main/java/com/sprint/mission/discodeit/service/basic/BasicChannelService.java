@@ -8,9 +8,11 @@ import com.sprint.mission.discodeit.dto.channelDTO.PublicChannelUpdateRequest;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.ReadStatus;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
+import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ public class BasicChannelService implements ChannelService {
   private final ChannelRepository channelRepository;
   private final MessageRepository messageRepository;
   private final ReadStatusRepository readStatusRepository;
+  private final UserRepository userRepository;
 
   @Override
   public Channel create(PublicChannelCreateRequest publicChannelDTO) {
@@ -44,7 +47,11 @@ public class BasicChannelService implements ChannelService {
     channelRepository.save(channel);
 
     privateChannelDTO.participantIds().stream()
-        .map(userId -> new ReadStatus(userId, channel.getId(), Instant.now()))
+        .map(userId -> {
+          User user = userRepository.findById(userId)
+              .orElseThrow(() -> new NoSuchElementException("User를 찾을 수 없습니다."));
+          return new ReadStatus(user, channel, Instant.now());
+        })
         .forEach(readStatusRepository::save);
     return channel;
   }
@@ -53,7 +60,7 @@ public class BasicChannelService implements ChannelService {
   @Override
   public List<ChannelDto> findAllByUserId(UUID userId) {
     List<UUID> userIds = readStatusRepository.findAllByUserId(userId).stream()
-        .map(ReadStatus::getChannelId)
+        .map(ReadStatus -> ReadStatus.getChannel().getId())
         .toList();
     return channelRepository.findAll().stream()
         .filter(channel ->
@@ -109,14 +116,14 @@ public class BasicChannelService implements ChannelService {
     if (channel.getType().equals(Channel.ChannelType.PRIVATE)) {
       readStatusRepository.findAllByChannelId(channel.getId())
           .stream()
-          .map(ReadStatus::getUserId)
+          .map(ReadStatus -> ReadStatus.getChannel().getId())
           .forEach(participantIds::add);
     }
 
     return new ChannelDto(
         channel.getId(),
         channel.getType(),
-        channel.getChannelName(),
+        channel.getName(),
         channel.getDescription(),
         participantIds,
         lastMessageAt

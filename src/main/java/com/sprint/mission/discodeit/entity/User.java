@@ -29,7 +29,7 @@ public class User extends BaseUpdatableEntity {
   @Column(name = "email", nullable = false, length = 100, unique = true)
   private String email;
 
-  @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+  @OneToOne(cascade = CascadeType.PERSIST)
   @JoinColumn(name = "profile_id", unique = true)
   private BinaryContent profile;
 
