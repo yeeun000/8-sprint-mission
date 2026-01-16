@@ -15,7 +15,7 @@ public class UserMapper {
 
   public UserDto toDto(User user) {
 
-    Boolean online = null;
+    Boolean online = false;
     if (user.getStatus() != null) {
       online = user.getStatus().isOnline();
     }

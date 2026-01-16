@@ -13,6 +13,6 @@ public class BinaryContentMapper {
     }
 
     return new BinaryContentDto(binaryContent.getId(), binaryContent.getFileName(),
-        binaryContent.getSize(), binaryContent.getContentType(), binaryContent.getBytes());
+        binaryContent.getSize(), binaryContent.getContentType());
   }
 }
