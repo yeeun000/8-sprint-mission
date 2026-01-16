@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.controller.api.UserApi;
 import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UserDto;
+import com.sprint.mission.discodeit.dto.userDTO.UserStatusDto;
 import com.sprint.mission.discodeit.dto.userDTO.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.User;
@@ -36,7 +37,7 @@ public class UserController implements UserApi {
   private final UserStatusService userStatusService;
 
   @PostMapping(consumes = "multipart/form-data")
-  public ResponseEntity<User> create(
+  public ResponseEntity<UserDto> create(
       @RequestPart("userCreateRequest") UserCreateRequest userCreateRequest,
       @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
 
@@ -49,12 +50,12 @@ public class UserController implements UserApi {
       );
     }
 
-    User user = userService.create(userCreateRequest, binaryContentDTO);
+    UserDto user = userService.create(userCreateRequest, binaryContentDTO);
     return ResponseEntity.status(HttpStatus.CREATED).body(user);
   }
 
   @PatchMapping(value = "/{userId}", consumes = "multipart/form-data")
-  public ResponseEntity<User> update(
+  public ResponseEntity<UserDto> update(
       @PathVariable("userId") UUID userId,
       @RequestPart("userUpdateRequest") UserUpdateRequest userUpdateRequest,
       @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
@@ -67,7 +68,7 @@ public class UserController implements UserApi {
           profile.getBytes()
       );
     }
-    User user = userService.update(userId, userUpdateRequest, binaryContentDTO);
+    UserDto user = userService.update(userId, userUpdateRequest, binaryContentDTO);
     return ResponseEntity.ok(user);
   }
 
@@ -84,9 +85,9 @@ public class UserController implements UserApi {
   }
 
   @PatchMapping(value = "/{userId}/userStatus")
-  public ResponseEntity<UserStatus> updateStatus(@PathVariable("userId") UUID userId,
+  public ResponseEntity<UserStatusDto> updateStatus(@PathVariable("userId") UUID userId,
       @RequestBody UserStatusUpdateRequest request) {
-    UserStatus updatedUserStatus = userStatusService.updateByUserId(userId, request);
+    UserStatusDto updatedUserStatus = userStatusService.updateByUserId(userId, request);
     return ResponseEntity.ok(updatedUserStatus);
   }
 }

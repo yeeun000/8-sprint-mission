@@ -10,22 +10,25 @@ spring:
     hikari:
       connection-init-sql: SET SESSION hibernate.jdbc.lob.non_contextual_creation=true
 
+  #  jpa:
+  #    generate-ddl: false
+  #    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  #    show-sql: true
+  #    properties:
+  #      hibernate:
+  #        format_sql: true
+  #        highlight_sql: true
+  #        use_sql_comments: true
   jpa:
     generate-ddl: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true
-        highlight_sql: true
-        use_sql_comments: true
+        format_sql: false
+        highlight_sql: false
+        use_sql_comments: false
 
-
-
-discodeit:
-  repository:
-    type: file   # jcf | file
-    file-directory: .discodeit
 
 server:
   port: 8080

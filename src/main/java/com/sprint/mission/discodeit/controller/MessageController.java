@@ -3,8 +3,8 @@ package com.sprint.mission.discodeit.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.messageDTO.MessageCreateRequest;
+import com.sprint.mission.discodeit.dto.messageDTO.MessageDto;
 import com.sprint.mission.discodeit.dto.messageDTO.MessageUpdateRequest;
-import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.service.MessageService;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class MessageController {
   private final MessageService messageService;
 
   @PostMapping(consumes = "multipart/form-data")
-  public ResponseEntity<Message> create(
+  public ResponseEntity<MessageDto> create(
       @RequestPart("messageCreateRequest") String messageCreateRequestJson,
       @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments)
       throws IOException {
@@ -53,15 +53,15 @@ public class MessageController {
       }
     }
 
-    Message message = messageService.create(request, binaryContentDTO);
+    MessageDto message = messageService.create(request, binaryContentDTO);
 
     return ResponseEntity.status(HttpStatus.CREATED).body(message);
   }
 
   @PatchMapping("/{messageId}")
-  public ResponseEntity<Message> update(
+  public ResponseEntity<MessageDto> update(
       @PathVariable("messageId") UUID messageId, @RequestBody MessageUpdateRequest request) {
-    Message message = messageService.update(messageId, request);
+    MessageDto message = messageService.update(messageId, request);
     return ResponseEntity.ok(message);
   }
 
@@ -72,9 +72,9 @@ public class MessageController {
   }
 
   @GetMapping
-  public ResponseEntity<List<Message>> findAllByChannelId(
+  public ResponseEntity<List<MessageDto>> findAllByChannelId(
       @RequestParam("channelId") UUID channelId) {
-    List<Message> messages = messageService.findAllByChannelId(channelId);
+    List<MessageDto> messages = messageService.findAllByChannelId(channelId);
     return ResponseEntity.ok(messages);
   }
 }

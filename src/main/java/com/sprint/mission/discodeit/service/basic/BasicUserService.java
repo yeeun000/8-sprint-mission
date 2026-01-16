@@ -7,6 +7,7 @@ import com.sprint.mission.discodeit.dto.userDTO.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
+import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
@@ -26,9 +27,10 @@ public class BasicUserService implements UserService {
   private final UserRepository userRepository;
   private final UserStatusRepository userStatusRepository;
   private final BinaryContentRepository binaryContentRepository;
+  private final UserMapper userMapper;
 
   @Override
-  public User create(UserCreateRequest createUserRequest) {
+  public UserDto create(UserCreateRequest createUserRequest) {
     if (userRepository.existsByUsername(createUserRequest.username())) {
       throw new IllegalArgumentException(createUserRequest.username());
     }
@@ -44,11 +46,11 @@ public class BasicUserService implements UserService {
     UserStatus userStatus = new UserStatus(user, now);
     userStatusRepository.save(userStatus);
 
-    return user;
+    return userMapper.toDto(user);
   }
 
   @Override
-  public User create(UserCreateRequest createUserRequest,
+  public UserDto create(UserCreateRequest createUserRequest,
       BinaryContentCreateRequest binaryContentDTO) {
     if (userRepository.existsByUsername(createUserRequest.username())) {
       throw new IllegalArgumentException(createUserRequest.username());
@@ -73,13 +75,13 @@ public class BasicUserService implements UserService {
     UserStatus userStatus = new UserStatus(user, now);
     userStatusRepository.save(userStatus);
 
-    return user;
+    return userMapper.toDto(user);
   }
 
   @Override
   public List<UserDto> findAll() {
     return userRepository.findAll().stream()
-        .map(this::toDto).toList();
+        .map(userMapper::toDto).toList();
   }
 
   @Override
@@ -97,7 +99,7 @@ public class BasicUserService implements UserService {
 
 
   @Override
-  public User update(UUID userId, UserUpdateRequest updateUserRequest,
+  public UserDto update(UUID userId, UserUpdateRequest updateUserRequest,
       BinaryContentCreateRequest binaryContentDTO) {
 
     User user = userRepository.findById(userId)
@@ -136,31 +138,15 @@ public class BasicUserService implements UserService {
     }
 
     user.update(newName, newEmail, newPassword, profile);
-    return userRepository.save(user);
+    return userMapper.toDto(userRepository.save(user));
   }
 
 
   @Override
   public UserDto findId(UUID id) {
     return userRepository.findById(id)
-        .map(this::toDto)
+        .map(userMapper::toDto)
         .orElseThrow(() -> new NoSuchElementException(" 유저를 찾을 수 없습니다. "));
-
   }
 
-  private UserDto toDto(User user) {
-    Boolean online = userStatusRepository.findByUserId(user.getId())
-        .map(UserStatus::isOnline)
-        .orElse(null);
-
-    return new UserDto(
-        user.getId(),
-        user.getCreatedAt(),
-        user.getUpdatedAt(),
-        user.getUsername(),
-        user.getEmail(),
-        user.getProfile().getId(),
-        online
-    );
-  }
 }

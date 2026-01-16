@@ -4,7 +4,6 @@ import com.sprint.mission.discodeit.entity.base.BaseUpdatableEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -41,16 +40,16 @@ public class User extends BaseUpdatableEntity {
 
   public User(String username, String email, String password, BinaryContent profile) {
     this.username = username;
-    this.password = password;
     this.email = email;
+    this.password = password;
     this.profile = profile;
   }
 
 
-  public void update(String username, String password, String email, BinaryContent profile) {
+  public void update(String username, String email, String password, BinaryContent profile) {
     this.username = username;
-    this.password = password;
     this.email = email;
+    this.password = password;
     this.profile = profile;
   }
 

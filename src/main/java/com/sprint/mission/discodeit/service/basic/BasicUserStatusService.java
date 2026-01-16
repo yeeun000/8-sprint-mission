@@ -1,9 +1,11 @@
 package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.userDTO.UserStatusCreateRequest;
+import com.sprint.mission.discodeit.dto.userDTO.UserStatusDto;
 import com.sprint.mission.discodeit.dto.userDTO.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
+import com.sprint.mission.discodeit.mapper.UserStatusMapper;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserStatusService;
@@ -19,9 +21,10 @@ public class BasicUserStatusService implements UserStatusService {
 
   private final UserStatusRepository userStatusRepository;
   private final UserRepository userRepository;
+  private final UserStatusMapper userStatusMapper;
 
   @Override
-  public UserStatus create(UserStatusCreateRequest userStatusDTO) {
+  public UserStatusDto create(UserStatusCreateRequest userStatusDTO) {
     User user = userRepository.findById(userStatusDTO.userId())
         .orElseThrow(() -> new NoSuchElementException(" 유저를 찾을 수 없습니다."));
     if (userStatusRepository.findByUserId(userStatusDTO.userId()).isPresent()) {
@@ -30,13 +33,13 @@ public class BasicUserStatusService implements UserStatusService {
 
     Instant lastActiveAt = Instant.now();
     UserStatus userStatus = new UserStatus(user, lastActiveAt);
-    return userStatusRepository.save(userStatus);
+    return userStatusMapper.toDto(userStatusRepository.save(userStatus));
   }
 
   @Override
-  public UserStatus find(UUID id) {
-    return userStatusRepository.findById(id)
-        .orElseThrow(() -> new NoSuchElementException(" UserStatus를 찾을 수 없습니다."));
+  public UserStatusDto find(UUID id) {
+    return userStatusMapper.toDto(userStatusRepository.findById(id)
+        .orElseThrow(() -> new NoSuchElementException(" UserStatus를 찾을 수 없습니다.")));
   }
 
   @Override
@@ -45,20 +48,21 @@ public class BasicUserStatusService implements UserStatusService {
   }
 
   @Override
-  public UserStatus update(UUID id, UserStatusCreateRequest userStateDTO) {
+  public UserStatusDto update(UUID id, UserStatusCreateRequest userStateDTO) {
     Instant newLastActiveAt = userStateDTO.lastActiveAt();
-    UserStatus status = find(id);
+    UserStatus status = userStatusRepository.findById(id)
+        .orElseThrow(() -> new NoSuchElementException(" UserStatus를 찾을 수 없습니다."));
     status.update(newLastActiveAt);
-    return userStatusRepository.save(status);
+    return userStatusMapper.toDto(userStatusRepository.save(status));
   }
 
   @Override
-  public UserStatus updateByUserId(UUID userId, UserStatusUpdateRequest request) {
+  public UserStatusDto updateByUserId(UUID userId, UserStatusUpdateRequest request) {
     Instant newLastActiveAt = request.newLastActiveAt();
     UserStatus status = userStatusRepository.findByUserId(userId)
         .orElseThrow(() -> new NoSuchElementException(" UserStatus를 찾을 수 없습니다."));
     status.update(newLastActiveAt);
-    return userStatusRepository.save(status);
+    return userStatusMapper.toDto(userStatusRepository.save(status));
   }
 
   @Override

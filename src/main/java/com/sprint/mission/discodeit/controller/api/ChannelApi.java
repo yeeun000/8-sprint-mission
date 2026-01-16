@@ -28,7 +28,7 @@ public interface ChannelApi {
           content = @Content(schema = @Schema(implementation = Channel.class))
       )
   })
-  ResponseEntity<Channel> createPublic(
+  ResponseEntity<ChannelDto> createPublic(
       @Parameter(description = "Public Channel 생성 정보") PublicChannelCreateRequest request
   );
 
@@ -39,7 +39,7 @@ public interface ChannelApi {
           content = @Content(schema = @Schema(implementation = Channel.class))
       )
   })
-  ResponseEntity<Channel> createPrivate(
+  ResponseEntity<ChannelDto> createPrivate(
       @Parameter(description = "Private Channel 생성 정보") PrivateChannelCreateRequest request
   );
 
@@ -58,7 +58,7 @@ public interface ChannelApi {
           content = @Content(examples = @ExampleObject(value = "Private channel cannot be updated"))
       )
   })
-  ResponseEntity<Channel> update(
+  ResponseEntity<ChannelDto> update(
       @Parameter(description = "수정할 Channel ID") UUID channelId,
       @Parameter(description = "수정할 Channel 정보") PublicChannelUpdateRequest request
   );

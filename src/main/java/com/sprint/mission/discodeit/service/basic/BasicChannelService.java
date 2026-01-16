@@ -6,17 +6,15 @@ import com.sprint.mission.discodeit.dto.channelDTO.PrivateChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.channelDTO.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.channelDTO.PublicChannelUpdateRequest;
 import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.mapper.ChannelMapper;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -32,17 +30,18 @@ public class BasicChannelService implements ChannelService {
   private final MessageRepository messageRepository;
   private final ReadStatusRepository readStatusRepository;
   private final UserRepository userRepository;
+  private final ChannelMapper channelMapper;
 
   @Override
-  public Channel create(PublicChannelCreateRequest publicChannelDTO) {
+  public ChannelDto create(PublicChannelCreateRequest publicChannelDTO) {
     Channel channel = Channel.createPublicChannel(publicChannelDTO.name(),
         publicChannelDTO.description());
     channelRepository.save(channel);
-    return channel;
+    return channelMapper.toDto(channel);
   }
 
   @Override
-  public Channel create(PrivateChannelCreateRequest privateChannelDTO) {
+  public ChannelDto create(PrivateChannelCreateRequest privateChannelDTO) {
     Channel channel = Channel.createPrivateChannel();
     channelRepository.save(channel);
 
@@ -53,7 +52,7 @@ public class BasicChannelService implements ChannelService {
           return new ReadStatus(user, channel, Instant.now());
         })
         .forEach(readStatusRepository::save);
-    return channel;
+    return channelMapper.toDto(channel);
   }
 
 
@@ -67,7 +66,7 @@ public class BasicChannelService implements ChannelService {
             channel.getType().equals(Channel.ChannelType.PUBLIC) || userIds.contains(
                 channel.getId())
         )
-        .map(this::toDto)
+        .map(channelMapper::toDto)
         .toList();
   }
 
@@ -82,7 +81,7 @@ public class BasicChannelService implements ChannelService {
   }
 
   @Override
-  public Channel update(UUID id, PublicChannelUpdateRequest publicChannelUpdateRequest) {
+  public ChannelDto update(UUID id, PublicChannelUpdateRequest publicChannelUpdateRequest) {
     Channel channel = channelRepository.findById(id)
         .orElseThrow(() -> new NoSuchElementException(" 채널을 찾을 수 없습니다."));
 
@@ -92,41 +91,14 @@ public class BasicChannelService implements ChannelService {
     channel.update(publicChannelUpdateRequest.newName(),
         publicChannelUpdateRequest.newDescription());
     channelRepository.save(channel);
-    return channel;
+    return channelMapper.toDto(channel);
   }
 
   @Override
   public ChannelDto find(UUID id) {
     return channelRepository.findById(id)
-        .map(this::toDto)
+        .map(channelMapper::toDto)
         .orElseThrow(() -> new NoSuchElementException(" 채널을 찾을 수 없습니다."));
   }
 
-  public ChannelDto toDto(Channel channel) {
-
-    Instant lastMessageAt = messageRepository.findAllByChannelId(channel.getId())
-        .stream()
-        .sorted(Comparator.comparing(Message::getCreatedAt).reversed())
-        .map(Message::getCreatedAt)
-        .limit(1)
-        .findFirst()
-        .orElse(Instant.MIN);
-
-    List<UUID> participantIds = new ArrayList<>();
-    if (channel.getType().equals(Channel.ChannelType.PRIVATE)) {
-      readStatusRepository.findAllByChannelId(channel.getId())
-          .stream()
-          .map(ReadStatus -> ReadStatus.getChannel().getId())
-          .forEach(participantIds::add);
-    }
-
-    return new ChannelDto(
-        channel.getId(),
-        channel.getType(),
-        channel.getName(),
-        channel.getDescription(),
-        participantIds,
-        lastMessageAt
-    );
-  }
 }
