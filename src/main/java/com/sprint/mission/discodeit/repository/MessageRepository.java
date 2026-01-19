@@ -5,6 +5,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,7 +23,7 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
 
   void deleteAllByChannelId(UUID channelId);
 
-  List<Message> findAllByChannelId(UUID channelId);
+  Slice<Message> findAllByChannelId(UUID channelId, Pageable pageable);
 
   @Query("SELECT MAX(m.createdAt) FROM Message m WHERE m.channel.id = :channelId")
   Optional<Instant> findLastMessageTime(@Param("channelId") UUID channelId);

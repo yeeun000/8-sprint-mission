@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS binary_contents
     file_name    varchar(255) NOT NULL,
     size         bigint       NOT NULL,
     content_type varchar(100) NOT NULL,
-    bytes        bytea        NOT NULL,
+    bytes        bytea,
 
     CONSTRAINT pk_binary_content_id PRIMARY KEY (id)
 );
@@ -106,3 +106,6 @@ FROM users;
 
 SELECT *
 FROM binary_contents;
+
+SELECT *
+FROM messages;

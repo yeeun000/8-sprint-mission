@@ -5,12 +5,16 @@ import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentCreateRequ
 import com.sprint.mission.discodeit.dto.messageDTO.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.messageDTO.MessageDto;
 import com.sprint.mission.discodeit.dto.messageDTO.MessageUpdateRequest;
+import com.sprint.mission.discodeit.dto.response.PageResponse;
 import com.sprint.mission.discodeit.service.MessageService;
+import org.springframework.data.domain.Pageable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -72,9 +76,17 @@ public class MessageController {
   }
 
   @GetMapping
-  public ResponseEntity<List<MessageDto>> findAllByChannelId(
-      @RequestParam("channelId") UUID channelId) {
-    List<MessageDto> messages = messageService.findAllByChannelId(channelId);
-    return ResponseEntity.ok(messages);
+  public ResponseEntity<PageResponse<MessageDto>> findAllByChannelId(
+      @RequestParam UUID channelId,
+      @PageableDefault(
+          size = 50,
+          sort = "createdAt",
+          direction = Sort.Direction.DESC
+      ) Pageable pageable
+  ) {
+    return ResponseEntity.ok(
+        messageService.findAllByChannelId(channelId, pageable)
+    );
   }
+
 }

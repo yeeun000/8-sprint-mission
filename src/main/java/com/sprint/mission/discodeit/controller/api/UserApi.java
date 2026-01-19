@@ -30,7 +30,7 @@ public interface UserApi {
   @ApiResponses(value = {
       @ApiResponse(
           responseCode = "201", description = "User가 성공적으로 생성됨",
-          content = @Content(schema = @Schema(implementation = User.class))
+          content = @Content(schema = @Schema(implementation = UserDto.class))
       ),
       @ApiResponse(
           responseCode = "400", description = "같은 email 또는 username를 사용하는 User가 이미 존재함",
@@ -52,7 +52,7 @@ public interface UserApi {
   @ApiResponses(value = {
       @ApiResponse(
           responseCode = "200", description = "User 정보가 성공적으로 수정됨",
-          content = @Content(schema = @Schema(implementation = User.class))
+          content = @Content(schema = @Schema(implementation = UserDto.class))
       ),
       @ApiResponse(
           responseCode = "404", description = "User를 찾을 수 없음",
@@ -98,7 +98,7 @@ public interface UserApi {
   @ApiResponses(value = {
       @ApiResponse(
           responseCode = "200", description = "User 온라인 상태가 성공적으로 업데이트됨",
-          content = @Content(schema = @Schema(implementation = UserStatus.class))
+          content = @Content(schema = @Schema(implementation = UserStatusDto.class))
       ),
       @ApiResponse(
           responseCode = "404", description = "해당 User의 UserStatus를 찾을 수 없음",

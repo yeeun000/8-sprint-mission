@@ -5,21 +5,27 @@ import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentCreateRequ
 import com.sprint.mission.discodeit.dto.messageDTO.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.messageDTO.MessageDto;
 import com.sprint.mission.discodeit.dto.messageDTO.MessageUpdateRequest;
+import com.sprint.mission.discodeit.dto.response.PageResponse;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.mapper.MessageMapper;
+import com.sprint.mission.discodeit.mapper.PageResponseMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.MessageService;
+import com.sprint.mission.discodeit.storage.BinaryContentStorage;
+import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -32,9 +38,10 @@ public class BasicMessageService implements MessageService {
   private final UserRepository userRepository;
   private final BinaryContentRepository binaryContentRepository;
   private final MessageMapper messageMapper;
-
+  private final BinaryContentStorage binaryContentStorage;
 
   @Override
+  @Transactional
   public MessageDto create(MessageCreateRequest createMessageRequest,
       List<BinaryContentCreateRequest> binaryContentDTO) {
 
@@ -46,15 +53,18 @@ public class BasicMessageService implements MessageService {
     User author = userRepository.findById(userId)
         .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
 
-    List<BinaryContent> attachmentIds = binaryContentDTO.stream()
-        .map(file -> {
-          String fileName = file.fileName();
-          String contentType = file.contentType();
-          byte[] bytes = file.bytes();
-          BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length,
-              contentType, bytes);
-          return binaryContentRepository.save(binaryContent);
-        }).toList();
+    List<BinaryContent> attachmentIds = binaryContentDTO == null ? List.of() :
+        binaryContentDTO.stream()
+            .map(file -> {
+              String fileName = file.fileName();
+              String contentType = file.contentType();
+              byte[] bytes = file.bytes();
+              BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length,
+                  contentType);
+              binaryContentRepository.save(binaryContent);
+              binaryContentStorage.put(binaryContent.getId(), bytes);
+              return binaryContent;
+            }).toList();
 
     String content = createMessageRequest.content();
     Message message = new Message(
@@ -67,18 +77,25 @@ public class BasicMessageService implements MessageService {
     return messageMapper.toDto(messageRepository.save(message));
   }
 
+
   @Override
-  public List<MessageDto> findAllByChannelId(UUID channelId) {
-    return messageRepository.findAllByChannelId(channelId)
-        .stream()
-        .map(messageMapper::toDto)
-        .toList();
+  public PageResponse<MessageDto> findAllByChannelId(
+      UUID channelId,
+      Pageable pageable
+  ) {
+    Slice<Message> slice =
+        messageRepository.findAllByChannelId(channelId, pageable);
+
+    return PageResponseMapper.fromSlice(
+        slice,
+        messageMapper::toDto
+    );
   }
 
   @Override
   public void delete(UUID id) {
-    messageMapper.toDto(messageRepository.findById(id)
-        .orElseThrow(() -> new NoSuchElementException("메시지를 찾을 수 없습니다.")));
+    messageRepository.findById(id)
+        .orElseThrow(() -> new NoSuchElementException("메시지를 찾을 수 없습니다."));
     messageRepository.deleteById(id);
   }
 

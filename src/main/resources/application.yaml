@@ -29,6 +29,12 @@ spring:
         highlight_sql: false
         use_sql_comments: false
 
-
 server:
   port: 8080
+
+discodeit:
+  storage:
+    type: local
+    local:
+      # 파일이 저장될 로컬 디렉토리 경로
+      root-path: uploads

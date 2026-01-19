@@ -20,8 +20,12 @@ public class UserMapper {
       online = user.getStatus().isOnline();
     }
 
-    return new UserDto(user.getId(), user.getUsername(), user.getEmail(),
-        binaryContentMapper.toDto(user.getProfile()), online);
+    return new UserDto(
+        user.getId(),
+        user.getUsername(),
+        user.getEmail(),
+        binaryContentMapper.toDto(user.getProfile()),
+        online);
   }
 
 }

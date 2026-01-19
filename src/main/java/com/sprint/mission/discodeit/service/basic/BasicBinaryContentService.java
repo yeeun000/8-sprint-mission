@@ -6,6 +6,8 @@ import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.mapper.BinaryContentMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.service.BinaryContentService;
+import com.sprint.mission.discodeit.storage.BinaryContentStorage;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -18,14 +20,15 @@ public class BasicBinaryContentService implements BinaryContentService {
 
   private final BinaryContentRepository binaryContentRepository;
   private final BinaryContentMapper binaryContentMapper;
+  private final BinaryContentStorage binaryContentStorage;
 
   @Override
+  @Transactional
   public BinaryContentDto create(BinaryContentCreateRequest binaryContentRequest) {
     BinaryContent binaryContent = new BinaryContent(
         binaryContentRequest.fileName(),
         (long) binaryContentRequest.bytes().length,
-        binaryContentRequest.contentType(),
-        binaryContentRequest.bytes()
+        binaryContentRequest.contentType()
     );
     return binaryContentMapper.toDto(binaryContentRepository.save(binaryContent));
   }

@@ -28,7 +28,7 @@ public class User extends BaseUpdatableEntity {
   @Column(name = "email", nullable = false, length = 100, unique = true)
   private String email;
 
-  @OneToOne(cascade = CascadeType.PERSIST)
+  @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "profile_id", unique = true)
   private BinaryContent profile;
 
@@ -38,6 +38,13 @@ public class User extends BaseUpdatableEntity {
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ReadStatus> readStatuses = new ArrayList<>();
 
+  public void update(String username, String email, String password, BinaryContent profile) {
+    this.username = username;
+    this.email = email;
+    this.password = password;
+    this.profile = profile;
+  }
+
   public User(String username, String email, String password, BinaryContent profile) {
     this.username = username;
     this.email = email;
@@ -46,20 +53,14 @@ public class User extends BaseUpdatableEntity {
   }
 
 
-  public void update(String username, String email, String password, BinaryContent profile) {
-    this.username = username;
-    this.email = email;
-    this.password = password;
-    this.profile = profile;
+  public static User create(String username, String email, String password) {
+    return new User(username, email, password, null);
   }
 
-  public static User create(String name, String email, String password) {
-    return new User(name, email, password, null);
-  }
 
-  public static User createProfile(String name, String email, String password,
-      BinaryContent profileId) {
-    return new User(name, email, password, profileId);
+  public static User createProfile(String username, String email, String password,
+      BinaryContent profile) {
+    return new User(username, email, password, profile);
   }
 
 }
