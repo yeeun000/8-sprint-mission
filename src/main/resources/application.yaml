@@ -2,6 +2,7 @@ spring:
   application:
     name: discodeit
 
+
   datasource:
     url: jdbc:postgresql://localhost:5432/discodeit
     username: discodeit_user
@@ -20,6 +21,7 @@ spring:
   #        highlight_sql: true
   #        use_sql_comments: true
   jpa:
+    open-in-view: false
     generate-ddl: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false

@@ -20,6 +20,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -33,6 +34,7 @@ public class BasicChannelService implements ChannelService {
   private final ChannelMapper channelMapper;
 
   @Override
+  @Transactional
   public ChannelDto create(PublicChannelCreateRequest publicChannelDTO) {
     Channel channel = Channel.createPublicChannel(publicChannelDTO.name(),
         publicChannelDTO.description());
@@ -41,6 +43,7 @@ public class BasicChannelService implements ChannelService {
   }
 
   @Override
+  @Transactional
   public ChannelDto create(PrivateChannelCreateRequest privateChannelDTO) {
     Channel channel = Channel.createPrivateChannel();
     channelRepository.save(channel);
@@ -57,6 +60,7 @@ public class BasicChannelService implements ChannelService {
 
 
   @Override
+  @Transactional(readOnly = true)
   public List<ChannelDto> findAllByUserId(UUID userId) {
     List<UUID> userIds = readStatusRepository.findAllByUserId(userId).stream()
         .map(ReadStatus -> ReadStatus.getChannel().getId())
@@ -71,6 +75,7 @@ public class BasicChannelService implements ChannelService {
   }
 
   @Override
+  @Transactional
   public void delete(UUID id) {
     channelRepository.findById(id)
         .orElseThrow(() -> new NoSuchElementException(" 채널을 찾을 수 없습니다."));
@@ -81,6 +86,7 @@ public class BasicChannelService implements ChannelService {
   }
 
   @Override
+  @Transactional
   public ChannelDto update(UUID id, PublicChannelUpdateRequest publicChannelUpdateRequest) {
     Channel channel = channelRepository.findById(id)
         .orElseThrow(() -> new NoSuchElementException(" 채널을 찾을 수 없습니다."));
@@ -95,6 +101,7 @@ public class BasicChannelService implements ChannelService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public ChannelDto find(UUID id) {
     return channelRepository.findById(id)
         .map(channelMapper::toDto)

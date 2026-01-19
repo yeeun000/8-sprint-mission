@@ -14,6 +14,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +25,7 @@ public class BasicUserStatusService implements UserStatusService {
   private final UserStatusMapper userStatusMapper;
 
   @Override
+  @Transactional
   public UserStatusDto create(UserStatusCreateRequest userStatusDTO) {
     User user = userRepository.findById(userStatusDTO.userId())
         .orElseThrow(() -> new NoSuchElementException(" 유저를 찾을 수 없습니다."));
@@ -37,17 +39,20 @@ public class BasicUserStatusService implements UserStatusService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public UserStatusDto find(UUID id) {
     return userStatusMapper.toDto(userStatusRepository.findById(id)
         .orElseThrow(() -> new NoSuchElementException(" UserStatus를 찾을 수 없습니다.")));
   }
 
   @Override
+  @Transactional(readOnly = true)
   public void findAll() {
     userStatusRepository.findAll();
   }
 
   @Override
+  @Transactional
   public UserStatusDto update(UUID id, UserStatusCreateRequest userStateDTO) {
     Instant newLastActiveAt = userStateDTO.lastActiveAt();
     UserStatus status = userStatusRepository.findById(id)
@@ -57,6 +62,7 @@ public class BasicUserStatusService implements UserStatusService {
   }
 
   @Override
+  @Transactional
   public UserStatusDto updateByUserId(UUID userId, UserStatusUpdateRequest request) {
     Instant newLastActiveAt = request.newLastActiveAt();
     UserStatus status = userStatusRepository.findByUserId(userId)
@@ -66,6 +72,7 @@ public class BasicUserStatusService implements UserStatusService {
   }
 
   @Override
+  @Transactional
   public void delete(UUID id) {
     find(id);
     userStatusRepository.deleteById(id);

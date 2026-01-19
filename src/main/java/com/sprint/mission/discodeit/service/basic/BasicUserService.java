@@ -13,7 +13,6 @@ import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
-import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -21,6 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +33,7 @@ public class BasicUserService implements UserService {
   private final BinaryContentStorage binaryContentStorage;
 
   @Override
+  @Transactional
   public UserDto create(UserCreateRequest createUserRequest) {
     if (userRepository.existsByUsername(createUserRequest.username())) {
       throw new IllegalArgumentException(createUserRequest.username());
@@ -92,12 +93,14 @@ public class BasicUserService implements UserService {
 
 
   @Override
+  @Transactional(readOnly = true)
   public List<UserDto> findAll() {
     return userRepository.findAll().stream()
         .map(userMapper::toDto).toList();
   }
 
   @Override
+  @Transactional
   public void delete(UUID id) {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
@@ -158,6 +161,7 @@ public class BasicUserService implements UserService {
 
 
   @Override
+  @Transactional(readOnly = true)
   public UserDto findId(UUID id) {
     return userRepository.findById(id)
         .map(userMapper::toDto)

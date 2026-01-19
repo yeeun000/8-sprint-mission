@@ -7,12 +7,12 @@ import com.sprint.mission.discodeit.mapper.BinaryContentMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,12 +34,14 @@ public class BasicBinaryContentService implements BinaryContentService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public BinaryContentDto find(UUID id) {
     return binaryContentMapper.toDto(binaryContentRepository.findById(id)
         .orElseThrow(() -> new NoSuchElementException(" 파일을 찾을 수 없습니다.")));
   }
 
   @Override
+  @Transactional(readOnly = true)
   public List<BinaryContentDto> findAllByIdIn(List<UUID> id) {
     return binaryContentRepository.findAllByIdIn(id)
         .stream()
@@ -48,6 +50,7 @@ public class BasicBinaryContentService implements BinaryContentService {
   }
 
   @Override
+  @Transactional
   public void delete(UUID id) {
     find(id);
     binaryContentRepository.deleteById(id);

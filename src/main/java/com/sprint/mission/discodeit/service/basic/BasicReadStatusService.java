@@ -17,6 +17,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +30,7 @@ public class BasicReadStatusService implements ReadStatusService {
 
 
   @Override
+  @Transactional
   public ReadStatusDto create(ReadStatusCreateRequest readStatusRequest) {
     User user = userRepository.findById(readStatusRequest.userId())
         .orElseThrow(() -> new NoSuchElementException(" 유저를 찾을 수 없습니다."));
@@ -46,12 +48,14 @@ public class BasicReadStatusService implements ReadStatusService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public ReadStatusDto find(UUID id) {
     return readStatusMapper.toDto(readStatusRepository.findById(id)
         .orElseThrow(() -> new NoSuchElementException(" readStatus를 찾을 수 없습니다.")));
   }
 
   @Override
+  @Transactional(readOnly = true)
   public List<ReadStatusDto> findAllByUserId(UUID userId) {
     return readStatusRepository.findAllByUserId(userId)
         .stream()
@@ -60,6 +64,7 @@ public class BasicReadStatusService implements ReadStatusService {
   }
 
   @Override
+  @Transactional
   public ReadStatusDto update(UUID readStatusId, ReadStatusUpdateRequest updateReadStatusRequest) {
     Instant lastReadAt = updateReadStatusRequest.newLastReadAt();
     ReadStatus readStatus = readStatusRepository.findById(readStatusId)
@@ -70,6 +75,7 @@ public class BasicReadStatusService implements ReadStatusService {
   }
 
   @Override
+  @Transactional
   public void delete(UUID id) {
     find(id);
     readStatusRepository.deleteById(id);

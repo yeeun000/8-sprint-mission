@@ -38,7 +38,6 @@ public class MessageController implements MessageApi {
 
   private final MessageService messageService;
 
-  @Override
   @PostMapping(consumes = "multipart/form-data")
   public ResponseEntity<MessageDto> create(
       @RequestPart("messageCreateRequest") MessageCreateRequest request,
@@ -57,7 +56,6 @@ public class MessageController implements MessageApi {
     }
 
     MessageDto message = messageService.create(request, binaryContentDTO);
-
     return ResponseEntity.status(HttpStatus.CREATED).body(message);
   }
 
@@ -88,5 +86,4 @@ public class MessageController implements MessageApi {
         messageService.findAllByChannelId(channelId, pageable)
     );
   }
-
 }

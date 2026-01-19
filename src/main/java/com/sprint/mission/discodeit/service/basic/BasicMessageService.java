@@ -18,7 +18,6 @@ import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -27,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -78,6 +78,7 @@ public class BasicMessageService implements MessageService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public PageResponse<MessageDto> findAllByChannelId(
       UUID channelId,
       Pageable pageable
@@ -92,6 +93,7 @@ public class BasicMessageService implements MessageService {
 
 
   @Override
+  @Transactional
   public void delete(UUID id) {
     messageRepository.findById(id)
         .orElseThrow(() -> new NoSuchElementException("메시지를 찾을 수 없습니다."));
@@ -99,6 +101,7 @@ public class BasicMessageService implements MessageService {
   }
 
   @Override
+  @Transactional
   public MessageDto update(UUID messageId, MessageUpdateRequest updateMessageRequest) {
     Message message = messageRepository.findById(messageId)
         .orElseThrow(() -> new NoSuchElementException("메시지를 찾을 수 없습니다."));
@@ -107,6 +110,7 @@ public class BasicMessageService implements MessageService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public MessageDto find(UUID id) {
     return messageMapper.toDto(messageRepository.findById(id)
         .orElseThrow(() -> new NoSuchElementException("메시지를 찾을 수 없습니다.")));
