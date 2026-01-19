@@ -40,7 +40,6 @@ public class PageResponseMapper {
       nextCursor = content.get(content.size() - 1);
 
     }
-
     return new PageResponse<>(
         content,
         nextCursor,

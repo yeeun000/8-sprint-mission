@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.mapper;
 
+import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDto;
 import com.sprint.mission.discodeit.dto.userDTO.UserDto;
 import com.sprint.mission.discodeit.entity.User;
 import org.springframework.stereotype.Component;
@@ -20,19 +21,18 @@ public class UserMapper {
       online = user.getStatus().isOnline();
     }
 
-    String profileId = null;
+    BinaryContentDto profile = null;
     if (user.getProfile() != null) {
-      profileId = user.getProfile().getId().toString();
+      profile = binaryContentMapper.toDto(user.getProfile());
     }
 
     return new UserDto(
         user.getId(),
         user.getUsername(),
         user.getEmail(),
-        online,
-        profileId
+        profile,
+        online
     );
-
   }
 
 }
