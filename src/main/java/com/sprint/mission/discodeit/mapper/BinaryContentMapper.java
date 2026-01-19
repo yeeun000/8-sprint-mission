@@ -13,16 +13,11 @@ public class BinaryContentMapper {
     if (entity == null) {
       return null;
     }
-
-    // API 문서의 /api/binaryContents/{binaryContentId}/download 경로와 일치해야 함
-    String downloadUrl = "http://localhost:8080/api/binaryContents/" + entity.getId() + "/download";
-
     return new BinaryContentDto(
         entity.getId(),
         entity.getFileName(),
         entity.getSize(),
-        entity.getContentType(),
-        downloadUrl // 프론트엔드가 이 URL을 <img src="...">에 사용함
+        entity.getContentType()
     );
   }
 }

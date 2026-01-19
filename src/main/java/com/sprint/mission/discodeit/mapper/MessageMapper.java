@@ -18,12 +18,6 @@ public class MessageMapper {
   }
 
   public MessageDto toDto(Message message) {
-    if (message.getAuthor() != null) {
-      System.out.println("디버깅 - 메시지 ID: " + message.getId());
-      System.out.println("디버깅 - 작성자 이름: " + message.getAuthor().getUsername());
-    } else {
-      System.out.println("디버깅 - 메시지 ID: " + message.getId() + " 의 작성자가 null입니다!");
-    }
 
     List<BinaryContentDto> attachments = message.getAttachments().stream()
         .map(binaryContentMapper::toDto).toList();
@@ -33,7 +27,6 @@ public class MessageMapper {
         message.getUpdatedAt(),
         message.getContent(),
         message.getChannel().getId(),
-        userMapper.toDto(message.getAuthor()),
-        attachments);
+        message.getAuthor().getId());
   }
 }
