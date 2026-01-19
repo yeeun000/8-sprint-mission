@@ -5,8 +5,6 @@ import com.sprint.mission.discodeit.dto.userDTO.UserDto;
 import com.sprint.mission.discodeit.dto.userDTO.UserStatusDto;
 import com.sprint.mission.discodeit.dto.userDTO.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UserUpdateRequest;
-import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.entity.UserStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

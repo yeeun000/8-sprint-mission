@@ -19,8 +19,9 @@ public class PageResponseMapper {
 
     return new PageResponse<>(
         content,
-        page.getNumber(),
+        page.hasNext() ? page.getNumber() + 1 : null,
         page.getSize(),
+        page.hasNext(),
         page.getTotalElements()
     );
   }
@@ -34,11 +35,18 @@ public class PageResponseMapper {
         .map(mapper)
         .toList();
 
+    Object nextCursor = null;
+    if (slice.hasNext() && !content.isEmpty()) {
+      nextCursor = content.get(content.size() - 1);
+
+    }
+
     return new PageResponse<>(
         content,
-        slice.getNumber(),
+        nextCursor,
         slice.getSize(),
-        null
+        slice.hasNext(),
+        0L
     );
   }
 }

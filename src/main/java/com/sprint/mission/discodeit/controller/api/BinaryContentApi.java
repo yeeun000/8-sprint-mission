@@ -1,7 +1,6 @@
 package com.sprint.mission.discodeit.controller.api;
 
 import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDto;
-import com.sprint.mission.discodeit.entity.BinaryContent;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -22,7 +21,7 @@ public interface BinaryContentApi {
   @ApiResponses(value = {
       @ApiResponse(
           responseCode = "200", description = "첨부 파일 조회 성공",
-          content = @Content(schema = @Schema(implementation = BinaryContent.class))
+          content = @Content(schema = @Schema(implementation = BinaryContentDto.class))
       ),
       @ApiResponse(
           responseCode = "404", description = "첨부 파일을 찾을 수 없음",
@@ -37,7 +36,7 @@ public interface BinaryContentApi {
   @ApiResponses(value = {
       @ApiResponse(
           responseCode = "200", description = "첨부 파일 목록 조회 성공",
-          content = @Content(array = @ArraySchema(schema = @Schema(implementation = BinaryContent.class)))
+          content = @Content(array = @ArraySchema(schema = @Schema(implementation = BinaryContentDto.class)))
       )
   })
   ResponseEntity<List<BinaryContentDto>> findAllByIdIn(

@@ -19,12 +19,12 @@ import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import jakarta.transaction.Transactional;
-import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
@@ -77,7 +77,6 @@ public class BasicMessageService implements MessageService {
     return messageMapper.toDto(messageRepository.save(message));
   }
 
-
   @Override
   public PageResponse<MessageDto> findAllByChannelId(
       UUID channelId,
@@ -85,12 +84,12 @@ public class BasicMessageService implements MessageService {
   ) {
     Slice<Message> slice =
         messageRepository.findAllByChannelId(channelId, pageable);
-
     return PageResponseMapper.fromSlice(
         slice,
         messageMapper::toDto
     );
   }
+
 
   @Override
   public void delete(UUID id) {

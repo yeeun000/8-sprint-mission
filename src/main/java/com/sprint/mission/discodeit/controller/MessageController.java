@@ -1,18 +1,19 @@
 package com.sprint.mission.discodeit.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sprint.mission.discodeit.controller.api.MessageApi;
 import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.messageDTO.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.messageDTO.MessageDto;
 import com.sprint.mission.discodeit.dto.messageDTO.MessageUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.PageResponse;
 import com.sprint.mission.discodeit.service.MessageService;
-import org.springframework.data.domain.Pageable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -29,22 +30,20 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/messages")
-public class MessageController {
+public class MessageController implements MessageApi {
 
   private final MessageService messageService;
 
+  @Override
   @PostMapping(consumes = "multipart/form-data")
   public ResponseEntity<MessageDto> create(
-      @RequestPart("messageCreateRequest") String messageCreateRequestJson,
+      @RequestPart("messageCreateRequest") MessageCreateRequest request,
       @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments)
       throws IOException {
-
-    ObjectMapper objectMapper = new ObjectMapper();
-    MessageCreateRequest request = objectMapper.readValue(messageCreateRequestJson,
-        MessageCreateRequest.class);
 
     List<BinaryContentCreateRequest> binaryContentDTO = new ArrayList<>();
     if (attachments != null) {
@@ -84,6 +83,7 @@ public class MessageController {
           direction = Sort.Direction.DESC
       ) Pageable pageable
   ) {
+    log.info("=== GET /api/messages 호출 시작 (channelId: {}) ===", channelId);
     return ResponseEntity.ok(
         messageService.findAllByChannelId(channelId, pageable)
     );

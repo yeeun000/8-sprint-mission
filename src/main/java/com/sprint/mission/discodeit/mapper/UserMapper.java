@@ -20,10 +20,19 @@ public class UserMapper {
       online = user.getStatus().isOnline();
     }
 
+    String profileId = null;
+    if (user.getProfile() != null) {
+      profileId = user.getProfile().getId().toString();
+    }
+
     return new UserDto(
         user.getId(),
         user.getUsername(),
-        user.getEmail());
+        user.getEmail(),
+        online,
+        profileId
+    );
+
   }
 
 }

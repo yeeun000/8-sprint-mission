@@ -1,19 +1,24 @@
 package com.sprint.mission.discodeit.dto.response;
 
 import java.util.List;
+import lombok.Getter;
 
+@Getter
 public class PageResponse<T> {
 
   private List<T> content;
-  private int number;
+  private Object nextCursor;
   private int size;
   private boolean hasNext;
   private Long totalElements;
 
-  public PageResponse(List<T> content, int number, int size, Long totalElements) {
+
+  public PageResponse(List<T> content, Object nextCursor, int size, boolean hasNext,
+      Long totalElements) {
     this.content = content;
-    this.number = number;
+    this.nextCursor = nextCursor;
     this.size = size;
+    this.hasNext = hasNext;
     this.totalElements = totalElements;
   }
 }
