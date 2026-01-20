@@ -81,7 +81,6 @@ public class MessageController implements MessageApi {
           direction = Sort.Direction.DESC
       ) Pageable pageable
   ) {
-    log.info("=== GET /api/messages 호출 시작 (channelId: {}) ===", channelId);
     return ResponseEntity.ok(
         messageService.findAllByChannelId(channelId, pageable)
     );
