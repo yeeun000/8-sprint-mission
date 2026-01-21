@@ -2,32 +2,28 @@ package com.sprint.mission.discodeit.mapper;
 
 import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDto;
 import com.sprint.mission.discodeit.dto.messageDTO.MessageDto;
+import com.sprint.mission.discodeit.dto.userDTO.UserDto;
 import com.sprint.mission.discodeit.entity.Message;
 import java.util.List;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
-@Component
-public class MessageMapper {
+@Mapper(
+    componentModel = "spring",
+    uses = {
+        BinaryContentMapper.class,
+        UserMapper.class
+    },
+    unmappedTargetPolicy = ReportingPolicy.IGNORE
+)
+public interface MessageMapper {
 
-  private final BinaryContentMapper binaryContentMapper;
-  private final UserMapper userMapper;
+  @Mapping(source = "message.id", target = "id")
+  @Mapping(source = "message.createdAt", target = "createdAt")
+  @Mapping(source = "message.updatedAt", target = "updatedAt")
+  @Mapping(source = "message.content", target = "content")
+  @Mapping(source = "message.channel.id", target = "channelId")
+  MessageDto toDto(Message message, UserDto author, List<BinaryContentDto> attachments);
 
-  public MessageMapper(BinaryContentMapper binaryContentMapper, UserMapper userMapper) {
-    this.binaryContentMapper = binaryContentMapper;
-    this.userMapper = userMapper;
-  }
-
-  public MessageDto toDto(Message message) {
-
-    List<BinaryContentDto> attachments = message.getAttachments().stream()
-        .map(binaryContentMapper::toDto).toList();
-    return new MessageDto(
-        message.getId(),
-        message.getCreatedAt(),
-        message.getUpdatedAt(),
-        message.getContent(),
-        message.getChannel().getId(),
-        userMapper.toDto(message.getAuthor()),
-        attachments);
-  }
 }

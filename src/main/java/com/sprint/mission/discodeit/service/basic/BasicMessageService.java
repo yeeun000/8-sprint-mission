@@ -2,16 +2,20 @@ package com.sprint.mission.discodeit.service.basic;
 
 
 import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDto;
 import com.sprint.mission.discodeit.dto.messageDTO.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.messageDTO.MessageDto;
 import com.sprint.mission.discodeit.dto.messageDTO.MessageUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.PageResponse;
+import com.sprint.mission.discodeit.dto.userDTO.UserDto;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.mapper.BinaryContentMapper;
 import com.sprint.mission.discodeit.mapper.MessageMapper;
 import com.sprint.mission.discodeit.mapper.PageResponseMapper;
+import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
@@ -39,6 +43,8 @@ public class BasicMessageService implements MessageService {
   private final BinaryContentRepository binaryContentRepository;
   private final MessageMapper messageMapper;
   private final BinaryContentStorage binaryContentStorage;
+  private final BinaryContentMapper binaryContentMapper;
+  private final UserMapper userMapper;
 
   @Override
   @Transactional
@@ -74,7 +80,7 @@ public class BasicMessageService implements MessageService {
         attachmentIds
     );
 
-    return messageMapper.toDto(messageRepository.save(message));
+    return toMessageDto(messageRepository.save(message));
   }
 
   @Override
@@ -87,7 +93,7 @@ public class BasicMessageService implements MessageService {
         messageRepository.findAllByChannelId(channelId, pageable);
     return PageResponseMapper.fromSlice(
         slice,
-        messageMapper::toDto
+        this::toMessageDto
     );
   }
 
@@ -106,13 +112,22 @@ public class BasicMessageService implements MessageService {
     Message message = messageRepository.findById(messageId)
         .orElseThrow(() -> new NoSuchElementException("메시지를 찾을 수 없습니다."));
     message.update(updateMessageRequest.newContent());
-    return messageMapper.toDto(messageRepository.save(message));
+    return toMessageDto(messageRepository.save(message));
   }
 
   @Override
   @Transactional(readOnly = true)
   public MessageDto find(UUID id) {
-    return messageMapper.toDto(messageRepository.findById(id)
+    return toMessageDto(messageRepository.findById(id)
         .orElseThrow(() -> new NoSuchElementException("메시지를 찾을 수 없습니다.")));
+  }
+
+  public MessageDto toMessageDto(Message message) {
+    UserDto author = userMapper.toDto(message.getAuthor());
+    List<BinaryContentDto> attachments = message.getAttachments().stream()
+        .map(binaryContentMapper::toDto).toList();
+    return messageMapper.toDto(
+        message, author,
+        attachments);
   }
 }

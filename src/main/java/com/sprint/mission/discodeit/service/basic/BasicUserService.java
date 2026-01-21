@@ -1,12 +1,14 @@
 package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDto;
 import com.sprint.mission.discodeit.dto.userDTO.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UserDto;
 import com.sprint.mission.discodeit.dto.userDTO.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
+import com.sprint.mission.discodeit.mapper.BinaryContentMapper;
 import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
@@ -31,6 +33,7 @@ public class BasicUserService implements UserService {
   private final BinaryContentRepository binaryContentRepository;
   private final UserMapper userMapper;
   private final BinaryContentStorage binaryContentStorage;
+  private final BinaryContentMapper binaryContentMapper;
 
   @Override
   @Transactional
@@ -50,7 +53,7 @@ public class BasicUserService implements UserService {
     UserStatus userStatus = new UserStatus(user, now);
     userStatusRepository.save(userStatus);
 
-    return userMapper.toDto(user);
+    return toUserDto(user);
   }
 
   @Override
@@ -88,7 +91,7 @@ public class BasicUserService implements UserService {
     UserStatus userStatus = new UserStatus(savedUser, now);
     userStatusRepository.save(userStatus);
     userRepository.flush();
-    return userMapper.toDto(savedUser);
+    return toUserDto(savedUser);
   }
 
 
@@ -96,7 +99,7 @@ public class BasicUserService implements UserService {
   @Transactional(readOnly = true)
   public List<UserDto> findAll() {
     return userRepository.findAll().stream()
-        .map(userMapper::toDto).toList();
+        .map(this::toUserDto).toList();
   }
 
   @Override
@@ -156,7 +159,7 @@ public class BasicUserService implements UserService {
     }
 
     user.update(newName, newEmail, newPassword, profile);
-    return userMapper.toDto(userRepository.save(user));
+    return toUserDto(userRepository.save(user));
   }
 
 
@@ -164,8 +167,27 @@ public class BasicUserService implements UserService {
   @Transactional(readOnly = true)
   public UserDto findId(UUID id) {
     return userRepository.findById(id)
-        .map(userMapper::toDto)
+        .map(this::toUserDto)
         .orElseThrow(() -> new NoSuchElementException(" 유저를 찾을 수 없습니다. "));
+  }
+
+  public UserDto toUserDto(User user) {
+
+    Boolean online = false;
+    if (user.getStatus() != null) {
+      online = user.getStatus().isOnline();
+    }
+
+    BinaryContentDto profile = null;
+    if (user.getProfile() != null) {
+      profile = binaryContentMapper.toDto(user.getProfile());
+    }
+
+    return userMapper.toDto(
+        user,
+        profile,
+        online
+    );
   }
 
 }

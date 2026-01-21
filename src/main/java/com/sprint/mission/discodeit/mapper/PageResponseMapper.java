@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.mapper;
 
+import com.sprint.mission.discodeit.dto.messageDTO.MessageDto;
 import com.sprint.mission.discodeit.dto.response.PageResponse;
 import java.util.List;
 import java.util.function.Function;
@@ -37,7 +38,7 @@ public class PageResponseMapper {
 
     Object nextCursor = null;
     if (slice.hasNext() && !content.isEmpty()) {
-      nextCursor = content.get(content.size() - 1);
+      nextCursor = ((MessageDto) (content.get(content.size() - 1))).id();
 
     }
     return new PageResponse<>(

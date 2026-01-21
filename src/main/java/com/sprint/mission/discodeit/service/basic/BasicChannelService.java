@@ -5,10 +5,12 @@ import com.sprint.mission.discodeit.dto.channelDTO.ChannelDto;
 import com.sprint.mission.discodeit.dto.channelDTO.PrivateChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.channelDTO.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.channelDTO.PublicChannelUpdateRequest;
+import com.sprint.mission.discodeit.dto.userDTO.UserDto;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.mapper.ChannelMapper;
+import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
@@ -32,6 +34,7 @@ public class BasicChannelService implements ChannelService {
   private final ReadStatusRepository readStatusRepository;
   private final UserRepository userRepository;
   private final ChannelMapper channelMapper;
+  private final UserMapper userMapper;
 
   @Override
   @Transactional
@@ -39,7 +42,7 @@ public class BasicChannelService implements ChannelService {
     Channel channel = Channel.createPublicChannel(publicChannelDTO.name(),
         publicChannelDTO.description());
     channelRepository.save(channel);
-    return channelMapper.toDto(channel);
+    return toChannelDto(channel);
   }
 
   @Override
@@ -55,7 +58,7 @@ public class BasicChannelService implements ChannelService {
           return new ReadStatus(user, channel, Instant.now());
         })
         .forEach(readStatusRepository::save);
-    return channelMapper.toDto(channel);
+    return toChannelDto(channel);
   }
 
 
@@ -70,7 +73,7 @@ public class BasicChannelService implements ChannelService {
             channel.getType().equals(Channel.ChannelType.PUBLIC) || userIds.contains(
                 channel.getId())
         )
-        .map(channelMapper::toDto)
+        .map(this::toChannelDto)
         .toList();
   }
 
@@ -97,15 +100,27 @@ public class BasicChannelService implements ChannelService {
     channel.update(publicChannelUpdateRequest.newName(),
         publicChannelUpdateRequest.newDescription());
     channelRepository.save(channel);
-    return channelMapper.toDto(channel);
+    return toChannelDto(channel);
   }
 
   @Override
   @Transactional(readOnly = true)
   public ChannelDto find(UUID id) {
     return channelRepository.findById(id)
-        .map(channelMapper::toDto)
+        .map(this::toChannelDto)
         .orElseThrow(() -> new NoSuchElementException(" 채널을 찾을 수 없습니다."));
   }
 
+  private ChannelDto toChannelDto(Channel channel) {
+
+    Instant lastMessageAt = messageRepository.findLastMessageTime(channel.getId())
+        .orElse(null);
+
+    List<UserDto> participants = readStatusRepository.findAllByChannelId(channel.getId())
+        .stream()
+        .map(readStatus -> userMapper.toDto(readStatus.getUser()))
+        .toList();
+
+    return channelMapper.toDto(channel, participants, lastMessageAt);
+  }
 }
