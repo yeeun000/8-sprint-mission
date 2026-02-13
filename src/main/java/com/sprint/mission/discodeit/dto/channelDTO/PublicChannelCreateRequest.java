@@ -1,7 +1,12 @@
 package com.sprint.mission.discodeit.dto.channelDTO;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record PublicChannelCreateRequest(
+
+    @NotBlank(message = "채널 이름은 필수입니다.")
     String name,
+
     String description
 ) {
 

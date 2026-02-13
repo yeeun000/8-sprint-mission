@@ -8,18 +8,19 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "messages")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Message extends BaseUpdatableEntity {
 
   @Column(name = "content")
@@ -33,8 +34,9 @@ public class Message extends BaseUpdatableEntity {
   @JoinColumn(name = "author_id")
   private User author;
 
-  @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-  @JoinTable(name = "message_attachments",
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JoinTable(
+      name = "message_attachments",
       joinColumns = @JoinColumn(name = "message_id"),
       inverseJoinColumns = @JoinColumn(name = "attachment_id"))
   private List<BinaryContent> attachments = new ArrayList<>();
@@ -47,6 +49,8 @@ public class Message extends BaseUpdatableEntity {
   }
 
   public void update(String content) {
-    this.content = content;
+    if (this.content != null) {
+      this.content = content;
+    }
   }
 }
