@@ -1,0 +1,17 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/discodeit
+    username: discodeit_user
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-init-sql: SET SESSION hibernate.jdbc.lob.non_contextual_creation=true
+
+logging:
+  level:
+    root: info
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace
