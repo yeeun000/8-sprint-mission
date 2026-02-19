@@ -49,7 +49,7 @@ public class Message extends BaseUpdatableEntity {
   }
 
   public void update(String content) {
-    if (this.content != null) {
+    if (content != null) {
       this.content = content;
     }
   }
