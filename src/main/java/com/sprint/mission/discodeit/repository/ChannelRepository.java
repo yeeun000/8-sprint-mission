@@ -1,14 +1,14 @@
 package com.sprint.mission.discodeit.repository;
 
-import com.sprint.mission.discodeit.dto.channelDTO.ChannelDto;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Channel.ChannelType;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
 
 public interface ChannelRepository extends JpaRepository<Channel, UUID> {
 
+  @EntityGraph(attributePaths = {"readStatuses", "readStatuses.user"})
   List<Channel> findAllByTypeOrIdIn(ChannelType type, List<UUID> ids);
 }

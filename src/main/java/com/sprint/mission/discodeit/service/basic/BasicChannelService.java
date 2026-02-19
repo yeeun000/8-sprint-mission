@@ -91,8 +91,8 @@ public class BasicChannelService implements ChannelService {
     List<UUID> userIds = readStatusRepository.findAllByUserId(userId).stream()
         .map(readStatus -> readStatus.getChannel().getId())
         .toList();
-    List<Channel> channels = channelRepository.findAllByTypeOrIdIn(ChannelType.PUBLIC, userIds);
-    return channels
+
+    return channelRepository.findAllByTypeOrIdIn(ChannelType.PUBLIC, userIds)
         .stream()
         .map(this::toDto)
         .toList();
@@ -154,7 +154,7 @@ public class BasicChannelService implements ChannelService {
   private ChannelDto toDto(Channel channel) {
     List<UserDto> participants = new ArrayList<>();
     if (channel.getType().equals(ChannelType.PRIVATE)) {
-      readStatusRepository.findAllByChannelIdWithUser(channel.getId())
+      channel.getReadStatuses()
           .stream()
           .map(ReadStatus::getUser)
           .map(userMapper::toDto)
