@@ -45,7 +45,7 @@ public class LocalBinaryContentStorage implements BinaryContentStorage {
   public UUID put(UUID id, byte[] bytes) {
     Path filePath = resolvePath(id);
     if (Files.exists(filePath)) {
-      throw new IllegalArgumentException("파일이 존재하지 않습니다.");
+      throw new IllegalArgumentException("이미 같은 아이디의 파일이 존재합니다.");
     }
     try (OutputStream outputStream = Files.newOutputStream(filePath)) {
       outputStream.write(bytes);
