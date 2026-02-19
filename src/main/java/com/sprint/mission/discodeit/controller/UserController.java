@@ -45,7 +45,7 @@ public class UserController implements UserApi {
       @RequestPart(value = "profile", required = false) MultipartFile profile)
       throws IOException {
 
-    log.info("유저 생성 시작 - userName: {}", userCreateRequest.username());
+    log.debug("유저 생성 시작");
     BinaryContentCreateRequest binaryContentDTO = null;
     if (profile != null && !profile.isEmpty()) {
       binaryContentDTO = new BinaryContentCreateRequest(
@@ -56,7 +56,7 @@ public class UserController implements UserApi {
     }
 
     UserDto user = userService.create(userCreateRequest, binaryContentDTO);
-    log.info("유저 생성 완료");
+    log.debug("유저 생성 완료 - userId: {}",user.id());
     return ResponseEntity.status(HttpStatus.CREATED).body(user);
   }
 
@@ -67,7 +67,7 @@ public class UserController implements UserApi {
       @RequestPart(value = "profile", required = false) MultipartFile profile)
       throws IOException {
 
-    log.info("유저 수정 시작 - userId: {}", userId);
+    log.debug("유저 수정 시작 - userId: {}", userId);
     BinaryContentCreateRequest binaryContentDTO = null;
     if (profile != null && !profile.isEmpty()) {
       binaryContentDTO = new BinaryContentCreateRequest(
@@ -77,15 +77,15 @@ public class UserController implements UserApi {
       );
     }
     UserDto user = userService.update(userId, userUpdateRequest, binaryContentDTO);
-    log.info("유저 수정 완료");
+    log.debug("유저 수정 완료");
     return ResponseEntity.ok(user);
   }
 
   @DeleteMapping(value = "/{userId}")
   public ResponseEntity<Void> delete(@PathVariable("userId") UUID userId) {
-    log.info("유저 삭제 시작 - userId: {}", userId);
+    log.debug("유저 삭제 시작 - userId: {}", userId);
     userService.delete(userId);
-    log.info("유저 삭제 완료");
+    log.debug("유저 삭제 완료");
     return ResponseEntity.noContent().build();
   }
 

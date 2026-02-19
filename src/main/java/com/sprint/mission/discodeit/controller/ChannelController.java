@@ -36,18 +36,18 @@ public class ChannelController implements ChannelApi {
   @PostMapping("/public")
   public ResponseEntity<ChannelDto> createPublic(
       @RequestBody @Valid PublicChannelCreateRequest request) {
-    log.info("public 채널 생성 시작 - channelName: {}", request.name());
+    log.debug("public 채널 생성 시작");
     ChannelDto channel = channelService.create(request);
-    log.info("public 채널 생성 완료");
+    log.debug("public 채널 생성 완료 - channel: {}", channel.id());
     return ResponseEntity.status(HttpStatus.CREATED).body(channel);
   }
 
   @PostMapping("/private")
   public ResponseEntity<ChannelDto> createPrivate(
       @RequestBody @Valid PrivateChannelCreateRequest request) {
-    log.info("private 채널 생성 시작");
+    log.debug("private 채널 생성 시작");
     ChannelDto channel = channelService.create(request);
-    log.info("private 채널 생성 완료");
+    log.debug("private 채널 생성 완료 - channel: {}", channel.id());
     return ResponseEntity.status(HttpStatus.CREATED).body(channel);
   }
 
@@ -55,17 +55,17 @@ public class ChannelController implements ChannelApi {
   public ResponseEntity<ChannelDto> update(
       @PathVariable("channelId") UUID channelId,
       @RequestBody @Valid PublicChannelUpdateRequest request) {
-    log.info("채널 수정 시작 - channelId: {}", channelId);
+    log.debug("채널 수정 시작 - channelId: {}", channelId);
     ChannelDto channel = channelService.update(channelId, request);
-    log.info("채널 수정 완료");
+    log.debug("채널 수정 완료");
     return ResponseEntity.ok(channel);
   }
 
   @DeleteMapping("/{channelId}")
   public ResponseEntity<Void> delete(@PathVariable("channelId") UUID channelId) {
-    log.info("채널 삭제 시작 - channelId: {}", channelId);
+    log.debug("채널 삭제 시작 - channelId: {}", channelId);
     channelService.delete(channelId);
-    log.info("채널 삭제 완료");
+    log.debug("채널 삭제 완료");
     return ResponseEntity.noContent().build();
   }
 

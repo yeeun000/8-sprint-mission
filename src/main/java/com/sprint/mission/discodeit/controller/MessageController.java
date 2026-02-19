@@ -47,7 +47,7 @@ public class MessageController implements MessageApi {
       @RequestPart("messageCreateRequest") @Valid MessageCreateRequest request,
       @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments)
       throws IOException {
-    log.info("메시지 생성 시작 - messageContent: {}", request.content());
+    log.debug("메시지 생성 시작 - channelId: {}", request.channelId());
     List<BinaryContentCreateRequest> binaryContentDTO = new ArrayList<>();
     if (attachments != null) {
       for (MultipartFile file : attachments) {
@@ -60,7 +60,7 @@ public class MessageController implements MessageApi {
     }
 
     MessageDto message = messageService.create(request, binaryContentDTO);
-    log.info("메시지 생성 완료");
+    log.debug("메시지 생성 완료 - messageId: {}", message.id());
     return ResponseEntity.status(HttpStatus.CREATED).body(message);
   }
 
@@ -68,17 +68,17 @@ public class MessageController implements MessageApi {
   public ResponseEntity<MessageDto> update(
       @PathVariable("messageId") UUID messageId,
       @RequestBody @Valid MessageUpdateRequest request) {
-    log.info("메시지 수정 시작 - messageId: {}", messageId);
+    log.debug("메시지 수정 시작 - messageId: {}", messageId);
     MessageDto message = messageService.update(messageId, request);
-    log.info("메시지 수정 완료");
+    log.debug("메시지 수정 완료");
     return ResponseEntity.ok(message);
   }
 
   @DeleteMapping("/{messageId}")
   public ResponseEntity<Void> delete(@PathVariable("messageId") UUID messageId) {
-    log.info("메시지 삭제 시작 - messageId: {}", messageId);
+    log.debug("메시지 삭제 시작 - messageId: {}", messageId);
     messageService.delete(messageId);
-    log.info("메시지 삭제 완료");
+    log.debug("메시지 삭제 완료");
     return ResponseEntity.noContent().build();
   }
 
