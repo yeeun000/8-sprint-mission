@@ -69,17 +69,18 @@ public class BasicMessageService implements MessageService {
           return new UserNotFoundException(userId);
         });
 
-    List<BinaryContent> attachmentIds = binaryContentDTO.stream()
-        .map(file -> {
-          String fileName = file.fileName();
-          String contentType = file.contentType();
-          byte[] bytes = file.bytes();
-          BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length,
-              contentType);
-          binaryContentRepository.save(binaryContent);
-          binaryContentStorage.put(binaryContent.getId(), bytes);
-          return binaryContent;
-        }).toList();
+    List<BinaryContent> attachmentIds =
+        binaryContentDTO == null ? List.of() : binaryContentDTO.stream()
+            .map(file -> {
+              String fileName = file.fileName();
+              String contentType = file.contentType();
+              byte[] bytes = file.bytes();
+              BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length,
+                  contentType);
+              binaryContentRepository.save(binaryContent);
+              binaryContentStorage.put(binaryContent.getId(), bytes);
+              return binaryContent;
+            }).toList();
 
     String content = createMessageRequest.content();
     Message message = new Message(
