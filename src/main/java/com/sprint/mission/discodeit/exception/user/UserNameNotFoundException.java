@@ -6,6 +6,6 @@ import java.util.Map;
 public class UserNameNotFoundException extends UserException {
 
   public UserNameNotFoundException(String username) {
-    super(ErrorCode.USERNAME_NOT_FOUNE, Map.of("username", username));
+    super(ErrorCode.USERNAME_NOT_FOUND, Map.of("username", username));
   }
 }

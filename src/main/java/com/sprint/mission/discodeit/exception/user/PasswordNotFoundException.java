@@ -5,8 +5,8 @@ import java.util.Map;
 
 public class PasswordNotFoundException extends UserException {
 
-  public PasswordNotFoundException(String password) {
-    super(ErrorCode.PASSWORD_NOT_FOUND, Map.of("password", password));
+  public PasswordNotFoundException(String username) {
+    super(ErrorCode.PASSWORD_NOT_FOUND, Map.of("username", username));
   }
 
 }

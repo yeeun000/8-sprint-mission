@@ -7,7 +7,7 @@ public enum ErrorCode {
   USER_NOT_FOUND("USER_NOT_FOUND", "유저를 찾을 수 없습니다.", 404),
   DUPLICATE_USERNAME("DUPLICATE_USERNAME", "이미 존재하는 아이디입니다.", 400),
   DUPLICATE_EMAIL("DUPLICATE_EMAIL", "이미 존재하는 이메일입니다.", 400),
-  USERNAME_NOT_FOUNE("USERNAME_NOT_FOUND", "아이디가 틀렸습니다.", 400),
+  USERNAME_NOT_FOUND("USERNAME_NOT_FOUND", "아이디가 틀렸습니다.", 400),
   PASSWORD_NOT_FOUND("PASSWORD_NOT_FOUND", "비밀번호가 일치하지 않습니다.", 400),
   BINARY_CONTENT_NOT_FOUND("BINARY_CONTENT_NOT_FOUND", "파일을 찾을 수 없습니다.", 404),
   CHANNEL_NOT_FOUND("CHANNEL_NOT_FOUND", "채널을 찾을 수 없습니다.", 404),
