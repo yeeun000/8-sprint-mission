@@ -11,8 +11,8 @@ spring:
         url: ${SPRING_BOOT_ADMIN_CLIENT_URL}
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/discodeit
-    username: discodeit_user
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
@@ -22,4 +22,3 @@ logging:
   level:
     root: info
     org.hibernate.SQL: debug
-    org.hibernate.orm.jdbc.bind: trace
