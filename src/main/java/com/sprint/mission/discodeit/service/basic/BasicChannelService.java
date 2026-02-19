@@ -1,9 +1,12 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import static com.sprint.mission.discodeit.entity.Channel.ChannelType.PRIVATE;
+
 import com.sprint.mission.discodeit.dto.channelDTO.ChannelDto;
 import com.sprint.mission.discodeit.dto.channelDTO.PrivateChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.channelDTO.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.channelDTO.PublicChannelUpdateRequest;
+import com.sprint.mission.discodeit.dto.userDTO.UserDto;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Channel.ChannelType;
 import com.sprint.mission.discodeit.entity.ReadStatus;
@@ -12,12 +15,14 @@ import com.sprint.mission.discodeit.exception.channel.ChannelNotFoundException;
 import com.sprint.mission.discodeit.exception.channel.PrivateChannelUpdateException;
 import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.ChannelMapper;
+import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +40,7 @@ public class BasicChannelService implements ChannelService {
   private final ReadStatusRepository readStatusRepository;
   private final UserRepository userRepository;
   private final ChannelMapper channelMapper;
+  private final UserMapper userMapper;
 
   @Override
   @Transactional
@@ -50,7 +56,7 @@ public class BasicChannelService implements ChannelService {
 
     log.info("채널 생성 완료 - id: {}", channel.getId());
 
-    return channelMapper.toDto(channel);
+    return toDto(channel);
   }
 
   @Override
@@ -76,18 +82,19 @@ public class BasicChannelService implements ChannelService {
 
     log.info("채널 생성 완료 - id: {}", channel.getId());
 
-    return channelMapper.toDto(channel);
+    return toDto(channel);
   }
 
   @Override
   @Transactional(readOnly = true)
   public List<ChannelDto> findAllByUserId(UUID userId) {
     List<UUID> userIds = readStatusRepository.findAllByUserId(userId).stream()
-        .map(ReadStatus -> ReadStatus.getChannel().getId())
+        .map(readStatus -> readStatus.getChannel().getId())
         .toList();
-    return channelRepository.findAllByTypeOrIdIn(ChannelType.PUBLIC, userIds)
+    List<Channel> channels = channelRepository.findAllByTypeOrIdIn(ChannelType.PUBLIC, userIds);
+    return channels
         .stream()
-        .map(channelMapper::toDto)
+        .map(this::toDto)
         .toList();
   }
 
@@ -124,7 +131,7 @@ public class BasicChannelService implements ChannelService {
           return new ChannelNotFoundException(id);
         });
 
-    if (channel.getType().equals(Channel.ChannelType.PRIVATE)) {
+    if (channel.getType().equals(PRIVATE)) {
       log.warn("private 채널 수정 불가 - id: {}", id);
       throw new PrivateChannelUpdateException(id);
     }
@@ -133,14 +140,28 @@ public class BasicChannelService implements ChannelService {
 
     log.info("채널 수정 완료 - id: {}", id);
 
-    return channelMapper.toDto(channel);
+    return toDto(channel);
   }
 
   @Override
   @Transactional(readOnly = true)
   public ChannelDto find(UUID id) {
-    return channelRepository.findById(id)
-        .map(channelMapper::toDto)
+    Channel channel = channelRepository.findById(id)
         .orElseThrow(() -> new ChannelNotFoundException(id));
+    return toDto(channel);
+  }
+
+  private ChannelDto toDto(Channel channel) {
+    List<UserDto> participants = new ArrayList<>();
+    if (channel.getType().equals(ChannelType.PRIVATE)) {
+      readStatusRepository.findAllByChannelIdWithUser(channel.getId())
+          .stream()
+          .map(ReadStatus::getUser)
+          .map(userMapper::toDto)
+          .forEach(participants::add);
+    }
+    Instant lastMessageAt = messageRepository.findLastMessageAtByChannelId(channel.getId())
+        .orElse(Instant.MIN);
+    return channelMapper.toDto(channel, participants, lastMessageAt);
   }
 }
