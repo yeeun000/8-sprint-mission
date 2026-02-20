@@ -1,14 +1,15 @@
 package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentCreateRequest;
-import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDto;
 import com.sprint.mission.discodeit.dto.userDTO.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UserDto;
 import com.sprint.mission.discodeit.dto.userDTO.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
-import com.sprint.mission.discodeit.mapper.BinaryContentMapper;
+import com.sprint.mission.discodeit.exception.user.DuplicateEmailException;
+import com.sprint.mission.discodeit.exception.user.DuplicateUserNameException;
+import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
@@ -17,13 +18,13 @@ import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.time.Instant;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BasicUserService implements UserService {
@@ -33,38 +34,23 @@ public class BasicUserService implements UserService {
   private final BinaryContentRepository binaryContentRepository;
   private final UserMapper userMapper;
   private final BinaryContentStorage binaryContentStorage;
-  private final BinaryContentMapper binaryContentMapper;
-
-  @Override
-  @Transactional
-  public UserDto create(UserCreateRequest createUserRequest) {
-    if (userRepository.existsByUsername(createUserRequest.username())) {
-      throw new IllegalArgumentException(createUserRequest.username());
-    }
-    if (userRepository.existsByEmail(createUserRequest.email())) {
-      throw new IllegalArgumentException(createUserRequest.email());
-    }
-
-    User user = User.create(createUserRequest.username(), createUserRequest.email(),
-        createUserRequest.password());
-    userRepository.save(user);
-
-    Instant now = Instant.now();
-    UserStatus userStatus = new UserStatus(user, now);
-    userStatusRepository.save(userStatus);
-
-    return toUserDto(user);
-  }
 
   @Override
   @Transactional
   public UserDto create(UserCreateRequest createUserRequest,
       BinaryContentCreateRequest binaryContentDTO) {
+
+    log.debug("유저 생성 요청 - name: {}, email: {}",
+        createUserRequest.username(),
+        createUserRequest.email());
+
     if (userRepository.existsByUsername(createUserRequest.username())) {
-      throw new IllegalArgumentException(createUserRequest.username());
+      log.warn("이미 있는 이름 - username: {}", createUserRequest.username());
+      throw new DuplicateUserNameException(createUserRequest.username());
     }
     if (userRepository.existsByEmail(createUserRequest.email())) {
-      throw new IllegalArgumentException(createUserRequest.email());
+      log.warn("이미 있는 이메일 - email: {}", createUserRequest.email());
+      throw new DuplicateEmailException(createUserRequest.email());
     }
 
     BinaryContent profile = null;
@@ -74,8 +60,8 @@ public class BasicUserService implements UserService {
           (long) binaryContentDTO.bytes().length,
           binaryContentDTO.contentType()
       );
-      binaryContentStorage.put(profile.getId(), binaryContentDTO.bytes());
       profile = binaryContentRepository.save(profile);
+      binaryContentStorage.put(profile.getId(), binaryContentDTO.bytes());
 
     }
     User user = User.createProfile(
@@ -84,46 +70,53 @@ public class BasicUserService implements UserService {
         createUserRequest.password(),
         profile
     );
-
-    User savedUser = userRepository.save(user);
-
     Instant now = Instant.now();
-    UserStatus userStatus = new UserStatus(savedUser, now);
-    userStatusRepository.save(userStatus);
-    userRepository.flush();
-    return toUserDto(savedUser);
-  }
+    UserStatus userStatus = new UserStatus(user, now);
+    userRepository.save(user);
 
+    log.info("유저 생성 완료 - id: {}", user.getId());
+
+    return userMapper.toDto(user);
+  }
 
   @Override
   @Transactional(readOnly = true)
   public List<UserDto> findAll() {
-    return userRepository.findAll().stream()
-        .map(this::toUserDto).toList();
+    return userRepository.findAllWithProfileAndStatus()
+        .stream()
+        .map(userMapper::toDto)
+        .toList();
   }
 
   @Override
   @Transactional
   public void delete(UUID id) {
-    User user = userRepository.findById(id)
-        .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
 
-    Optional.ofNullable(user.getProfile())
-        .map(BinaryContent::getId)
-        .ifPresent(binaryContentRepository::deleteById);
+    log.debug("유저 삭제 요청 - id: {}", id);
 
-    userStatusRepository.deleteByUserId(id);
+    if (!userRepository.existsById(id)) {
+      log.warn("유저 삭제 실패 - id: {}", id);
+      throw new UserNotFoundException(id);
+    }
     userRepository.deleteById(id);
-  }
 
+    log.info("유저 삭제 완료 - id: {}", id);
+  }
 
   @Override
   @Transactional
   public UserDto update(UUID userId, UserUpdateRequest updateUserRequest,
       BinaryContentCreateRequest binaryContentDTO) {
 
+    log.debug("유저 수정 요청 - name: {}, email: {}",
+        updateUserRequest.newUsername(),
+        updateUserRequest.newEmail());
+
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
+        .orElseThrow(() -> {
+          log.warn("유저 찾기 실패 - id: {}", userId);
+          return new UserNotFoundException(userId);
+        });
 
     String newName = updateUserRequest.newUsername() != null
         ? updateUserRequest.newUsername()
@@ -136,10 +129,12 @@ public class BasicUserService implements UserService {
         : user.getPassword();
 
     if (!newEmail.equals(user.getEmail()) && userRepository.existsByEmail(newEmail)) {
-      throw new IllegalArgumentException("이미 있는 이메일입니다.");
+      log.warn("이미 있는 이메일 - email: {}", newEmail);
+      throw new DuplicateEmailException(newEmail);
     }
     if (!newName.equals(user.getUsername()) && userRepository.existsByUsername(newName)) {
-      throw new IllegalArgumentException("이미 있는 유저 이름입니다.");
+      log.warn("이미 있는 이름 - username: {}", newName);
+      throw new DuplicateUserNameException(newName);
     }
 
     BinaryContent profile = user.getProfile();
@@ -151,43 +146,26 @@ public class BasicUserService implements UserService {
           binaryContentDTO.contentType()
       );
 
-      binaryContentStorage.put(content.getId(), binaryContentDTO.bytes());
       profile = binaryContentRepository.save(content);
+      binaryContentStorage.put(content.getId(), binaryContentDTO.bytes());
       if (oldProfile != null) {
         binaryContentRepository.deleteById(oldProfile.getId());
       }
     }
 
     user.update(newName, newEmail, newPassword, profile);
-    return toUserDto(userRepository.save(user));
-  }
 
+    log.info("유저 수정 완료 - id: {}", user.getId());
+
+    return userMapper.toDto(user);
+  }
 
   @Override
   @Transactional(readOnly = true)
-  public UserDto findId(UUID id) {
+  public UserDto find(UUID id) {
     return userRepository.findById(id)
-        .map(this::toUserDto)
-        .orElseThrow(() -> new NoSuchElementException(" 유저를 찾을 수 없습니다. "));
-  }
-
-  public UserDto toUserDto(User user) {
-
-    Boolean online = false;
-    if (user.getStatus() != null) {
-      online = user.getStatus().isOnline();
-    }
-
-    BinaryContentDto profile = null;
-    if (user.getProfile() != null) {
-      profile = binaryContentMapper.toDto(user.getProfile());
-    }
-
-    return userMapper.toDto(
-        user,
-        profile,
-        online
-    );
+        .map(userMapper::toDto)
+        .orElseThrow(() -> new UserNotFoundException(id));
   }
 
 }

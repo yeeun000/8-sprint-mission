@@ -10,13 +10,14 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "channels")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Channel extends BaseUpdatableEntity {
 
   public enum ChannelType {
@@ -55,7 +56,11 @@ public class Channel extends BaseUpdatableEntity {
   }
 
   public void update(String newchannelName, String newdescription) {
-    this.name = newchannelName;
-    this.description = newdescription;
+    if (newchannelName != null) {
+      this.name = newchannelName;
+    }
+    if (newdescription != null) {
+      this.description = newdescription;
+    }
   }
 }

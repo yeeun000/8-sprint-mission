@@ -9,12 +9,15 @@ import com.sprint.mission.discodeit.dto.userDTO.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.dto.userDTO.UserUpdateRequest;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
+import jakarta.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -26,9 +29,11 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/users")
+@Validated
 public class UserController implements UserApi {
 
   private final UserService userService;
@@ -36,9 +41,11 @@ public class UserController implements UserApi {
 
   @PostMapping(consumes = "multipart/form-data")
   public ResponseEntity<UserDto> create(
-      @RequestPart("userCreateRequest") UserCreateRequest userCreateRequest,
-      @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
+      @RequestPart("userCreateRequest") @Valid UserCreateRequest userCreateRequest,
+      @RequestPart(value = "profile", required = false) MultipartFile profile)
+      throws IOException {
 
+    log.debug("유저 생성 시작");
     BinaryContentCreateRequest binaryContentDTO = null;
     if (profile != null && !profile.isEmpty()) {
       binaryContentDTO = new BinaryContentCreateRequest(
@@ -49,15 +56,18 @@ public class UserController implements UserApi {
     }
 
     UserDto user = userService.create(userCreateRequest, binaryContentDTO);
+    log.debug("유저 생성 완료 - userId: {}",user.id());
     return ResponseEntity.status(HttpStatus.CREATED).body(user);
   }
 
   @PatchMapping(value = "/{userId}", consumes = "multipart/form-data")
   public ResponseEntity<UserDto> update(
       @PathVariable("userId") UUID userId,
-      @RequestPart("userUpdateRequest") UserUpdateRequest userUpdateRequest,
-      @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
+      @RequestPart("userUpdateRequest") @Valid UserUpdateRequest userUpdateRequest,
+      @RequestPart(value = "profile", required = false) MultipartFile profile)
+      throws IOException {
 
+    log.debug("유저 수정 시작 - userId: {}", userId);
     BinaryContentCreateRequest binaryContentDTO = null;
     if (profile != null && !profile.isEmpty()) {
       binaryContentDTO = new BinaryContentCreateRequest(
@@ -67,12 +77,15 @@ public class UserController implements UserApi {
       );
     }
     UserDto user = userService.update(userId, userUpdateRequest, binaryContentDTO);
+    log.debug("유저 수정 완료");
     return ResponseEntity.ok(user);
   }
 
   @DeleteMapping(value = "/{userId}")
   public ResponseEntity<Void> delete(@PathVariable("userId") UUID userId) {
+    log.debug("유저 삭제 시작 - userId: {}", userId);
     userService.delete(userId);
+    log.debug("유저 삭제 완료");
     return ResponseEntity.noContent().build();
   }
 
@@ -84,7 +97,7 @@ public class UserController implements UserApi {
 
   @PatchMapping(value = "/{userId}/userStatus")
   public ResponseEntity<UserStatusDto> updateStatus(@PathVariable("userId") UUID userId,
-      @RequestBody UserStatusUpdateRequest request) {
+      @RequestBody @Valid UserStatusUpdateRequest request) {
     UserStatusDto updatedUserStatus = userStatusService.updateByUserId(userId, request);
     return ResponseEntity.ok(updatedUserStatus);
   }
