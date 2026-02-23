@@ -69,10 +69,6 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-//tasks.named('bootJar') {
-//    archiveFileName.set('app.jar')
-//    enabled = true
-//}
 
 tasks.build {
     dependsOn tasks.bootJar
