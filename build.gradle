@@ -19,6 +19,11 @@ group = 'com.sprint.mission'
 version = '1.2-M8'
 description = 'Demo project for Spring Boot'
 
+bootJar {
+    archiveBaseName = project.name
+    archiveVersion = project.version
+    enabled = true
+}
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
@@ -64,10 +69,10 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-tasks.named('bootJar') {
-    archiveFileName.set('app.jar')
-    enabled = true
-}
+//tasks.named('bootJar') {
+//    archiveFileName.set('app.jar')
+//    enabled = true
+//}
 
 tasks.build {
     dependsOn tasks.bootJar
