@@ -46,3 +46,4 @@ bin/
 uploads/
 .logs
 .env
+descodeit.env

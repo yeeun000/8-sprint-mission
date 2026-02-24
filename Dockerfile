@@ -10,12 +10,8 @@ COPY gradle gradle
 COPY build.gradle .
 COPY settings.gradle .
 
-# 소스 코드 복사
-COPY src src
-
-# 애플리케이션 빌드
-RUN chmod +x gradlew
-RUN ./gradlew bootJar
+# 소스 코드 복사, jar만
+COPY build/libs/discodeit-1.2-M8.jar app.jar
 
 # 포트 노출
 EXPOSE 80
@@ -27,4 +23,4 @@ ENV JVM_OPTS=""
 ENV SERVER_PORT=80
 
 # 애플리케이션 실행 명령어
-CMD sh -c "java $JVM_OPTS -jar build/libs/$PROJECT_NAME-$PROJECT_VERSION.jar"
+ENTRYPOINT ["sh", "-c", "java $JVM_OPTS -jar app.jar"]
