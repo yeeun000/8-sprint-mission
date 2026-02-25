@@ -5,6 +5,8 @@ plugins {
     id 'jacoco'
 }
 test {
+    useJUnitPlatform()
+    systemProperty "spring.profiles.active", "test"
     finalizedBy jacocoTestReport
 }
 
