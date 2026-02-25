@@ -69,5 +69,11 @@ jobs:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: ${{ vars.ECS_SERVICE }}
           cluster: ${{ vars.ECS_CLUSTER }}
-          desired-count: 1
           wait-for-service-stability: true
+
+      - name: Start ECS service with new task
+        run: |
+          aws ecs update-service 
+            --cluster ${{ vars.ECS_CLUSTER }} 
+            --service ${{ vars.ECS_SERVICE }} 
+            --desired-count 1
