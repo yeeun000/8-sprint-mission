@@ -8,7 +8,7 @@ spring:
       max-request-size: 30MB
 
   datasource:
-    url: ${POSTGRES_URL}
+    url: ${SPRING_DATASOURCE_URL}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -33,7 +33,7 @@ discodeit:
   storage:
     type: ${STORAGE_TYPE:local}
     local:
-      root-path: ${STORAGE_LOCAL_ROOT_PATH}
+      root-path: ${STORAGE_LOCAL_ROOT_PATH:.discodeit/storage}
     s3:
       access-key: ${AWS_ACCESS_KEY_ID}
       secret-key: ${AWS_SECRET_ACCESS_KEY}

@@ -23,4 +23,4 @@ ENV JVM_OPTS=""
 ENV SERVER_PORT=80
 
 # 애플리케이션 실행 명령어
-ENTRYPOINT ["sh", "-c", "java $JVM_OPTS -jar app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
