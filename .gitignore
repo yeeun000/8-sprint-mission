@@ -46,4 +46,15 @@ bin/
 uploads/
 .logs
 .env
+.env.*
 descodeit.env
+
+application-*.yaml
+
+*.pem
+*.key
+aws-credentials.txt
+.aws/
+credentials
+config
+.docker/
