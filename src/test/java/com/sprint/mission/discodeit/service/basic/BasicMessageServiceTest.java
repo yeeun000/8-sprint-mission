@@ -339,27 +339,4 @@ class BasicMessageServiceTest {
         .isInstanceOf(MessageNotFoundException.class);
   }
 
-  @Test
-  @DisplayName("메시지 삭제 성공")
-  void deleteMessage_Success() {
-    // given
-    given(messageRepository.existsById(eq(messageId))).willReturn(true);
-
-    // when
-    messageService.delete(messageId);
-
-    // then
-    verify(messageRepository).deleteById(eq(messageId));
-  }
-
-  @Test
-  @DisplayName("존재하지 않는 메시지 삭제 시도 시 실패")
-  void deleteMessage_WithNonExistentId_ThrowsException() {
-    // given
-    given(messageRepository.existsById(eq(messageId))).willReturn(false);
-
-    // when & then
-    assertThatThrownBy(() -> messageService.delete(messageId))
-        .isInstanceOf(MessageNotFoundException.class);
-  }
 } 

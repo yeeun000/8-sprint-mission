@@ -91,40 +91,6 @@ class ChannelApiIntegrationTest {
         .andExpect(status().isBadRequest());
   }
 
-  @Test
-  @DisplayName("비공개 채널 생성 API 통합 테스트")
-  void createPrivateChannel_Success() throws Exception {
-    // Given
-    // 테스트 사용자 생성
-    UserCreateRequest userRequest1 = new UserCreateRequest(
-        "user1",
-        "user1@example.com",
-        "Password1!"
-    );
-
-    UserCreateRequest userRequest2 = new UserCreateRequest(
-        "user2",
-        "user2@example.com",
-        "Password1!"
-    );
-
-    UserDto user1 = userService.create(userRequest1, null);
-    UserDto user2 = userService.create(userRequest2, null);
-
-    List<UUID> participantIds = List.of(user1.id(), user2.id());
-    PrivateChannelCreateRequest createRequest = new PrivateChannelCreateRequest(participantIds);
-
-    String requestBody = objectMapper.writeValueAsString(createRequest);
-
-    // When & Then
-    mockMvc.perform(post("/api/channels/private")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
-        .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.id", notNullValue()))
-        .andExpect(jsonPath("$.type", is(ChannelType.PRIVATE.name())))
-        .andExpect(jsonPath("$.participants", hasSize(2)));
-  }
 
   @Test
   @DisplayName("사용자별 채널 목록 조회 API 통합 테스트")

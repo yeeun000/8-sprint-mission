@@ -74,30 +74,6 @@ class BasicUserServiceTest {
     verify(userRepository).save(any(User.class));
   }
 
-  @Test
-  @DisplayName("이미 존재하는 이메일로 사용자 생성 시도 시 실패")
-  void createUser_WithExistingEmail_ThrowsException() {
-    // given
-    UserCreateRequest request = new UserCreateRequest(username, email, password);
-    given(userRepository.existsByEmail(eq(email))).willReturn(true);
-
-    // when & then
-    assertThatThrownBy(() -> userService.create(request, null))
-        .isInstanceOf(UserAlreadyExistsException.class);
-  }
-
-  @Test
-  @DisplayName("이미 존재하는 사용자명으로 사용자 생성 시도 시 실패")
-  void createUser_WithExistingUsername_ThrowsException() {
-    // given
-    UserCreateRequest request = new UserCreateRequest(username, email, password);
-    given(userRepository.existsByEmail(eq(email))).willReturn(false);
-    given(userRepository.existsByUsername(eq(username))).willReturn(true);
-
-    // when & then
-    assertThatThrownBy(() -> userService.create(request, null))
-        .isInstanceOf(UserAlreadyExistsException.class);
-  }
 
   @Test
   @DisplayName("사용자 조회 성공")

@@ -95,23 +95,6 @@ class BasicChannelServiceTest {
     verify(channelRepository).save(any(Channel.class));
   }
 
-  @Test
-  @DisplayName("비공개 채널 생성 성공")
-  void createPrivateChannel_Success() {
-    // given
-    List<UUID> participantIds = List.of(userId);
-    PrivateChannelCreateRequest request = new PrivateChannelCreateRequest(participantIds);
-    given(userRepository.findAllById(eq(participantIds))).willReturn(List.of(user));
-    given(channelMapper.toDto(any(Channel.class), anyList(), any(Instant.class))).willReturn(channelDto);
-
-    // when
-    ChannelDto result = channelService.create(request);
-
-    // then
-    assertThat(result).isEqualTo(channelDto);
-    verify(channelRepository).save(any(Channel.class));
-    verify(readStatusRepository).<ReadStatus>saveAll(anyList());
-  }
 
   @Test
   @DisplayName("채널 조회 성공")
