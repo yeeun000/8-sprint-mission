@@ -58,3 +58,5 @@ aws-credentials.txt
 credentials
 config
 .docker/
+*.ser
+data/
