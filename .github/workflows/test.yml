@@ -2,7 +2,7 @@ name: CI Test
 
 on:
   pull_request:
-    branches: [ release ]
+    branches: [ main ]
 
 jobs:
   test:
@@ -23,9 +23,12 @@ jobs:
         run: chmod +x gradlew
 
       - name: Test with Gradle
-        run: ./gradlew clean test jacocoTestReport || true
+        run: ./gradlew clean test jacocoTestReport
 
       - name: Upload coverage to CodeCov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: build/reports/jacoco/test/jacocoTestReport.xml
+          fail_ci_if_error: true
+          verbose: true
