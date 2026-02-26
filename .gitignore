@@ -60,3 +60,4 @@ config
 .docker/
 *.ser
 data/
+*.ser
