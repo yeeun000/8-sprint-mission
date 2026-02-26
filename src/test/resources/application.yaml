@@ -31,3 +31,9 @@ logging:
     com.ohgiraffers.springtest: DEBUG
     org.springframework.test: INFO
     org.hibernate.SQL: DEBUG
+
+discodeit:
+  storage:
+    type: local
+    local:
+      root-path: ./build/test-storage
