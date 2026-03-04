@@ -24,7 +24,7 @@ FROM amazoncorretto:17
 
 WORKDIR /app
 
-COPY --from=builder /app/build/libs/discodeit-1.2-M8.jar app.jar
+COPY --from=builder /app/build/libs/${PROJECT_NAME}-${PROJECT_VERSION}.jar ./
 
 # 포트 노출
 EXPOSE 80
