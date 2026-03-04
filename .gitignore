@@ -49,8 +49,6 @@ uploads/
 .env.*
 discodeit.env
 
-application-*.yaml
-
 *.pem
 *.key
 aws-credentials.txt
