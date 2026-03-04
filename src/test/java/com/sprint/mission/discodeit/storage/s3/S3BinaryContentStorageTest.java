@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDto;
-import com.sprint.mission.discodeit.storage.local.S3BinaryContentStorage;
 import java.io.InputStream;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
