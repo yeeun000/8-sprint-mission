@@ -12,7 +12,7 @@ COPY settings.gradle .
 
 # 의존성 다운로드
 RUN chmod +x gradlew
-RUN ./gradlew buildNeededDependencies --no-daemon || true
+RUN ./gradlew buildNeededDependencies --no-daemon
 
 # 소스 코드 복사, jar만
 COPY src ./src
@@ -24,7 +24,6 @@ FROM amazoncorretto:17
 
 WORKDIR /app
 
-
 # 포트 노출
 EXPOSE 80
 
@@ -33,7 +32,7 @@ ENV PROJECT_NAME=discodeit
 ENV PROJECT_VERSION=1.2-M8
 ENV JVM_OPTS=""
 
-COPY --from=builder /app/build/libs/${PROJECT_NAME}-${PROJECT_VERSION}.jar ./
+COPY --from=builder /app/build/libs/${PROJECT_NAME}-*.jar ./${PROJECT_NAME}-${PROJECT_VERSION}.jar
 
 # 애플리케이션 실행 명령어
-ENTRYPOINT ["sh", "-c", "java ${JVM_OPTS} -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "java ${JVM_OPTS} -jar ${PROJECT_NAME}-${PROJECT_VERSION}.jar"]
