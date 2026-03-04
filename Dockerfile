@@ -33,7 +33,6 @@ EXPOSE 80
 ENV PROJECT_NAME=discodeit
 ENV PROJECT_VERSION=1.2-M8
 ENV JVM_OPTS=""
-ENV SERVER_PORT=80
 
 # 애플리케이션 실행 명령어
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["sh", "-c", "java ${JVM_OPTS} -jar ${PROJECT_NAME}-${PROJECT_VERSION}.jar"]
