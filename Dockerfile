@@ -36,4 +36,4 @@ ENV JVM_OPTS=""
 COPY --from=builder /app/build/libs/${PROJECT_NAME}-${PROJECT_VERSION}.jar ./
 
 # 애플리케이션 실행 명령어
-ENTRYPOINT ["sh", "-c", "java ${JVM_OPTS} -jar ${PROJECT_NAME}-${PROJECT_VERSION}.jar"]
+ENTRYPOINT ["sh", "-c", "java ${JVM_OPTS} -jar app.jar"]
