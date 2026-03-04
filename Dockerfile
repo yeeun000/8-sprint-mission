@@ -12,7 +12,6 @@ COPY settings.gradle .
 
 # 의존성 다운로드
 RUN chmod +x gradlew
-RUN ./gradlew buildNeededDependencies --no-daemon
 
 # 소스 코드 복사, jar만
 COPY src ./src
