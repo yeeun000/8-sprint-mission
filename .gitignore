@@ -45,3 +45,16 @@ bin/
 .discodeit
 uploads/
 .logs
+.env
+.env.*
+discodeit.env
+
+*.pem
+*.key
+aws-credentials.txt
+.aws/
+credentials
+config
+.docker/
+*.ser
+data/

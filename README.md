@@ -1,0 +1,1 @@
+[![codecov](https://codecov.io/github/yeeun000/8-sprint-mission/graph/badge.svg?token=APKLBGEIWS)](https://codecov.io/github/yeeun000/8-sprint-mission)

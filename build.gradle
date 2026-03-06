@@ -16,9 +16,14 @@ jacocoTestReport {
     }
 }
 group = 'com.sprint.mission'
-version = '0.0.1-SNAPSHOT'
+version = '1.2-M8'
 description = 'Demo project for Spring Boot'
 
+bootJar {
+    archiveBaseName = project.name
+    archiveVersion = project.version
+    enabled = true
+}
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
@@ -59,17 +64,14 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    implementation 'de.codecentric:spring-boot-admin-starter-client:3.4.5'
+    implementation 'software.amazon.awssdk:s3:2.31.7'
+
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
 
-tasks.named('bootJar') {
-    archiveFileName.set('app.jar')
-    enabled = true
-}
 
 tasks.build {
     dependsOn tasks.bootJar

@@ -2,21 +2,15 @@ spring:
   application:
     name: discodeit
 
-  boot:
-    admin:
-      client:
-        instance:
-          name: discodeit
-
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 30MB
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/discodeit
-    username: discodeit_user
-    password: discodeit1234
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-init-sql: SET SESSION hibernate.jdbc.lob.non_contextual_creation=true
@@ -37,58 +31,22 @@ logging:
 
 discodeit:
   storage:
-    type: local
+    type: ${STORAGE_TYPE:local}
     local:
-      root-path: .discodeit/storage
+      root-path: ${STORAGE_LOCAL_ROOT_PATH:.discodeit/storage}
+    s3:
+      access-key: ${AWS_ACCESS_KEY_ID}
+      secret-key: ${AWS_SECRET_ACCESS_KEY}
+      region: ${AWS_S3_REGION}
+      bucket: ${AWS_S3_BUCKET}
+      presigned-url-expiration: ${AWS_S3_PRESIGNED_URL_EXPIRATION}
 
 management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: health
       base-path: /actuator
   endpoint:
-    health:
-      show-details: always
-      show-components: always
     info:
-      enabled: true
-    loggers:
-      access: unrestricted
-
-  info:
-    env:
-      enabled: true
-    java:
-      enabled: true
-    os:
-      enabled: true
-  prometheus:
-    metrics:
-      export:
-        enabled: true
-  metrics:
-    tags:
-      application: Discodeit
-
-info:
-  app:
-    name: Discodeit
-    version: 1.7.0
-    encoding: UTF-8
-    java:
-      version: 17
-  spring:
-    boot:
-      version: 3.4.0
-    datasource:
-      url: jdbc:postgresql://localhost:5432/discodeit
-      driver-class-name: org.postgresql.Driver
-    jpa:
-      ddl-auto: none
-    storage:
-      type: local
-      path: .discodeit/storage
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 30MB
+      enabled: false
