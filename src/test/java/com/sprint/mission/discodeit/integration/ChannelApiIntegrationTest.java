@@ -11,13 +11,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.channelDTO.ChannelDto;
-import com.sprint.mission.discodeit.dto.channelDTO.PrivateChannelCreateRequest;
-import com.sprint.mission.discodeit.dto.channelDTO.PublicChannelCreateRequest;
-import com.sprint.mission.discodeit.dto.channelDTO.PublicChannelUpdateRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserCreateRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserDto;
-import com.sprint.mission.discodeit.entity.Channel.ChannelType;
+import com.sprint.mission.discodeit.dto.data.ChannelDto;
+import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.request.PrivateChannelCreateRequest;
+import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
+import com.sprint.mission.discodeit.dto.request.PublicChannelUpdateRequest;
+import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
+import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.UserService;
 import java.util.List;
@@ -108,8 +108,8 @@ class ChannelApiIntegrationTest {
         "Password1!"
     );
 
-    UserDto user1 = userService.create(userRequest1, null);
-    UserDto user2 = userService.create(userRequest2, null);
+    UserDto user1 = userService.create(userRequest1, Optional.empty());
+    UserDto user2 = userService.create(userRequest2, Optional.empty());
 
     List<UUID> participantIds = List.of(user1.id(), user2.id());
     PrivateChannelCreateRequest createRequest = new PrivateChannelCreateRequest(participantIds);
@@ -137,7 +137,7 @@ class ChannelApiIntegrationTest {
         "Password1!"
     );
 
-    UserDto user = userService.create(userRequest, null);
+    UserDto user = userService.create(userRequest, Optional.empty());
     UUID userId = user.id();
 
     // 공개 채널 생성
@@ -155,7 +155,7 @@ class ChannelApiIntegrationTest {
         "Password1!"
     );
 
-    UserDto otherUser = userService.create(otherUserRequest, null);
+    UserDto otherUser = userService.create(otherUserRequest, Optional.empty());
 
     PrivateChannelCreateRequest privateChannelRequest = new PrivateChannelCreateRequest(
         List.of(userId, otherUser.id())
@@ -247,7 +247,7 @@ class ChannelApiIntegrationTest {
         "Password1!"
     );
 
-    UserDto user = userService.create(userRequest, null);
+    UserDto user = userService.create(userRequest, Optional.empty());
 
     mockMvc.perform(get("/api/channels")
             .param("userId", user.id().toString())

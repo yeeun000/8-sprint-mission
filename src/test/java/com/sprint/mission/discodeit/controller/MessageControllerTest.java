@@ -13,12 +13,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDto;
-import com.sprint.mission.discodeit.dto.messageDTO.MessageCreateRequest;
-import com.sprint.mission.discodeit.dto.messageDTO.MessageDto;
-import com.sprint.mission.discodeit.dto.messageDTO.MessageUpdateRequest;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
+import com.sprint.mission.discodeit.dto.data.MessageDto;
+import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
+import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.PageResponse;
-import com.sprint.mission.discodeit.dto.userDTO.UserDto;
 import com.sprint.mission.discodeit.exception.message.MessageNotFoundException;
 import com.sprint.mission.discodeit.service.MessageService;
 import java.time.Instant;
@@ -200,7 +201,7 @@ class MessageControllerTest {
     );
 
     given(messageService.update(eq(nonExistentMessageId), any(MessageUpdateRequest.class)))
-        .willThrow(new MessageNotFoundException(nonExistentMessageId));
+        .willThrow(MessageNotFoundException.withId(nonExistentMessageId));
 
     // When & Then
     mockMvc.perform(patch("/api/messages/{messageId}", nonExistentMessageId)
@@ -227,7 +228,7 @@ class MessageControllerTest {
   void deleteMessage_Failure_MessageNotFound() throws Exception {
     // Given
     UUID nonExistentMessageId = UUID.randomUUID();
-    willThrow(new MessageNotFoundException(nonExistentMessageId))
+    willThrow(MessageNotFoundException.withId(nonExistentMessageId))
         .given(messageService).delete(nonExistentMessageId);
 
     // When & Then

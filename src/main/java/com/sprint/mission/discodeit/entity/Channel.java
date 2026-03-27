@@ -1,15 +1,11 @@
 package com.sprint.mission.discodeit.entity;
 
 import com.sprint.mission.discodeit.entity.base.BaseUpdatableEntity;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,26 +16,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Channel extends BaseUpdatableEntity {
 
-  public enum ChannelType {
-    PUBLIC,
-    PRIVATE
-  }
-
-  @Column(name = "name", length = 100)
-  private String name;
-
-  @Column(name = "description", length = 500)
-  private String description;
-
   @Enumerated(EnumType.STRING)
-  @Column(name = "type", nullable = false)
+  @Column(nullable = false)
   private ChannelType type;
-
-  @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Message> messages = new ArrayList<>();
-
-  @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<ReadStatus> readStatuses = new ArrayList<>();
+  @Column(length = 100)
+  private String name;
+  @Column(length = 500)
+  private String description;
 
   public Channel(ChannelType type, String name, String description) {
     this.type = type;
@@ -47,20 +30,12 @@ public class Channel extends BaseUpdatableEntity {
     this.description = description;
   }
 
-  public static Channel createPrivateChannel() {
-    return new Channel(ChannelType.PRIVATE, null, null);
-  }
-
-  public static Channel createPublicChannel(String name, String description) {
-    return new Channel(ChannelType.PUBLIC, name, description);
-  }
-
-  public void update(String newchannelName, String newdescription) {
-    if (newchannelName != null) {
-      this.name = newchannelName;
+  public void update(String newName, String newDescription) {
+    if (newName != null && !newName.equals(this.name)) {
+      this.name = newName;
     }
-    if (newdescription != null) {
-      this.description = newdescription;
+    if (newDescription != null && !newDescription.equals(this.description)) {
+      this.description = newDescription;
     }
   }
 }

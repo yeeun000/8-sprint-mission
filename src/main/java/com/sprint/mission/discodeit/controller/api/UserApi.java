@@ -1,10 +1,10 @@
 package com.sprint.mission.discodeit.controller.api;
 
-import com.sprint.mission.discodeit.dto.userDTO.UserCreateRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserDto;
-import com.sprint.mission.discodeit.dto.userDTO.UserStatusDto;
-import com.sprint.mission.discodeit.dto.userDTO.UserStatusUpdateRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserUpdateRequest;
+import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.data.UserStatusDto;
+import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
+import com.sprint.mission.discodeit.dto.request.UserStatusUpdateRequest;
+import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -14,15 +14,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "User", description = "User API")
@@ -43,12 +38,12 @@ public interface UserApi {
       @Parameter(
           description = "User 생성 정보",
           content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)
-      ) @RequestPart @Valid UserCreateRequest userCreateRequest,
+      ) UserCreateRequest userCreateRequest,
       @Parameter(
           description = "User 프로필 이미지",
           content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
-      ) @RequestPart MultipartFile profile
-  ) throws IOException;
+      ) MultipartFile profile
+  );
 
   @Operation(summary = "User 정보 수정")
   @ApiResponses(value = {
@@ -66,13 +61,10 @@ public interface UserApi {
       )
   })
   ResponseEntity<UserDto> update(
-      @Parameter(description = "수정할 User ID")
-      @PathVariable UUID userId,
-      @Parameter(description = "수정할 User 정보")
-      @RequestPart @Valid UserUpdateRequest userUpdateRequest,
-      @Parameter(description = "수정할 User 프로필 이미지")
-      @RequestPart MultipartFile profile
-  ) throws IOException;
+      @Parameter(description = "수정할 User ID") UUID userId,
+      @Parameter(description = "수정할 User 정보") UserUpdateRequest userUpdateRequest,
+      @Parameter(description = "수정할 User 프로필 이미지") MultipartFile profile
+  );
 
   @Operation(summary = "User 삭제")
   @ApiResponses(value = {
@@ -87,8 +79,7 @@ public interface UserApi {
       )
   })
   ResponseEntity<Void> delete(
-      @Parameter(description = "삭제할 User ID")
-      @PathVariable UUID userId
+      @Parameter(description = "삭제할 User ID") UUID userId
   );
 
   @Operation(summary = "전체 User 목록 조회")
@@ -111,10 +102,8 @@ public interface UserApi {
           content = @Content(examples = @ExampleObject(value = "UserStatus with userId {userId} not found"))
       )
   })
-  ResponseEntity<UserStatusDto> updateStatus(
-      @Parameter(description = "상태를 변경할 User ID")
-      @PathVariable UUID userId,
-      @Parameter(description = "변경할 User 온라인 상태 정보")
-      @RequestBody @Valid UserStatusUpdateRequest request
+  ResponseEntity<UserStatusDto> updateUserStatusByUserId(
+      @Parameter(description = "상태를 변경할 User ID") UUID userId,
+      @Parameter(description = "변경할 User 온라인 상태 정보") UserStatusUpdateRequest request
   );
 }

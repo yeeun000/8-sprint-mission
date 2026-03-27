@@ -1,57 +1,52 @@
+version: '3.8'
 
 services:
-  postgres:
-    image: postgres:17
-    container_name: discodeit
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    ports:
-      - "${POSTGRES_PORT}:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   app:
-    build: .
     image: discodeit:local
-    container_name: discodeit-app
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
-      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
-      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-      SERVER_PORT: ${SERVER_PORT}
-      JVM_OPTS: ${JVM_OPTS}
-      STORAGE_TYPE: ${STORAGE_TYPE:-s3}
-      STORAGE_LOCAL_ROOT_PATH: /app/.discodeit/storage
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_S3_REGION: ${AWS_S3_REGION}
-      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
-      AWS_S3_PRESIGNED_URL_EXPIRATION: ${AWS_S3_PRESIGNED_URL_EXPIRATION:-600}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: discodeit
     ports:
-      - "${APP_PORT}:${SERVER_PORT}"
+      - "8081:80"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/discodeit
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - STORAGE_TYPE=s3
+      - STORAGE_LOCAL_ROOT_PATH=.discodeit/storage
+      - AWS_S3_ACCESS_KEY=${AWS_S3_ACCESS_KEY}
+      - AWS_S3_SECRET_KEY=${AWS_S3_SECRET_KEY}
+      - AWS_S3_REGION=${AWS_S3_REGION}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+      - AWS_S3_PRESIGNED_URL_EXPIRATION=600
+    depends_on:
+      - db
     volumes:
-      - app_data:/app/.discodeit/storage
+      - binary-content-storage:/app/.discodeit/storage
+    networks:
+      - discodeit-network
+
+  db:
+    image: postgres:16-alpine
+    container_name: discodeit-db
+    environment:
+      - POSTGRES_DB=discodeit
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - discodeit-network
 
 volumes:
-  postgres_data:
-    driver: local
-    name: discodeit-postgres-data
-  app_data:
-    driver: local
-    name: discodeit-app-data
+  postgres-data:
+  binary-content-storage:
 
+networks:
+  discodeit-network:
+    driver: bridge 

@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@MappedSuperclass
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
@@ -26,6 +26,6 @@ public abstract class BaseEntity {
   private UUID id;
 
   @CreatedDate
-  @Column(name = "created_at", updatable = false, nullable = false)
+  @Column(columnDefinition = "timestamp with time zone", updatable = false, nullable = false)
   private Instant createdAt;
 }

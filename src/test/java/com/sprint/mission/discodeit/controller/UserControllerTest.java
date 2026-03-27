@@ -14,13 +14,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentCreateRequest;
-import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDto;
-import com.sprint.mission.discodeit.dto.userDTO.UserCreateRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserDto;
-import com.sprint.mission.discodeit.dto.userDTO.UserStatusDto;
-import com.sprint.mission.discodeit.dto.userDTO.UserStatusUpdateRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserUpdateRequest;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
+import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.data.UserStatusDto;
+import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
+import com.sprint.mission.discodeit.dto.request.UserStatusUpdateRequest;
+import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
 import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
@@ -92,7 +91,7 @@ class UserControllerTest {
         false
     );
 
-    given(userService.create(any(UserCreateRequest.class), any(BinaryContentCreateRequest.class)))
+    given(userService.create(any(UserCreateRequest.class), any(Optional.class)))
         .willReturn(createdUser);
 
     // When & Then
@@ -211,8 +210,7 @@ class UserControllerTest {
         true
     );
 
-    given(userService.update(eq(userId), any(UserUpdateRequest.class), any(
-        BinaryContentCreateRequest.class)))
+    given(userService.update(eq(userId), any(UserUpdateRequest.class), any(Optional.class)))
         .willReturn(updatedUser);
 
     // When & Then
@@ -258,8 +256,8 @@ class UserControllerTest {
     );
 
     given(userService.update(eq(nonExistentUserId), any(UserUpdateRequest.class),
-        any(BinaryContentCreateRequest.class)))
-        .willThrow(new UserNotFoundException(nonExistentUserId));
+        any(Optional.class)))
+        .willThrow(UserNotFoundException.withId(nonExistentUserId));
 
     // When & Then
     mockMvc.perform(multipart("/api/users/{userId}", nonExistentUserId)
@@ -291,7 +289,7 @@ class UserControllerTest {
   void deleteUser_Failure_UserNotFound() throws Exception {
     // Given
     UUID nonExistentUserId = UUID.randomUUID();
-    willThrow(new UserNotFoundException(nonExistentUserId))
+    willThrow(UserNotFoundException.withId(nonExistentUserId))
         .given(userService).delete(nonExistentUserId);
 
     // When & Then
@@ -334,7 +332,7 @@ class UserControllerTest {
     UserStatusUpdateRequest updateRequest = new UserStatusUpdateRequest(lastActiveAt);
 
     given(userStatusService.updateByUserId(eq(userId), any(UserStatusUpdateRequest.class)))
-        .willThrow(new UserNotFoundException(userId));
+        .willThrow(UserNotFoundException.withId(userId));
 
     // When & Then
     mockMvc.perform(patch("/api/users/{userId}/userStatus", userId)

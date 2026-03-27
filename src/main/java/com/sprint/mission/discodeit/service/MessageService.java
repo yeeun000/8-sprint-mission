@@ -1,9 +1,9 @@
 package com.sprint.mission.discodeit.service;
 
-import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentCreateRequest;
-import com.sprint.mission.discodeit.dto.messageDTO.MessageCreateRequest;
-import com.sprint.mission.discodeit.dto.messageDTO.MessageDto;
-import com.sprint.mission.discodeit.dto.messageDTO.MessageUpdateRequest;
+import com.sprint.mission.discodeit.dto.data.MessageDto;
+import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
+import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.PageResponse;
 import java.time.Instant;
 import java.util.List;
@@ -12,15 +12,14 @@ import org.springframework.data.domain.Pageable;
 
 public interface MessageService {
 
-  MessageDto create(MessageCreateRequest createMessageRequest,
-      List<BinaryContentCreateRequest> binaryContentDTO);
+  MessageDto create(MessageCreateRequest messageCreateRequest,
+      List<BinaryContentCreateRequest> binaryContentCreateRequests);
 
-  PageResponse<MessageDto> findAllByChannelId(UUID channelId, Instant createAt, Pageable pageable);
+  MessageDto find(UUID messageId);
 
-  void delete(UUID id);
+  PageResponse<MessageDto> findAllByChannelId(UUID channelId, Instant createdAt, Pageable pageable);
 
-  MessageDto update(UUID messageId, MessageUpdateRequest updateMessageRequest);
+  MessageDto update(UUID messageId, MessageUpdateRequest request);
 
-  MessageDto find(UUID id);
-
+  void delete(UUID messageId);
 }
