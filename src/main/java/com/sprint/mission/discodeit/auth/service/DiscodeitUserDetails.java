@@ -12,12 +12,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @RequiredArgsConstructor
 public class DiscodeitUserDetails implements UserDetails {
+
   private final UserDto user;
   private final String password;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    return List.of(new SimpleGrantedAuthority("ROLE_" + user.role().name()));
   }
 
   @Override

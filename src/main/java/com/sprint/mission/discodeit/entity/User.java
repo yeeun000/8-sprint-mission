@@ -5,10 +5,13 @@ import com.sprint.mission.discodeit.entity.base.BaseUpdatableEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.time.Instant;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +29,9 @@ public class User extends BaseUpdatableEntity {
   private String email;
   @Column(length = 60, nullable = false)
   private String password;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private Role role;
   @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   @JoinColumn(name = "profile_id", columnDefinition = "uuid")
   private BinaryContent profile;
@@ -39,6 +45,7 @@ public class User extends BaseUpdatableEntity {
     this.email = email;
     this.password = password;
     this.profile = profile;
+    this.status = new UserStatus(this, Instant.now());
   }
 
   public void update(String newUsername, String newEmail, String newPassword,
@@ -49,11 +56,17 @@ public class User extends BaseUpdatableEntity {
     if (newEmail != null && !newEmail.equals(this.email)) {
       this.email = newEmail;
     }
-    if (newPassword != null && !newPassword.equals(this.password)) {
+    if (newPassword != null) {
       this.password = newPassword;
     }
     if (newProfile != null) {
       this.profile = newProfile;
     }
+  }
+  public void setRole(Role role) {
+    this.role = role;
+  }
+  public void setStatus(UserStatus status) {
+    this.status = status;
   }
 }
