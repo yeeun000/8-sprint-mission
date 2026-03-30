@@ -29,6 +29,11 @@ public class SecurityConfig {
             .loginProcessingUrl("/api/auth/login")
             .successHandler(loginSuccessHandler)
             .failureHandler(loginFailureHandler)
+        )
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/auth/login").permitAll()
+            .requestMatchers("/api/auth/csrf-token").permitAll()
+            .anyRequest().authenticated()
         );
 
     SecurityFilterChain chain = http.build();
