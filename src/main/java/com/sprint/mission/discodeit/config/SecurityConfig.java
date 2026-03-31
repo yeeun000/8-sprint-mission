@@ -74,6 +74,10 @@ public class SecurityConfig {
                 .maximumSessions(1)
                 .sessionRegistry(sessionRegistry)
             )
+        ).rememberMe(remember -> remember
+            .rememberMeParameter("remember-me")
+            .tokenValiditySeconds(60)
+            .key("remember-key")
         );
 
     SecurityFilterChain chain = http.build();
