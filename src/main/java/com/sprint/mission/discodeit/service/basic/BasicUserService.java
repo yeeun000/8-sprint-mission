@@ -101,6 +101,7 @@ public class BasicUserService implements UserService {
     return userDtos;
   }
 
+  @PreAuthorize("#userId == authentication.principal.user.id")
   @Transactional
   @Override
   public UserDto update(UUID userId, UserUpdateRequest userUpdateRequest,
@@ -151,6 +152,7 @@ public class BasicUserService implements UserService {
     return userMapper.toDto(user, isOnline(user.getUsername()));
   }
 
+  @PreAuthorize("#userId == authentication.principal.user.id")
   @Transactional
   @Override
   public void delete(UUID userId) {
