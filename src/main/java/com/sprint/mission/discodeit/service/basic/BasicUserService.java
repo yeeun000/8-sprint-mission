@@ -8,22 +8,21 @@ import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.exception.user.UserAlreadyExistsException;
 import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
-import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,11 +33,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class BasicUserService implements UserService {
 
   private final UserRepository userRepository;
-  private final UserStatusRepository userStatusRepository;
   private final UserMapper userMapper;
   private final BinaryContentRepository binaryContentRepository;
   private final BinaryContentStorage binaryContentStorage;
   private final PasswordEncoder passwordEncoder;
+  private final SessionRegistry sessionRegistry;
 
   @Transactional
   @Override
@@ -72,13 +71,10 @@ public class BasicUserService implements UserService {
 
     User user = new User(username, email, password, nullableProfile);
     user.setRole(Role.USER);
-    Instant now = Instant.now();
-    UserStatus userStatus = new UserStatus(user, now);
-    user.setStatus(userStatus);
 
     userRepository.save(user);
     log.info("사용자 생성 완료: id={}, username={}", user.getId(), username);
-    return userMapper.toDto(user);
+    return userMapper.toDto(user, isOnline(username));
   }
 
   @Transactional(readOnly = true)
@@ -86,7 +82,7 @@ public class BasicUserService implements UserService {
   public UserDto find(UUID userId) {
     log.debug("사용자 조회 시작: id={}", userId);
     UserDto userDto = userRepository.findById(userId)
-        .map(userMapper::toDto)
+        .map(user -> userMapper.toDto(user, isOnline(user.getUsername())))
         .orElseThrow(() -> UserNotFoundException.withId(userId));
     log.info("사용자 조회 완료: id={}", userId);
     return userDto;
@@ -98,7 +94,7 @@ public class BasicUserService implements UserService {
     log.debug("모든 사용자 조회 시작");
     List<UserDto> userDtos = userRepository.findAllWithProfileAndStatus()
         .stream()
-        .map(userMapper::toDto)
+        .map(user -> userMapper.toDto(user, isOnline(user.getUsername())))
         .toList();
     log.info("모든 사용자 조회 완료: 총 {}명", userDtos.size());
     return userDtos;
@@ -151,7 +147,7 @@ public class BasicUserService implements UserService {
     }
 
     log.info("사용자 수정 완료: id={}", userId);
-    return userMapper.toDto(user);
+    return userMapper.toDto(user, isOnline(user.getUsername()));
   }
 
   @Transactional
@@ -175,7 +171,15 @@ public class BasicUserService implements UserService {
         .orElseThrow(() -> UserNotFoundException.withId(userRoleUpdateRequest.userId()));
 
     user.setRole(userRoleUpdateRequest.role());
-    return userMapper.toDto(user);
+    return userMapper.toDto(user, isOnline(user.getUsername()));
 
+  }
+
+  private boolean isOnline(String username) {
+    return sessionRegistry.getAllPrincipals().stream()
+        .filter(principal -> principal instanceof UserDetails)
+        .map(principal -> (UserDetails) principal)
+        .map(UserDetails::getUsername)
+        .anyMatch(name -> name.equals(username));
   }
 }

@@ -19,7 +19,7 @@ public class DiscodeitUserDetailsService implements UserDetailsService {
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
 
     return userRepository.findByUsername(username)
-        .map(user -> new DiscodeitUserDetails(userMapper.toDto(user), user.getPassword()))
+        .map(user -> new DiscodeitUserDetails(userMapper.toDto(user,false), user.getPassword()))
         .orElseThrow(()->new UsernameNotFoundException(username));
   }
 
