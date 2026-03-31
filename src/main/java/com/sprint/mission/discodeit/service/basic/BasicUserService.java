@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,7 +74,7 @@ public class BasicUserService implements UserService {
 
     userRepository.save(user);
     log.info("사용자 생성 완료: id={}, username={}", user.getId(), username);
-    return userMapper.toDto(user, isOnline(username));
+    return userMapper.toDto(user, isOnline(user.getId()));
   }
 
   @Transactional(readOnly = true)
@@ -83,7 +82,7 @@ public class BasicUserService implements UserService {
   public UserDto find(UUID userId) {
     log.debug("사용자 조회 시작: id={}", userId);
     UserDto userDto = userRepository.findById(userId)
-        .map(user -> userMapper.toDto(user, isOnline(user.getUsername())))
+        .map(user -> userMapper.toDto(user, isOnline(user.getId())))
         .orElseThrow(() -> UserNotFoundException.withId(userId));
     log.info("사용자 조회 완료: id={}", userId);
     return userDto;
@@ -93,9 +92,9 @@ public class BasicUserService implements UserService {
   @Override
   public List<UserDto> findAll() {
     log.debug("모든 사용자 조회 시작");
-    List<UserDto> userDtos = userRepository.findAllWithProfileAndStatus()
+    List<UserDto> userDtos = userRepository.findAll()
         .stream()
-        .map(user -> userMapper.toDto(user, isOnline(user.getUsername())))
+        .map(user -> userMapper.toDto(user, isOnline(user.getId())))
         .toList();
     log.info("모든 사용자 조회 완료: 총 {}명", userDtos.size());
     return userDtos;
@@ -149,7 +148,7 @@ public class BasicUserService implements UserService {
     }
 
     log.info("사용자 수정 완료: id={}", userId);
-    return userMapper.toDto(user, isOnline(user.getUsername()));
+    return userMapper.toDto(user, isOnline(user.getId()));
   }
 
   @PreAuthorize("#userId == authentication.principal.user.id")
@@ -174,15 +173,14 @@ public class BasicUserService implements UserService {
         .orElseThrow(() -> UserNotFoundException.withId(userRoleUpdateRequest.userId()));
 
     user.setRole(userRoleUpdateRequest.role());
-    return userMapper.toDto(user, isOnline(user.getUsername()));
+    return userMapper.toDto(user, isOnline(user.getId()));
 
   }
 
-  private boolean isOnline(String username) {
+  private boolean isOnline(UUID userId) {
     return sessionRegistry.getAllPrincipals().stream()
         .filter(principal -> principal instanceof DiscodeitUserDetails)
         .map(principal -> (DiscodeitUserDetails) principal)
-        .map(UserDetails::getUsername)
-        .anyMatch(name -> name.equals(username));
+        .anyMatch(details -> details.getUser().id().equals(userId));
   }
 }
