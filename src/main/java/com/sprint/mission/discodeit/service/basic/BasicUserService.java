@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import com.sprint.mission.discodeit.auth.service.DiscodeitUserDetails;
 import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
@@ -177,8 +178,8 @@ public class BasicUserService implements UserService {
 
   private boolean isOnline(String username) {
     return sessionRegistry.getAllPrincipals().stream()
-        .filter(principal -> principal instanceof UserDetails)
-        .map(principal -> (UserDetails) principal)
+        .filter(principal -> principal instanceof DiscodeitUserDetails)
+        .map(principal -> (DiscodeitUserDetails) principal)
         .map(UserDetails::getUsername)
         .anyMatch(name -> name.equals(username));
   }

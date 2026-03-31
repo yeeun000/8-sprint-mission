@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.mapper;
 
+import com.sprint.mission.discodeit.auth.service.DiscodeitUserDetails;
 import com.sprint.mission.discodeit.dto.data.ChannelDto;
 import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.entity.Channel;
@@ -52,8 +53,8 @@ public abstract class ChannelMapper {
 
   private boolean isOnline(String username) {
     return sessionRegistry.getAllPrincipals().stream()
-        .filter(principal -> principal instanceof UserDetails)
-        .map(principal -> (UserDetails) principal)
+        .filter(principal -> principal instanceof DiscodeitUserDetails)
+        .map(principal -> (DiscodeitUserDetails) principal)
         .map(UserDetails::getUsername)
         .anyMatch(name -> name.equals(username));
   }
