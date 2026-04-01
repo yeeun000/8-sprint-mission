@@ -1,2 +1,2 @@
 
-[![codecov](https://codecov.io/gh/codeit-bootcamp-spring/0-sprint-mission/branch/s8%2Fadvanced/graph/badge.svg?token=XRIA1GENAM)](https://codecov.io/gh/codeit-bootcamp-spring/0-sprint-mission)
+[![codecov](https://codecov.io/github/yeeun000/8-sprint-mission/graph/badge.svg?token=APKLBGEIWS)](https://codecov.io/github/yeeun000/8-sprint-mission)
