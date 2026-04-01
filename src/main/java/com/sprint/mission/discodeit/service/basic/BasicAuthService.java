@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.service.basic;
 import com.sprint.mission.discodeit.auth.service.DiscodeitUserDetails;
 import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.AuthService;
@@ -28,9 +29,9 @@ public class BasicAuthService implements AuthService {
       throw new UsernameNotFoundException("유저를 찾을 수 없습니다");
     }
 
-    String username = discodeitUserDetails.getUsername();
-    User user = userRepository.findByUsername(username)
-        .orElseThrow(() -> new UsernameNotFoundException(username));
+    UUID userId = discodeitUserDetails.getUser().id();
+    User user = userRepository.findByIdWithProfile(userId)
+        .orElseThrow(() -> UserNotFoundException.withId(userId));
 
     return userMapper.toDto(user, isOnline(user.getId()));
   }

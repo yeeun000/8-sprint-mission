@@ -174,23 +174,7 @@ public class BasicUserService implements UserService {
         .orElseThrow(() -> UserNotFoundException.withId(userRoleUpdateRequest.userId()));
 
     user.setRole(userRoleUpdateRequest.role());
-
-    List<Object> allPrincipals = sessionRegistry.getAllPrincipals();
-    for (Object principal : allPrincipals) {
-      DiscodeitUserDetails discodeitUserDetails = (DiscodeitUserDetails) principal;
-      UUID userId = discodeitUserDetails.getUser().id();
-
-      if (userId.equals(user.getId())) {
-        List<SessionInformation> sessions = sessionRegistry.getAllSessions(principal, false);
-
-        for (SessionInformation session : sessions) {
-          session.expireNow();
-        }
-
-        break;
-      }
-    }
-
+    expireUserSessions(user.getId());
     return userMapper.toDto(user, isOnline(user.getId()));
 
   }
@@ -200,5 +184,23 @@ public class BasicUserService implements UserService {
         .filter(principal -> principal instanceof DiscodeitUserDetails)
         .map(principal -> (DiscodeitUserDetails) principal)
         .anyMatch(details -> details.getUser().id().equals(userId));
+  }
+
+  private void expireUserSessions(UUID userId) {
+    List<Object> allPrincipals = sessionRegistry.getAllPrincipals();
+    for (Object principal : allPrincipals) {
+      DiscodeitUserDetails discodeitUserDetails = (DiscodeitUserDetails) principal;
+      UUID Id = discodeitUserDetails.getUser().id();
+
+      if (Id.equals(userId)) {
+        List<SessionInformation> sessions = sessionRegistry.getAllSessions(principal, false);
+
+        for (SessionInformation session : sessions) {
+          session.expireNow();
+        }
+
+        break;
+      }
+    }
   }
 }

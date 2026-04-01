@@ -16,11 +16,11 @@ public class DiscodeitUserDetailsService implements UserDetailsService {
   private final UserMapper userMapper;
 
   @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-    return userRepository.findByUsername(username)
-        .map(user -> new DiscodeitUserDetails(userMapper.toDto(user,false), user.getPassword()))
-        .orElseThrow(()->new UsernameNotFoundException(username));
+    return userRepository.findByUsernameWithProfile(username)
+        .map(user -> new DiscodeitUserDetails(userMapper.toDto(user, false), user.getPassword()))
+        .orElseThrow(() -> new UsernameNotFoundException(username));
   }
 
 }
