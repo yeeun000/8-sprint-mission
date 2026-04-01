@@ -22,6 +22,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -173,6 +174,23 @@ public class BasicUserService implements UserService {
         .orElseThrow(() -> UserNotFoundException.withId(userRoleUpdateRequest.userId()));
 
     user.setRole(userRoleUpdateRequest.role());
+
+    List<Object> allPrincipals = sessionRegistry.getAllPrincipals();
+    for (Object principal : allPrincipals) {
+      DiscodeitUserDetails discodeitUserDetails = (DiscodeitUserDetails) principal;
+      UUID userId = discodeitUserDetails.getUser().id();
+
+      if (userId.equals(user.getId())) {
+        List<SessionInformation> sessions = sessionRegistry.getAllSessions(principal, false);
+
+        for (SessionInformation session : sessions) {
+          session.expireNow();
+        }
+
+        break;
+      }
+    }
+
     return userMapper.toDto(user, isOnline(user.getId()));
 
   }

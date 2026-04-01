@@ -8,29 +8,30 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class LoginFailureHandler implements AuthenticationFailureHandler {
+public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
   private final ObjectMapper objectMapper;
 
   @Override
-  public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-      AuthenticationException exception) throws IOException, ServletException {
-    String errorMessage = exception.getMessage();
+  public void handle(HttpServletRequest request,
+      HttpServletResponse response,
+      AccessDeniedException accessDeniedException) throws IOException, ServletException{
 
     Map<String, Object> errorResponse = new HashMap<>();
     errorResponse.put("success", false);
-    errorResponse.put("error", "AUTHENTICATION_FAILED");
-    errorResponse.put("message", errorMessage);
+    errorResponse.put("error", "ACCESS_DENIED");
+    errorResponse.put("message", "해당 리소스에 접근할 권한이 없습니다.");
+    errorResponse.put("status", 403);
 
     response.setContentType("application/json");
     response.setCharacterEncoding("UTF-8");
-    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
     String responseBody = objectMapper.writeValueAsString(errorResponse);
     response.getWriter().write(responseBody);

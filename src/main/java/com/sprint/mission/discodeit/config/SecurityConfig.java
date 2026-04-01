@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.config;
 
+import com.sprint.mission.discodeit.auth.handler.CustomAccessDeniedHandler;
 import com.sprint.mission.discodeit.auth.handler.LoginFailureHandler;
 import com.sprint.mission.discodeit.auth.handler.LoginSuccessHandler;
 import com.sprint.mission.discodeit.auth.handler.SpaCsrfTokenRequestHandler;
@@ -8,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -35,7 +37,8 @@ public class SecurityConfig {
       HttpSecurity http,
       SessionRegistry sessionRegistry,
       LoginSuccessHandler loginSuccessHandler,
-      LoginFailureHandler loginFailureHandler
+      LoginFailureHandler loginFailureHandler,
+      CustomAccessDeniedHandler customAccessDeniedHandler
   ) throws Exception {
 
     http
@@ -52,8 +55,7 @@ public class SecurityConfig {
         .exceptionHandling(ex -> ex
             .authenticationEntryPoint((request, response, authException) ->
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
-            .accessDeniedHandler((request, response, accessDeniedException) ->
-                response.sendError(HttpServletResponse.SC_FORBIDDEN))
+            .accessDeniedHandler(customAccessDeniedHandler)
         )
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/", "/index.html", "/favicon.ico").permitAll()
@@ -70,10 +72,13 @@ public class SecurityConfig {
         )
         .logout(logout -> logout
             .logoutUrl("/api/auth/logout")
-            .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
+            .logoutSuccessHandler(
+                new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))
+            .permitAll()
         ).sessionManagement(management -> management
             .sessionConcurrency(concurrency -> concurrency
                 .maximumSessions(1)
+                .maxSessionsPreventsLogin(false)
                 .sessionRegistry(sessionRegistry)
             )
         ).rememberMe(remember -> remember

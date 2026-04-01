@@ -17,7 +17,7 @@ public class AdminInitializer implements CommandLineRunner {
   private final PasswordEncoder passwordEncoder;
 
   public void run(String... args) throws Exception {
-    if (!userRepository.existsByEmail("admin@admin.com")) {
+    if (!userRepository.existsByRole(ADMIN)) {
       User admin = new User("admin", "admin@admin.com", passwordEncoder.encode("admin"), null);
       admin.setRole(ADMIN);
       userRepository.save(admin);

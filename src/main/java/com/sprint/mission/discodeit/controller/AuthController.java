@@ -44,8 +44,7 @@ public class AuthController implements AuthApi {
   }
 
   @PutMapping("role")
-  public ResponseEntity<UserDto> updateRole(
-      @RequestBody UserRoleUpdateRequest userRoleUpdateRequest) {
+  public ResponseEntity<UserDto> updateRole(@RequestBody UserRoleUpdateRequest userRoleUpdateRequest) {
     try {
       UserDto userDto = userService.updateUserRole(userRoleUpdateRequest);
       return ResponseEntity.ok(userDto);

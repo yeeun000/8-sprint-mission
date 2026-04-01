@@ -3,7 +3,6 @@ package com.sprint.mission.discodeit.auth.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sprint.mission.discodeit.auth.service.DiscodeitUserDetails;
 import com.sprint.mission.discodeit.dto.data.UserDto;
-import com.sprint.mission.discodeit.entity.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,8 +30,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
       String responseBody = objectMapper.writeValueAsString(user);
       response.getWriter().write(responseBody);
-    }
-    else{
+    } else {
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       response.getWriter().write("Unauthorized");
     }
