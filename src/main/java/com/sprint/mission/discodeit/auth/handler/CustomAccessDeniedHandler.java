@@ -1,13 +1,15 @@
 package com.sprint.mission.discodeit.auth.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sprint.mission.discodeit.exception.ErrorCode;
+import com.sprint.mission.discodeit.exception.ErrorResponse;
+import com.sprint.mission.discodeit.exception.auth.AuthException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
@@ -21,15 +23,13 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
   @Override
   public void handle(HttpServletRequest request,
       HttpServletResponse response,
-      AccessDeniedException accessDeniedException) throws IOException, ServletException{
+      AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
-    Map<String, Object> errorResponse = new HashMap<>();
-    errorResponse.put("success", false);
-    errorResponse.put("error", "ACCESS_DENIED");
-    errorResponse.put("message", "해당 리소스에 접근할 권한이 없습니다.");
-    errorResponse.put("status", 403);
+    ErrorResponse errorResponse = new ErrorResponse(
+        new AuthException(ErrorCode.ACCESS_DENIED),
+        HttpServletResponse.SC_FORBIDDEN);
 
-    response.setContentType("application/json");
+    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     response.setCharacterEncoding("UTF-8");
     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 

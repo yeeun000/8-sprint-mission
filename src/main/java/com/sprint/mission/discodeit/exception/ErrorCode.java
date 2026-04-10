@@ -29,7 +29,10 @@ public enum ErrorCode {
     
     // Server 에러 코드
     INTERNAL_SERVER_ERROR("서버 내부 오류가 발생했습니다."),
-    INVALID_REQUEST("잘못된 요청입니다.");
+    INVALID_REQUEST("잘못된 요청입니다."),
+
+    // 접근 권한 에러 코드
+    ACCESS_DENIED( "접근 권한이 없습니다.");
 
     private final String message;
 
