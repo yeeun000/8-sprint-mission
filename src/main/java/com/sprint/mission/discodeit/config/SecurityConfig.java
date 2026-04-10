@@ -6,6 +6,7 @@ import com.sprint.mission.discodeit.auth.handler.LoginSuccessHandler;
 import com.sprint.mission.discodeit.auth.handler.SpaCsrfTokenRequestHandler;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,7 +17,6 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,8 +29,10 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 @Slf4j
 @Configuration
 @EnableMethodSecurity
-@EnableWebSecurity
 public class SecurityConfig {
+
+  @Value("${discodeit.security.remember-me.key}")
+  private String rememberMeKey;
 
   @Bean
   public SecurityFilterChain filterChain(
@@ -74,7 +76,6 @@ public class SecurityConfig {
             .logoutUrl("/api/auth/logout")
             .logoutSuccessHandler(
                 new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))
-            .permitAll()
         ).sessionManagement(management -> management
             .sessionConcurrency(concurrency -> concurrency
                 .maximumSessions(1)
@@ -83,8 +84,8 @@ public class SecurityConfig {
             )
         ).rememberMe(remember -> remember
             .rememberMeParameter("remember-me")
-            .tokenValiditySeconds(60)
-            .key("remember-key")
+            .tokenValiditySeconds(7 * 24 * 60 * 60)
+            .key(rememberMeKey)
         );
 
     SecurityFilterChain chain = http.build();
