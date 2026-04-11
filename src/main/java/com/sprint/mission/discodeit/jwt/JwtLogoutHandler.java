@@ -1,8 +1,11 @@
 package com.sprint.mission.discodeit.jwt;
 
-import jakarta.servlet.http.Cookie;
+import com.sprint.mission.discodeit.auth.service.DiscodeitUserDetails;
+import com.sprint.mission.discodeit.auth.service.DiscodeitUserDetailsService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -13,33 +16,31 @@ import org.springframework.stereotype.Component;
 public class JwtLogoutHandler implements LogoutHandler {
 
   private final JwtTokenProvider jwtTokenProvider;
+  private final JwtRegistry jwtRegistry;
+  private final DiscodeitUserDetailsService userDetailsService;
 
   @Override
   public void logout(HttpServletRequest request, HttpServletResponse response,
       Authentication authentication) {
+    if (request.getCookies() != null) {
+      Arrays.stream(request.getCookies())
+          .filter(cookie -> cookie.getName().equals(JwtTokenProvider.REFRESH_TOKEN_COOKIE_NAME))
+          .findFirst()
+          .ifPresent(cookie -> {
+            String refreshToken = cookie.getValue();
 
-    String authorizationHeader = request.getHeader("Authorization");
-    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-      String at = authorizationHeader.substring(7);
+            if (jwtTokenProvider.validateRefreshToken(refreshToken)) {
+              String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
+
+              DiscodeitUserDetails userDetails =
+                  (DiscodeitUserDetails) userDetailsService.loadUserByUsername(username);
+
+              UUID userId = userDetails.getUser().id();
+              jwtRegistry.invalidateJwtInformationByUserId(userId);
+            }
+          });
     }
-    String Cookie = extractRefreshToken(request);
     jwtTokenProvider.expireRefreshCookie(response);
-
-  }
-
-  private String extractRefreshToken(HttpServletRequest request) {
-    Cookie[] cookies = request.getCookies();
-
-    if (cookies == null) {
-      return null;
-    }
-
-    for (Cookie cookie : cookies) {
-      if (JwtTokenProvider.REFRESH_TOKEN_COOKIE_NAME.equals(cookie.getName())) {
-        return cookie.getValue();
-      }
-    }
-
-    return null;
   }
 }
+

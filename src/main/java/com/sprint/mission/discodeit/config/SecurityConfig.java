@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.config;
 import com.sprint.mission.discodeit.auth.handler.CustomAccessDeniedHandler;
 import com.sprint.mission.discodeit.auth.handler.LoginFailureHandler;
 import com.sprint.mission.discodeit.auth.handler.SpaCsrfTokenRequestHandler;
+import com.sprint.mission.discodeit.jwt.JwtAuthenticationFilter;
 import com.sprint.mission.discodeit.jwt.JwtLoginSuccessHandler;
 import com.sprint.mission.discodeit.jwt.JwtLogoutHandler;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,6 +25,7 @@ import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
@@ -33,13 +35,10 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-  @Value("${discodeit.security.remember-me.key}")
-  private String rememberMeKey;
-
   @Bean
   public SecurityFilterChain filterChain(
       HttpSecurity http,
-      SessionRegistry sessionRegistry,
+      JwtAuthenticationFilter jwtAuthenticationFilter,
       JwtLoginSuccessHandler jwtLoginSuccessHandler,
       LoginFailureHandler loginFailureHandler,
       JwtLogoutHandler jwtLogoutHandler,
@@ -76,6 +75,7 @@ public class SecurityConfig {
             .requestMatchers("/api/auth/role").hasRole("ADMIN")
             .anyRequest().authenticated()
         )
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .logout(logout -> logout
             .logoutUrl("/api/auth/logout")
             .logoutSuccessHandler(
