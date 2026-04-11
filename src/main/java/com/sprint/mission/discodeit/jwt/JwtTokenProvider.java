@@ -32,10 +32,10 @@ public class JwtTokenProvider {
   private final JWSVerifier refreshTokenVerifier;
 
   public JwtTokenProvider(
-      @Value("${jwt.access-token.secret}") String accessTokenSecret,
-      @Value("${jwt.access-token.exp}") int accessTokenExpirationMs,
-      @Value("${jwt.refresh-token.secret}") String refreshTokenSecret,
-      @Value("${jwt.refresh-token.exp}") int refreshTokenExpirationMs
+      @Value("${discodeit.jwt.access-token-secret}") String accessTokenSecret,
+      @Value("${discodeit.jwt.access-token-exp}") int accessTokenExpirationMs,
+      @Value("${discodeit.jwt.refresh-token-secret}") String refreshTokenSecret,
+      @Value("${discodeit.jwt.refresh-token-exp}") int refreshTokenExpirationMs
   ) throws JOSEException {
     this.accessTokenExpirationMs = accessTokenExpirationMs;
     this.refreshTokenExpirationMs = refreshTokenExpirationMs;
@@ -142,6 +142,16 @@ public class JwtTokenProvider {
       return valid;
     } catch (Exception e) {
       return false;
+    }
+  }
+
+  public String getUsernameFromToken(String token) {
+    try {
+      SignedJWT signedJWT = SignedJWT.parse(token);
+      String subject = signedJWT.getJWTClaimsSet().getSubject();
+      return subject;
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Invalid JWT token", e);
     }
   }
 
