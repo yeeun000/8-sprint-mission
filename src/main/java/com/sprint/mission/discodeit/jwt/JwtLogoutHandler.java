@@ -30,12 +30,11 @@ public class JwtLogoutHandler implements LogoutHandler {
             String refreshToken = cookie.getValue();
 
             if (jwtTokenProvider.validateRefreshToken(refreshToken)) {
-              String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
-
+              String userIdStr = jwtTokenProvider.getUserIdFromToken(refreshToken);
+              UUID userId = UUID.fromString(userIdStr);
               DiscodeitUserDetails userDetails =
-                  (DiscodeitUserDetails) userDetailsService.loadUserByUsername(username);
+                  (DiscodeitUserDetails) userDetailsService.loadUserByUserId(userId);
 
-              UUID userId = userDetails.getUser().id();
               jwtRegistry.invalidateJwtInformationByUserId(userId);
             }
           });

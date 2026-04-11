@@ -11,6 +11,7 @@ import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.exception.user.UserAlreadyExistsException;
 import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
+import com.sprint.mission.discodeit.jwt.JwtRegistry;
 import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
@@ -22,8 +23,6 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.session.SessionInformation;
-import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +37,7 @@ public class BasicUserService implements UserService {
   private final BinaryContentRepository binaryContentRepository;
   private final BinaryContentStorage binaryContentStorage;
   private final PasswordEncoder passwordEncoder;
-  private final SessionRegistry sessionRegistry;
+  private final JwtRegistry jwtRegistry;
 
   @Transactional
   @Override
@@ -141,15 +140,13 @@ public class BasicUserService implements UserService {
 
     String newPassword = userUpdateRequest.newPassword();
 
-    if (newPassword != null) {
-      newPassword = passwordEncoder.encode(newPassword);
-      user.update(newUsername, newEmail, newPassword, nullableProfile);
-    } else {
-      user.update(newUsername, newEmail, null, nullableProfile);
-    }
-
+    String encodedPassword = (newPassword != null) ? passwordEncoder.encode(newPassword) : null;
+    user.update(newUsername, newEmail, encodedPassword, nullableProfile);
+    UserDto updatedUserDto = userMapper.toDto(user, isOnline(user.getId()));
+    jwtRegistry.updateJwtInformationUser(userId, updatedUserDto);
+    updateSecurityContext(user);
     log.info("사용자 수정 완료: id={}", userId);
-    return userMapper.toDto(user, isOnline(user.getId()));
+    return updatedUserDto;
   }
 
   @PreAuthorize("#userId == authentication.principal.user.id")
@@ -174,33 +171,22 @@ public class BasicUserService implements UserService {
         .orElseThrow(() -> UserNotFoundException.withId(userRoleUpdateRequest.userId()));
 
     user.setRole(userRoleUpdateRequest.role());
-    expireUserSessions(user.getId());
-    return userMapper.toDto(user, isOnline(user.getId()));
-
+    UserDto updatedUserDto = userMapper.toDto(user, isOnline(user.getId()));
+    jwtRegistry.updateJwtInformationUser(user.getId(), updatedUserDto);
+    return updatedUserDto;
   }
 
   private boolean isOnline(UUID userId) {
-    return sessionRegistry.getAllPrincipals().stream()
-        .filter(principal -> principal instanceof DiscodeitUserDetails)
-        .map(principal -> (DiscodeitUserDetails) principal)
-        .anyMatch(details -> details.getUser().id().equals(userId));
+    return jwtRegistry.hasActiveJwtInformationByUserId(userId);
   }
 
-  private void expireUserSessions(UUID userId) {
-    List<Object> allPrincipals = sessionRegistry.getAllPrincipals();
-    for (Object principal : allPrincipals) {
-      DiscodeitUserDetails discodeitUserDetails = (DiscodeitUserDetails) principal;
-      UUID Id = discodeitUserDetails.getUser().id();
+  private void updateSecurityContext(User user) {
+    org.springframework.security.core.Authentication auth =
+        org.springframework.security.core.context.SecurityContextHolder.getContext()
+            .getAuthentication();
 
-      if (Id.equals(userId)) {
-        List<SessionInformation> sessions = sessionRegistry.getAllSessions(principal, false);
-
-        for (SessionInformation session : sessions) {
-          session.expireNow();
-        }
-
-        break;
-      }
+    if (auth != null && auth.getPrincipal() instanceof DiscodeitUserDetails userDetails) {
+      userDetails.updateUser(userMapper.toDto(user, true));
     }
   }
 }

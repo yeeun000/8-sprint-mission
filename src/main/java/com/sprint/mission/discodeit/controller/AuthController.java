@@ -11,6 +11,7 @@ import com.sprint.mission.discodeit.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -59,10 +60,10 @@ public class AuthController implements AuthApi {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
+    String userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
 
-    DiscodeitUserDetails userDetails = (DiscodeitUserDetails) discodeitUserDetailsService.loadUserByUsername(
-        username);
+    DiscodeitUserDetails userDetails = (DiscodeitUserDetails) discodeitUserDetailsService.loadUserByUserId(
+        UUID.fromString(userId));
 
     try {
       String newAccessToken = jwtTokenProvider.generateAccessToken(userDetails);

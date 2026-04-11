@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.jwt;
 
+import com.sprint.mission.discodeit.dto.data.UserDto;
 import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
@@ -60,14 +61,13 @@ public class InMemoryJwtRegistry implements JwtRegistry {
     UUID userId = newJwtInformation.getUserDto().id();
     Queue<JwtInformation> token = origin.get(userId);
 
-    if(token != null) {
+    if (token != null) {
       token.removeIf(jwtInformation -> jwtInformation.getRefreshToken().equals(refreshToken));
       token.offer(newJwtInformation);
       while (token.size() > maxActiveJwtCount) {
         token.poll();
       }
-    }
-    else{
+    } else {
       registerJwtInformation(newJwtInformation);
     }
   }
@@ -76,10 +76,22 @@ public class InMemoryJwtRegistry implements JwtRegistry {
   @Override
   public void clearExpiredJwtInformation() {
     for (Queue<JwtInformation> token : origin.values()) {
-      token.removeIf(jwtInformation -> !jwtTokenProvider.validateRefreshToken(jwtInformation.getRefreshToken()));
+      token.removeIf(jwtInformation -> !jwtTokenProvider.validateRefreshToken(
+          jwtInformation.getRefreshToken()));
     }
     origin.entrySet().removeIf(entry -> entry.getValue().isEmpty());
 
+  }
+
+  @Override
+  public void updateJwtInformationUser(UUID userId, UserDto newUserDto) {
+    Queue<JwtInformation> tokens = origin.get(userId);
+    if (tokens != null) {
+      for (JwtInformation jwtInformation : tokens) {
+        jwtInformation.updateUser(newUserDto);
+      }
+
+    }
   }
 
 }

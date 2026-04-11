@@ -10,7 +10,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -38,11 +41,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (!jwtTokenProvider.validateAccessToken(token)) {
           throw new AuthException(ErrorCode.AUTHENTICATION_FAILED);
         }
-        if (!jwtRegistry.hasActiveJwtInformationByAccessToken(token)) {
-          throw new AuthException(ErrorCode.AUTHENTICATION_FAILED);
-        }
-        String username = jwtTokenProvider.getUsernameFromToken(token);
-        UserDetails userDetails = discodeitUserDetailsService.loadUserByUsername(username);
+
+        String userId = jwtTokenProvider.getUserIdFromToken(token);
+        UserDetails userDetails = discodeitUserDetailsService.loadUserByUserId(
+            UUID.fromString(userId));
         UsernamePasswordAuthenticationToken authentication =
             new UsernamePasswordAuthenticationToken(
                 userDetails,
@@ -55,6 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     } catch (Exception e) {
       SecurityContextHolder.clearContext();
+      log.error("JWT 인증 필터 에러: {}", e.getMessage()); // 에러 원인 출력
       sendErrorResponse(response);
       return;
     }

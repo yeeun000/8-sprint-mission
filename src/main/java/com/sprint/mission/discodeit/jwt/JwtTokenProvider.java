@@ -67,7 +67,7 @@ public class JwtTokenProvider {
     Date expiryDate = new Date(now.getTime() + expirationMs);
 
     JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-        .subject(discodeitUserDetails.getUsername())
+        .subject(discodeitUserDetails.getUser().id().toString())
         .jwtID(tokenId)
         .claim("userId", discodeitUserDetails.getUser().id())
         .claim("type", type)
@@ -150,6 +150,15 @@ public class JwtTokenProvider {
       SignedJWT signedJWT = SignedJWT.parse(token);
       String subject = signedJWT.getJWTClaimsSet().getSubject();
       return subject;
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Invalid JWT token", e);
+    }
+  }
+
+  public String getUserIdFromToken(String token) {
+    try {
+      SignedJWT signedJWT = SignedJWT.parse(token);
+      return signedJWT.getJWTClaimsSet().getSubject();
     } catch (Exception e) {
       throw new IllegalArgumentException("Invalid JWT token", e);
     }
