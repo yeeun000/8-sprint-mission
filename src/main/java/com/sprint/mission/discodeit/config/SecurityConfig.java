@@ -70,6 +70,7 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.POST, "/api/users").permitAll()   // 회원가입
             .requestMatchers("/api/auth/login").permitAll()               // 로그인
             .requestMatchers("/api/auth/logout").permitAll()              // 로그아웃
+            .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
             .requestMatchers("/api/auth/role").hasRole("ADMIN")
             .anyRequest().authenticated()
         )
@@ -79,10 +80,6 @@ public class SecurityConfig {
                 new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))
         ).sessionManagement(session -> session
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        ).rememberMe(remember -> remember
-            .rememberMeParameter("remember-me")
-            .tokenValiditySeconds(7 * 24 * 60 * 60)
-            .key(rememberMeKey)
         );
 
     SecurityFilterChain chain = http.build();
