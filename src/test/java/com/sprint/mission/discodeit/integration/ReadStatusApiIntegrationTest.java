@@ -11,13 +11,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.channelDTO.ChannelDto;
-import com.sprint.mission.discodeit.dto.channelDTO.PublicChannelCreateRequest;
-import com.sprint.mission.discodeit.dto.readStatusDTO.ReadStatusCreateRequest;
-import com.sprint.mission.discodeit.dto.readStatusDTO.ReadStatusDto;
-import com.sprint.mission.discodeit.dto.readStatusDTO.ReadStatusUpdateRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserCreateRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserDto;
+import com.sprint.mission.discodeit.dto.data.ChannelDto;
+import com.sprint.mission.discodeit.dto.data.ReadStatusDto;
+import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
+import com.sprint.mission.discodeit.dto.request.ReadStatusCreateRequest;
+import com.sprint.mission.discodeit.dto.request.ReadStatusUpdateRequest;
+import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.ReadStatusService;
 import com.sprint.mission.discodeit.service.UserService;
@@ -65,7 +65,7 @@ class ReadStatusApiIntegrationTest {
         "readstatus@example.com",
         "Password1!"
     );
-    UserDto user = userService.create(userRequest, null);
+    UserDto user = userService.create(userRequest, Optional.empty());
 
     // 공개 채널 생성
     PublicChannelCreateRequest channelRequest = new PublicChannelCreateRequest(
@@ -105,7 +105,7 @@ class ReadStatusApiIntegrationTest {
         "duplicate@example.com",
         "Password1!"
     );
-    UserDto user = userService.create(userRequest, null);
+    UserDto user = userService.create(userRequest, Optional.empty());
 
     // 공개 채널 생성
     PublicChannelCreateRequest channelRequest = new PublicChannelCreateRequest(
@@ -154,7 +154,7 @@ class ReadStatusApiIntegrationTest {
         "update@example.com",
         "Password1!"
     );
-    UserDto user = userService.create(userRequest, null);
+    UserDto user = userService.create(userRequest, Optional.empty());
 
     // 공개 채널 생성
     PublicChannelCreateRequest channelRequest = new PublicChannelCreateRequest(
@@ -222,7 +222,7 @@ class ReadStatusApiIntegrationTest {
         "list@example.com",
         "Password1!"
     );
-    UserDto user = userService.create(userRequest, null);
+    UserDto user = userService.create(userRequest, Optional.empty());
 
     // 여러 채널 생성
     PublicChannelCreateRequest channelRequest1 = new PublicChannelCreateRequest(

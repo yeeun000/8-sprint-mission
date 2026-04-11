@@ -7,18 +7,18 @@ import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.channelDTO.ChannelDto;
-import com.sprint.mission.discodeit.dto.channelDTO.PrivateChannelCreateRequest;
-import com.sprint.mission.discodeit.dto.channelDTO.PublicChannelCreateRequest;
-import com.sprint.mission.discodeit.dto.channelDTO.PublicChannelUpdateRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserDto;
-import com.sprint.mission.discodeit.entity.Channel.ChannelType;
+import com.sprint.mission.discodeit.dto.data.ChannelDto;
+import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.request.PrivateChannelCreateRequest;
+import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
+import com.sprint.mission.discodeit.dto.request.PublicChannelUpdateRequest;
+import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.exception.channel.ChannelNotFoundException;
 import com.sprint.mission.discodeit.exception.channel.PrivateChannelUpdateException;
 import com.sprint.mission.discodeit.service.ChannelService;
@@ -175,7 +175,7 @@ class ChannelControllerTest {
     );
 
     given(channelService.update(eq(nonExistentChannelId), any(PublicChannelUpdateRequest.class)))
-        .willThrow(new ChannelNotFoundException(nonExistentChannelId));
+        .willThrow(ChannelNotFoundException.withId(nonExistentChannelId));
 
     // When & Then
     mockMvc.perform(patch("/api/channels/{channelId}", nonExistentChannelId)
@@ -195,7 +195,7 @@ class ChannelControllerTest {
     );
 
     given(channelService.update(eq(privateChannelId), any(PublicChannelUpdateRequest.class)))
-        .willThrow(new PrivateChannelUpdateException(privateChannelId));
+        .willThrow(PrivateChannelUpdateException.forChannel(privateChannelId));
 
     // When & Then
     mockMvc.perform(patch("/api/channels/{channelId}", privateChannelId)
@@ -222,7 +222,7 @@ class ChannelControllerTest {
   void deleteChannel_Failure_ChannelNotFound() throws Exception {
     // Given
     UUID nonExistentChannelId = UUID.randomUUID();
-    willThrow(new ChannelNotFoundException(nonExistentChannelId))
+    willThrow(ChannelNotFoundException.withId(nonExistentChannelId))
         .given(channelService).delete(nonExistentChannelId);
 
     // When & Then

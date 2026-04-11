@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentCreateRequest;
-import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDto;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
+import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.exception.binarycontent.BinaryContentNotFoundException;
 import com.sprint.mission.discodeit.mapper.BinaryContentMapper;
@@ -16,67 +16,65 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
-@Service
 @RequiredArgsConstructor
+@Service
 public class BasicBinaryContentService implements BinaryContentService {
 
   private final BinaryContentRepository binaryContentRepository;
   private final BinaryContentMapper binaryContentMapper;
   private final BinaryContentStorage binaryContentStorage;
 
-  @Override
   @Transactional
-  public BinaryContentDto create(BinaryContentCreateRequest binaryContentRequest) {
+  @Override
+  public BinaryContentDto create(BinaryContentCreateRequest request) {
+    log.debug("바이너리 컨텐츠 생성 시작: fileName={}, size={}, contentType={}", 
+        request.fileName(), request.bytes().length, request.contentType());
 
-    log.debug("파일 생성 요청 - fileName: {}, contentType: {}, size: {}",
-        binaryContentRequest.fileName(),
-        binaryContentRequest.contentType(),
-        binaryContentRequest.bytes().length);
-
+    String fileName = request.fileName();
+    byte[] bytes = request.bytes();
+    String contentType = request.contentType();
     BinaryContent binaryContent = new BinaryContent(
-        binaryContentRequest.fileName(),
-        (long) binaryContentRequest.bytes().length,
-        binaryContentRequest.contentType()
+        fileName,
+        (long) bytes.length,
+        contentType
     );
-    byte[] bytes = binaryContentRequest.bytes();
-
     binaryContentRepository.save(binaryContent);
     binaryContentStorage.put(binaryContent.getId(), bytes);
 
-    log.info("파일 생성 완료 - id: {}", binaryContent.getId());
-
+    log.info("바이너리 컨텐츠 생성 완료: id={}, fileName={}, size={}", 
+        binaryContent.getId(), fileName, bytes.length);
     return binaryContentMapper.toDto(binaryContent);
   }
 
   @Override
-  @Transactional(readOnly = true)
-  public BinaryContentDto find(UUID id) {
-    return binaryContentRepository.findById(id)
+  public BinaryContentDto find(UUID binaryContentId) {
+    log.debug("바이너리 컨텐츠 조회 시작: id={}", binaryContentId);
+    BinaryContentDto dto = binaryContentRepository.findById(binaryContentId)
         .map(binaryContentMapper::toDto)
-        .orElseThrow(() -> new BinaryContentNotFoundException(id));
+        .orElseThrow(() -> BinaryContentNotFoundException.withId(binaryContentId));
+    log.info("바이너리 컨텐츠 조회 완료: id={}, fileName={}", 
+        dto.id(), dto.fileName());
+    return dto;
   }
 
   @Override
-  @Transactional(readOnly = true)
-  public List<BinaryContentDto> findAllByIdIn(List<UUID> id) {
-    return binaryContentRepository.findAllById(id)
-        .stream()
+  public List<BinaryContentDto> findAllByIdIn(List<UUID> binaryContentIds) {
+    log.debug("바이너리 컨텐츠 목록 조회 시작: ids={}", binaryContentIds);
+    List<BinaryContentDto> dtos = binaryContentRepository.findAllById(binaryContentIds).stream()
         .map(binaryContentMapper::toDto)
         .toList();
+    log.info("바이너리 컨텐츠 목록 조회 완료: 조회된 항목 수={}", dtos.size());
+    return dtos;
   }
 
-  @Override
   @Transactional
-  public void delete(UUID id) {
-
-    log.debug("파일 삭제 요청 - id: {}", id);
-
-    if (!binaryContentRepository.existsById(id)) {
-      log.warn("파일 삭제 실패 - id: {}", id);
-      throw new BinaryContentNotFoundException(id);
+  @Override
+  public void delete(UUID binaryContentId) {
+    log.debug("바이너리 컨텐츠 삭제 시작: id={}", binaryContentId);
+    if (!binaryContentRepository.existsById(binaryContentId)) {
+      throw BinaryContentNotFoundException.withId(binaryContentId);
     }
-    binaryContentRepository.deleteById(id);
-
-    log.info("파일 삭제 완료 - id: {}", id);
+    binaryContentRepository.deleteById(binaryContentId);
+    log.info("바이너리 컨텐츠 삭제 완료: id={}", binaryContentId);
   }
 }

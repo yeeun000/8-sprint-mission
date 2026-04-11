@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.binaryContentDTO.BinaryContentDto;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
 import com.sprint.mission.discodeit.exception.binarycontent.BinaryContentNotFoundException;
 import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
@@ -71,7 +71,7 @@ class BinaryContentControllerTest {
     UUID nonExistentId = UUID.randomUUID();
 
     given(binaryContentService.find(nonExistentId))
-        .willThrow(new BinaryContentNotFoundException(nonExistentId));
+        .willThrow(BinaryContentNotFoundException.withId(nonExistentId));
 
     // When & Then
     mockMvc.perform(get("/api/binaryContents/{binaryContentId}", nonExistentId)
@@ -140,7 +140,7 @@ class BinaryContentControllerTest {
     UUID nonExistentId = UUID.randomUUID();
 
     given(binaryContentService.find(nonExistentId))
-        .willThrow(new BinaryContentNotFoundException(nonExistentId));
+        .willThrow(BinaryContentNotFoundException.withId(nonExistentId));
 
     // When & Then
     mockMvc.perform(get("/api/binaryContents/{binaryContentId}/download", nonExistentId))

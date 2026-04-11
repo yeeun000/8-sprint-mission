@@ -1,15 +1,15 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-import com.sprint.mission.discodeit.dto.userDTO.UserCreateRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserDto;
-import com.sprint.mission.discodeit.dto.userDTO.UserUpdateRequest;
+import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
+import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.exception.user.UserAlreadyExistsException;
 import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
@@ -67,7 +67,7 @@ class BasicUserServiceTest {
     given(userMapper.toDto(any(User.class))).willReturn(userDto);
 
     // when
-    UserDto result = userService.create(request, null);
+    UserDto result = userService.create(request, Optional.empty());
 
     // then
     assertThat(result).isEqualTo(userDto);
@@ -82,7 +82,7 @@ class BasicUserServiceTest {
     given(userRepository.existsByEmail(eq(email))).willReturn(true);
 
     // when & then
-    assertThatThrownBy(() -> userService.create(request, null))
+    assertThatThrownBy(() -> userService.create(request, Optional.empty()))
         .isInstanceOf(UserAlreadyExistsException.class);
   }
 
@@ -95,7 +95,7 @@ class BasicUserServiceTest {
     given(userRepository.existsByUsername(eq(username))).willReturn(true);
 
     // when & then
-    assertThatThrownBy(() -> userService.create(request, null))
+    assertThatThrownBy(() -> userService.create(request, Optional.empty()))
         .isInstanceOf(UserAlreadyExistsException.class);
   }
 
@@ -139,7 +139,7 @@ class BasicUserServiceTest {
     given(userMapper.toDto(any(User.class))).willReturn(userDto);
 
     // when
-    UserDto result = userService.update(userId, request, null);
+    UserDto result = userService.update(userId, request, Optional.empty());
 
     // then
     assertThat(result).isEqualTo(userDto);
@@ -154,7 +154,7 @@ class BasicUserServiceTest {
     given(userRepository.findById(eq(userId))).willReturn(Optional.empty());
 
     // when & then
-    assertThatThrownBy(() -> userService.update(userId, request, null))
+    assertThatThrownBy(() -> userService.update(userId, request, Optional.empty()))
         .isInstanceOf(UserNotFoundException.class);
   }
 

@@ -1,9 +1,9 @@
 package com.sprint.mission.discodeit.service;
 
-import com.sprint.mission.discodeit.dto.LoginRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserDto;
+import com.sprint.mission.discodeit.auth.service.DiscodeitUserDetails;
+import com.sprint.mission.discodeit.dto.data.UserDto;
 
 public interface AuthService {
 
-  UserDto login(LoginRequest loginRequest);
+  UserDto getCurrentUserInfo(DiscodeitUserDetails discodeitUserDetails);
 }

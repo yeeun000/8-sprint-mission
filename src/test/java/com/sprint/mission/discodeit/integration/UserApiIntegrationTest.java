@@ -11,10 +11,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.userDTO.UserCreateRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserDto;
-import com.sprint.mission.discodeit.dto.userDTO.UserStatusUpdateRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserUpdateRequest;
+import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
+import com.sprint.mission.discodeit.dto.request.UserStatusUpdateRequest;
+import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
 import com.sprint.mission.discodeit.service.UserService;
 import java.time.Instant;
 import java.util.Optional;
@@ -124,8 +124,8 @@ class UserApiIntegrationTest {
         "Password1!"
     );
 
-    userService.create(userRequest1, null);
-    userService.create(userRequest2, null);
+    userService.create(userRequest1, Optional.empty());
+    userService.create(userRequest2, Optional.empty());
 
     // When & Then
     mockMvc.perform(get("/api/users")
@@ -149,7 +149,7 @@ class UserApiIntegrationTest {
         "Password1!"
     );
 
-    UserDto createdUser = userService.create(createRequest, null);
+    UserDto createdUser = userService.create(createRequest, Optional.empty());
     UUID userId = createdUser.id();
 
     UserUpdateRequest updateRequest = new UserUpdateRequest(
@@ -228,7 +228,7 @@ class UserApiIntegrationTest {
         "Password1!"
     );
 
-    UserDto createdUser = userService.create(createRequest, null);
+    UserDto createdUser = userService.create(createRequest, Optional.empty());
     UUID userId = createdUser.id();
 
     // When & Then
@@ -263,7 +263,7 @@ class UserApiIntegrationTest {
         "Password1!"
     );
 
-    UserDto createdUser = userService.create(createRequest, null);
+    UserDto createdUser = userService.create(createRequest, Optional.empty());
     UUID userId = createdUser.id();
 
     Instant newLastActiveAt = Instant.now();

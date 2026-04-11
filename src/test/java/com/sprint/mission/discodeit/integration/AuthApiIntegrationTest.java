@@ -7,8 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.LoginRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserCreateRequest;
+import com.sprint.mission.discodeit.dto.request.LoginRequest;
+import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.service.UserService;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -47,7 +47,7 @@ class AuthApiIntegrationTest {
             "Password1!"
         );
         
-        userService.create(userRequest, null);
+        userService.create(userRequest, Optional.empty());
         
         // 로그인 요청
         LoginRequest loginRequest = new LoginRequest(
@@ -96,7 +96,7 @@ class AuthApiIntegrationTest {
             "Password1!"
         );
         
-        userService.create(userRequest, null);
+        userService.create(userRequest, Optional.empty());
         
         // 잘못된 비밀번호로 로그인 시도
         LoginRequest loginRequest = new LoginRequest(

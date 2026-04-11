@@ -8,12 +8,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-import com.sprint.mission.discodeit.dto.channelDTO.ChannelDto;
-import com.sprint.mission.discodeit.dto.channelDTO.PrivateChannelCreateRequest;
-import com.sprint.mission.discodeit.dto.channelDTO.PublicChannelCreateRequest;
-import com.sprint.mission.discodeit.dto.channelDTO.PublicChannelUpdateRequest;
+import com.sprint.mission.discodeit.dto.data.ChannelDto;
+import com.sprint.mission.discodeit.dto.request.PrivateChannelCreateRequest;
+import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
+import com.sprint.mission.discodeit.dto.request.PublicChannelUpdateRequest;
 import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.entity.Channel.ChannelType;
+import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.exception.channel.ChannelNotFoundException;
@@ -85,7 +85,7 @@ class BasicChannelServiceTest {
     // given
     PublicChannelCreateRequest request = new PublicChannelCreateRequest(channelName,
         channelDescription);
-    given(channelMapper.toDto(any(Channel.class), anyList(), any(Instant.class))).willReturn(channelDto);
+    given(channelMapper.toDto(any(Channel.class))).willReturn(channelDto);
 
     // when
     ChannelDto result = channelService.create(request);
@@ -102,7 +102,7 @@ class BasicChannelServiceTest {
     List<UUID> participantIds = List.of(userId);
     PrivateChannelCreateRequest request = new PrivateChannelCreateRequest(participantIds);
     given(userRepository.findAllById(eq(participantIds))).willReturn(List.of(user));
-    given(channelMapper.toDto(any(Channel.class), anyList(), any(Instant.class))).willReturn(channelDto);
+    given(channelMapper.toDto(any(Channel.class))).willReturn(channelDto);
 
     // when
     ChannelDto result = channelService.create(request);
@@ -118,7 +118,7 @@ class BasicChannelServiceTest {
   void findChannel_Success() {
     // given
     given(channelRepository.findById(eq(channelId))).willReturn(Optional.of(channel));
-    given(channelMapper.toDto(any(Channel.class), anyList(), any(Instant.class))).willReturn(channelDto);
+    given(channelMapper.toDto(any(Channel.class))).willReturn(channelDto);
 
     // when
     ChannelDto result = channelService.find(channelId);
@@ -146,7 +146,7 @@ class BasicChannelServiceTest {
     given(readStatusRepository.findAllByUserId(eq(userId))).willReturn(readStatuses);
     given(channelRepository.findAllByTypeOrIdIn(eq(ChannelType.PUBLIC), eq(List.of(channel.getId()))))
         .willReturn(List.of(channel));
-    given(channelMapper.toDto(any(Channel.class), anyList(), any(Instant.class))).willReturn(channelDto);
+    given(channelMapper.toDto(any(Channel.class))).willReturn(channelDto);
 
     // when
     List<ChannelDto> result = channelService.findAllByUserId(userId);
@@ -164,7 +164,7 @@ class BasicChannelServiceTest {
     PublicChannelUpdateRequest request = new PublicChannelUpdateRequest(newName, newDescription);
 
     given(channelRepository.findById(eq(channelId))).willReturn(Optional.of(channel));
-    given(channelMapper.toDto(any(Channel.class), anyList(), any(Instant.class))).willReturn(channelDto);
+    given(channelMapper.toDto(any(Channel.class))).willReturn(channelDto);
 
     // when
     ChannelDto result = channelService.update(channelId, request);

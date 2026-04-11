@@ -11,13 +11,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.channelDTO.ChannelDto;
-import com.sprint.mission.discodeit.dto.channelDTO.PublicChannelCreateRequest;
-import com.sprint.mission.discodeit.dto.messageDTO.MessageCreateRequest;
-import com.sprint.mission.discodeit.dto.messageDTO.MessageDto;
-import com.sprint.mission.discodeit.dto.messageDTO.MessageUpdateRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserCreateRequest;
-import com.sprint.mission.discodeit.dto.userDTO.UserDto;
+import com.sprint.mission.discodeit.dto.data.ChannelDto;
+import com.sprint.mission.discodeit.dto.data.MessageDto;
+import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
+import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
+import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
+import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
@@ -75,7 +75,7 @@ class MessageApiIntegrationTest {
         "Password1!"
     );
 
-    UserDto user = userService.create(userRequest, null);
+    UserDto user = userService.create(userRequest, Optional.empty());
 
     // 메시지 생성 요청
     MessageCreateRequest createRequest = new MessageCreateRequest(
@@ -153,7 +153,7 @@ class MessageApiIntegrationTest {
         "Password1!"
     );
 
-    UserDto user = userService.create(userRequest, null);
+    UserDto user = userService.create(userRequest, Optional.empty());
 
     // 메시지 생성
     MessageCreateRequest messageRequest1 = new MessageCreateRequest(
@@ -203,7 +203,7 @@ class MessageApiIntegrationTest {
         "Password1!"
     );
 
-    UserDto user = userService.create(userRequest, null);
+    UserDto user = userService.create(userRequest, Optional.empty());
 
     // 메시지 생성
     MessageCreateRequest createRequest = new MessageCreateRequest(
@@ -270,7 +270,7 @@ class MessageApiIntegrationTest {
         "Password1!"
     );
 
-    UserDto user = userService.create(userRequest, null);
+    UserDto user = userService.create(userRequest, Optional.empty());
 
     // 메시지 생성
     MessageCreateRequest createRequest = new MessageCreateRequest(
