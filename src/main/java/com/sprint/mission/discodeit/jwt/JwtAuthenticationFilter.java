@@ -41,6 +41,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (!jwtTokenProvider.validateAccessToken(token)) {
           throw new AuthException(ErrorCode.AUTHENTICATION_FAILED);
         }
+        if (!jwtRegistry.hasActiveJwtInformationByAccessToken(token)) {
+          throw new AuthException(ErrorCode.AUTHENTICATION_FAILED);
+        }
 
         String userId = jwtTokenProvider.getUserIdFromToken(token);
         UserDetails userDetails = discodeitUserDetailsService.loadUserByUserId(

@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public interface JwtRegistry {
 
-  void registerJwtInformation(JwtInformation jwthformation);
+  void registerJwtInformation(JwtInformation jwtInformation);
 
   void invalidateJwtInformationByUserId(UUID userId);
 
