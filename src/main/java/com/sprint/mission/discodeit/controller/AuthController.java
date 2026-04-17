@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.auth.service.DiscodeitUserDetailsService;
 import com.sprint.mission.discodeit.controller.api.AuthApi;
 import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.UserRoleUpdateRequest;
+import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import com.sprint.mission.discodeit.jwt.JwtDto;
 import com.sprint.mission.discodeit.jwt.JwtTokenProvider;
 import com.sprint.mission.discodeit.service.UserService;
@@ -47,8 +48,12 @@ public class AuthController implements AuthApi {
     try {
       UserDto userDto = userService.updateUserRole(userRoleUpdateRequest);
       return ResponseEntity.ok(userDto);
-    } catch (IllegalArgumentException e) {
-      return ResponseEntity.notFound().build();
+    } catch (UserNotFoundException e) {
+      log.warn("사용자 없음: {}", e.getMessage());
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    } catch (Exception e) {
+      log.warn("사용자 역할 변경 실패: {}", e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
 
@@ -57,6 +62,7 @@ public class AuthController implements AuthApi {
     String refreshToken = extractRefreshToken(request);
 
     if (refreshToken == null || !jwtTokenProvider.validateRefreshToken(refreshToken)) {
+      log.warn("refresh token 없음");
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
@@ -75,7 +81,14 @@ public class AuthController implements AuthApi {
       JwtDto jwtDto = new JwtDto(userDto, newAccessToken);
       return ResponseEntity.ok(jwtDto);
 
+    } catch (UserNotFoundException e) {
+      log.warn("사용자 없음: {}", e.getMessage());
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    } catch (IllegalArgumentException e) {
+      log.warn("잘못된 토큰: {}", e.getMessage());
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     } catch (Exception e) {
+      log.warn("refresh token 실패: {}", e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
