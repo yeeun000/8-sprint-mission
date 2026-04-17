@@ -1,6 +1,5 @@
 package com.sprint.mission.discodeit.jwt;
 
-import com.sprint.mission.discodeit.dto.data.UserDto;
 import java.util.UUID;
 
 public interface JwtRegistry {
@@ -19,5 +18,4 @@ public interface JwtRegistry {
 
   void clearExpiredJwtInformation();
 
-  void updateJwtInformationUser(UUID userId, UserDto newUserDto);
 }

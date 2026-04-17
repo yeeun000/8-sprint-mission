@@ -8,4 +8,7 @@ public record JwtInformation(
     String refreshToken
 ) {
 
+  public JwtInformation rotate(String newAccess, String newRefresh) {
+    return new JwtInformation(this.userDto, newAccess, newRefresh);
+  }
 }
