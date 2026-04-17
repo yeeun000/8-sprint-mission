@@ -11,6 +11,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -38,8 +39,11 @@ public class JwtLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         String accessToken = tokenProvider.generateAccessToken(discodeitUserDetails);
         String refreshToken = tokenProvider.generateRefreshToken(discodeitUserDetails);
+        Instant accessExpiry = tokenProvider.getAccessTokenExpiry(accessToken);
+        Instant refreshExpiry = tokenProvider.getRefreshTokenExpiry(refreshToken);
 
-        JwtInformation jwtInfo = new JwtInformation(discodeitUserDetails.getUser(), accessToken, refreshToken);
+        JwtInformation jwtInfo = new JwtInformation(discodeitUserDetails.getUser(), accessToken,
+            refreshToken, accessExpiry, refreshExpiry);
         jwtRegistry.registerJwtInformation(jwtInfo);
 
         tokenProvider.addRefreshCookie(response, refreshToken);

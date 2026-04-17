@@ -13,6 +13,7 @@ import com.sprint.mission.discodeit.auth.service.DiscodeitUserDetails;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
@@ -164,6 +165,31 @@ public class JwtTokenProvider {
     }
   }
 
+  public Instant getAccessTokenExpiry(String token) {
+    try {
+      SignedJWT signedJWT = SignedJWT.parse(token);
+      if (!signedJWT.verify(accessTokenVerifier)) {
+        throw new IllegalArgumentException("Invalid access token");
+      }
+      Date expiration = signedJWT.getJWTClaimsSet().getExpirationTime();
+      return expiration.toInstant();
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Invalid JWT token", e);
+    }
+  }
+
+  public Instant getRefreshTokenExpiry(String token) {
+    try {
+      SignedJWT signedJWT = SignedJWT.parse(token);
+      if (!signedJWT.verify(refreshTokenVerifier)) {
+        throw new IllegalArgumentException("Invalid refresh token");
+      }
+      Date expiration = signedJWT.getJWTClaimsSet().getExpirationTime();
+      return expiration.toInstant();
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Invalid JWT token", e);
+    }
+  }
 
 }
 

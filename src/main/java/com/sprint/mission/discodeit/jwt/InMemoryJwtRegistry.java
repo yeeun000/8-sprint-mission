@@ -63,7 +63,10 @@ public class InMemoryJwtRegistry implements JwtRegistry {
 
   @Override
   public boolean hasActiveJwtInformationByUserId(UUID userId) {
-    return origin.containsKey(userId);
+    Queue<JwtInformation> queue = origin.get(userId);
+    if (queue == null) return false;
+    return queue.stream()
+        .anyMatch(info -> !info.isRefreshTokenExpired());
   }
 
   @Override
@@ -106,8 +109,8 @@ public class InMemoryJwtRegistry implements JwtRegistry {
       Queue<JwtInformation> queue = entry.getValue();
       queue.removeIf(jwtInformation -> {
         boolean isExpired =
-            !jwtTokenProvider.validateAccessToken(jwtInformation.accessToken()) ||
-                !jwtTokenProvider.validateRefreshToken(jwtInformation.refreshToken());
+            jwtInformation.isAccessTokenExpired()
+                || jwtInformation.isRefreshTokenExpired();
         if (isExpired) {
           removeTokenIndex(
               jwtInformation.accessToken(),
