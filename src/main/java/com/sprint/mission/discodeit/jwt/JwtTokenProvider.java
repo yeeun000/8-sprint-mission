@@ -10,13 +10,13 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.sprint.mission.discodeit.auth.service.DiscodeitUserDetails;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
@@ -86,32 +86,34 @@ public class JwtTokenProvider {
     return compactJWT;
   }
 
-  public Cookie generateRefreshTokenCookie(String refreshToken) {
-    Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
-    cookie.setHttpOnly(true);
-    cookie.setSecure(true);
-    cookie.setPath("/");
-    cookie.setMaxAge(refreshTokenExpirationMs / 1000);
-    return cookie;
+  public ResponseCookie generateRefreshTokenCookie(String refreshToken) {
+    return ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, refreshToken)
+        .httpOnly(true)
+        .secure(true)
+        .path("/")
+        .sameSite("Lax")
+        .maxAge(refreshTokenExpirationMs / 1000)
+        .build();
   }
 
-  public Cookie generateRefreshTokenExpirationCookie() {
-    Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, "");
-    cookie.setHttpOnly(true);
-    cookie.setSecure(false);
-    cookie.setPath("/");
-    cookie.setMaxAge(0);
-    return cookie;
+  public ResponseCookie generateRefreshTokenExpirationCookie() {
+    return ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, "")
+        .httpOnly(true)
+        .secure(true)
+        .path("/")
+        .sameSite("Lax")
+        .maxAge(0)
+        .build();
   }
 
   public void addRefreshCookie(HttpServletResponse response, String refreshToken) {
-    Cookie cookie = generateRefreshTokenCookie(refreshToken);
-    response.addCookie(cookie);
+    ResponseCookie cookie = generateRefreshTokenCookie(refreshToken);
+    response.addHeader("Set-Cookie", cookie.toString());
   }
 
   public void expireRefreshCookie(HttpServletResponse response) {
-    Cookie cookie = generateRefreshTokenExpirationCookie();
-    response.addCookie(cookie);
+    ResponseCookie cookie = generateRefreshTokenExpirationCookie();
+    response.addHeader("Set-Cookie", cookie.toString());
   }
 
   public boolean validateAccessToken(String token) {
