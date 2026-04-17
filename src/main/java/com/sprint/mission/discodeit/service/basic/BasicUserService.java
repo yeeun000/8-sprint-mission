@@ -143,7 +143,6 @@ public class BasicUserService implements UserService {
     String encodedPassword = (newPassword != null) ? passwordEncoder.encode(newPassword) : null;
     user.update(newUsername, newEmail, encodedPassword, nullableProfile);
     UserDto updatedUserDto = userMapper.toDto(user, isOnline(user.getId()));
-    jwtRegistry.updateJwtInformationUser(userId, updatedUserDto);
     updateSecurityContext(user);
     log.info("사용자 수정 완료: id={}", userId);
     return updatedUserDto;
@@ -172,7 +171,6 @@ public class BasicUserService implements UserService {
 
     user.setRole(userRoleUpdateRequest.role());
     UserDto updatedUserDto = userMapper.toDto(user, isOnline(user.getId()));
-    jwtRegistry.updateJwtInformationUser(user.getId(), updatedUserDto);
     return updatedUserDto;
   }
 

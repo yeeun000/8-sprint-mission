@@ -15,7 +15,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,39 +24,32 @@ import org.springframework.stereotype.Component;
 public class JwtTokenProvider {
 
   public static final String REFRESH_TOKEN_COOKIE_NAME = "REFRESH_TOKEN";
-  private final int accessTokenExpirationMs;
-  private final int refreshTokenExpirationMs;
 
+  private final JwtProperties jwtProperties;
   private final JWSSigner accessTokenSigner;
   private final JWSVerifier accessTokenVerifier;
   private final JWSSigner refreshTokenSigner;
   private final JWSVerifier refreshTokenVerifier;
 
-  public JwtTokenProvider(
-      @Value("${discodeit.jwt.access-token-secret}") String accessTokenSecret,
-      @Value("${discodeit.jwt.access-token-exp}") int accessTokenExpirationMs,
-      @Value("${discodeit.jwt.refresh-token-secret}") String refreshTokenSecret,
-      @Value("${discodeit.jwt.refresh-token-exp}") int refreshTokenExpirationMs
-  ) throws JOSEException {
-    this.accessTokenExpirationMs = accessTokenExpirationMs;
-    this.refreshTokenExpirationMs = refreshTokenExpirationMs;
-    byte[] accessSecretBytes = accessTokenSecret.getBytes(StandardCharsets.UTF_8);
+  public JwtTokenProvider(JwtProperties jwtProperties) throws JOSEException {
+    this.jwtProperties = jwtProperties;
+    byte[] accessSecretBytes = jwtProperties.accessTokenSecret().getBytes(StandardCharsets.UTF_8);
     this.accessTokenSigner = new MACSigner(accessSecretBytes);
     this.accessTokenVerifier = new MACVerifier(accessSecretBytes);
-    byte[] refreshSecretBytes = refreshTokenSecret.getBytes(StandardCharsets.UTF_8);
+    byte[] refreshSecretBytes = jwtProperties.refreshTokenSecret().getBytes(StandardCharsets.UTF_8);
     this.refreshTokenSigner = new MACSigner(refreshSecretBytes);
     this.refreshTokenVerifier = new MACVerifier(refreshSecretBytes);
   }
 
   public String generateAccessToken(DiscodeitUserDetails discodeitUserDetails)
       throws JOSEException {
-    return generateToken(discodeitUserDetails, accessTokenExpirationMs, accessTokenSigner,
+    return generateToken(discodeitUserDetails, jwtProperties.accessTokenExp(), accessTokenSigner,
         "access");
   }
 
   public String generateRefreshToken(DiscodeitUserDetails discodeitUserDetails)
       throws JOSEException {
-    return generateToken(discodeitUserDetails, refreshTokenExpirationMs, refreshTokenSigner,
+    return generateToken(discodeitUserDetails, jwtProperties.refreshTokenExp(), refreshTokenSigner,
         "refresh");
   }
 
@@ -93,7 +85,7 @@ public class JwtTokenProvider {
         .secure(true)
         .path("/")
         .sameSite("Lax")
-        .maxAge(refreshTokenExpirationMs / 1000)
+        .maxAge(jwtProperties.refreshTokenExp() / 1000)
         .build();
   }
 
