@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -108,12 +109,12 @@ public class JwtTokenProvider {
 
   public void addRefreshCookie(HttpServletResponse response, String refreshToken) {
     ResponseCookie cookie = generateRefreshTokenCookie(refreshToken);
-    response.addHeader("Set-Cookie", cookie.toString());
+    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
   }
 
   public void expireRefreshCookie(HttpServletResponse response) {
     ResponseCookie cookie = generateRefreshTokenExpirationCookie();
-    response.addHeader("Set-Cookie", cookie.toString());
+    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
   }
 
   public boolean validateAccessToken(String token) {
