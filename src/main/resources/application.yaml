@@ -64,6 +64,12 @@ discodeit:
   security:
     remember-me:
       key: ${REMEMBER_ME_KEY}
+  jwt:
+    access-token-secret: ${ACCESS_TOKEN_SECRET}
+    access-token-exp: ${ACCESS_TOKEN_EXP}
+    refresh-token-secret: ${REFRESH_TOKEN_SECRET}
+    refresh-token-exp: ${REFRESH_TOKEN_EXP}
+
 
 logging:
   level:

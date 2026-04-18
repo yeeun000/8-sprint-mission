@@ -2,8 +2,10 @@ package com.sprint.mission.discodeit.config;
 
 import com.sprint.mission.discodeit.auth.handler.CustomAccessDeniedHandler;
 import com.sprint.mission.discodeit.auth.handler.LoginFailureHandler;
-import com.sprint.mission.discodeit.auth.handler.LoginSuccessHandler;
 import com.sprint.mission.discodeit.auth.handler.SpaCsrfTokenRequestHandler;
+import com.sprint.mission.discodeit.jwt.JwtAuthenticationFilter;
+import com.sprint.mission.discodeit.jwt.JwtLoginSuccessHandler;
+import com.sprint.mission.discodeit.jwt.JwtLogoutHandler;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,11 +19,13 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
@@ -31,15 +35,13 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-  @Value("${discodeit.security.remember-me.key}")
-  private String rememberMeKey;
-
   @Bean
   public SecurityFilterChain filterChain(
       HttpSecurity http,
-      SessionRegistry sessionRegistry,
-      LoginSuccessHandler loginSuccessHandler,
+      JwtAuthenticationFilter jwtAuthenticationFilter,
+      JwtLoginSuccessHandler jwtLoginSuccessHandler,
       LoginFailureHandler loginFailureHandler,
+      JwtLogoutHandler jwtLogoutHandler,
       CustomAccessDeniedHandler customAccessDeniedHandler
   ) throws Exception {
 
@@ -50,7 +52,7 @@ public class SecurityConfig {
         )
         .formLogin(login -> login
             .loginProcessingUrl("/api/auth/login")
-            .successHandler(loginSuccessHandler)
+            .successHandler(jwtLoginSuccessHandler)
             .failureHandler(loginFailureHandler)
             .permitAll()
         )
@@ -69,23 +71,18 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.POST, "/api/users").permitAll()   // 회원가입
             .requestMatchers("/api/auth/login").permitAll()               // 로그인
             .requestMatchers("/api/auth/logout").permitAll()              // 로그아웃
+            .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
             .requestMatchers("/api/auth/role").hasRole("ADMIN")
             .anyRequest().authenticated()
         )
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .logout(logout -> logout
             .logoutUrl("/api/auth/logout")
             .logoutSuccessHandler(
                 new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))
-        ).sessionManagement(management -> management
-            .sessionConcurrency(concurrency -> concurrency
-                .maximumSessions(1)
-                .maxSessionsPreventsLogin(false)
-                .sessionRegistry(sessionRegistry)
-            )
-        ).rememberMe(remember -> remember
-            .rememberMeParameter("remember-me")
-            .tokenValiditySeconds(7 * 24 * 60 * 60)
-            .key(rememberMeKey)
+            .addLogoutHandler(jwtLogoutHandler)
+        ).sessionManagement(session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
 
     SecurityFilterChain chain = http.build();

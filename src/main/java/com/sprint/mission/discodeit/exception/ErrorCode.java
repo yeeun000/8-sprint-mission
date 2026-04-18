@@ -35,7 +35,10 @@ public enum ErrorCode {
   ACCESS_DENIED("접근 권한이 없습니다."),
 
   // 로그인 에러 코드
-  AUTHENTICATION_FAILED("로그인 실패했습니다");
+  AUTHENTICATION_FAILED("로그인 실패했습니다"),
+
+  //jwt
+  TOKEN_GENERATION_FAILED("jwt 토큰 생성 실패했습니다.");
 
   private final String message;
 

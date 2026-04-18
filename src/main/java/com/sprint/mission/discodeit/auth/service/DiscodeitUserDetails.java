@@ -4,17 +4,17 @@ import com.sprint.mission.discodeit.dto.data.UserDto;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class DiscodeitUserDetails implements UserDetails {
 
-  private final UserDto user;
+  private UserDto user;
   private final String password;
 
   @Override
@@ -66,6 +66,10 @@ public class DiscodeitUserDetails implements UserDetails {
   @Override
   public int hashCode() {
     return Objects.hash(user.username());
+  }
+
+  public void updateUser(UserDto userDto) {
+    this.user = userDto;
   }
 
 }
