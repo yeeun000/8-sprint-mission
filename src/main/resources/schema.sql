@@ -127,3 +127,9 @@ ALTER TABLE read_statuses
 
 ALTER TABLE users
     ADD role varchar(20) NOT NULL;
+
+ALTER TABLE binary_contents
+    ADD COLUMN updated_at timestamp with time zone;
+
+ALTER TABLE binary_contents
+    ADD COLUMN status varchar(20) NOT NULL DEFAULT 'PROCESSING';
