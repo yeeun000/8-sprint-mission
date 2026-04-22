@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.storage.local;
 
 import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
+import com.sprint.mission.discodeit.event.S3UploadFailedEvent;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
@@ -10,13 +11,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 @ConditionalOnProperty(name = "discodeit.storage.type", havingValue = "local")
@@ -24,11 +30,13 @@ import org.springframework.stereotype.Component;
 public class LocalBinaryContentStorage implements BinaryContentStorage {
 
   private final Path root;
+  private final ApplicationEventPublisher applicationEventPublisher;
 
   public LocalBinaryContentStorage(
-      @Value("${discodeit.storage.local.root-path}") Path root
-  ) {
+      @Value("${discodeit.storage.local.root-path}") Path root,
+      ApplicationEventPublisher applicationEventPublisher) {
     this.root = root;
+    this.applicationEventPublisher = applicationEventPublisher;
   }
 
   @PostConstruct
@@ -43,6 +51,7 @@ public class LocalBinaryContentStorage implements BinaryContentStorage {
     }
   }
 
+  @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 1000, multiplier = 1))
   public UUID put(UUID binaryContentId, byte[] bytes) {
     try {
       Thread.sleep(3000);
@@ -91,5 +100,17 @@ public class LocalBinaryContentStorage implements BinaryContentStorage {
         .header(HttpHeaders.CONTENT_TYPE, metaData.contentType())
         .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(metaData.size()))
         .body(resource);
+  }
+
+  @Recover
+  public UUID recover(RuntimeException e, UUID id, byte[] bytes) {
+    String requestId = MDC.get("requestId");
+    if (requestId == null) {
+      requestId = "unknown";
+    }
+
+    applicationEventPublisher.publishEvent(new S3UploadFailedEvent(requestId, id, e.getMessage()));
+
+    throw new RuntimeException("upload failed", e);
   }
 }
