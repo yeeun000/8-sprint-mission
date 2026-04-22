@@ -10,7 +10,6 @@ import com.sprint.mission.discodeit.mapper.NotificationMapper;
 import com.sprint.mission.discodeit.repository.NotificationRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.NotificationService;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -39,9 +38,9 @@ public class BasicNotificationService implements NotificationService {
   @Override
   public List<NotificationDto> findAll(UUID receiverId) {
     List<NotificationDto> notifications = notificationRepository
-        .findByUserIdOrderByCreatedAtDesc(receiverId)
+        .findByReceiver_IdOrderByCreatedAtDesc(receiverId)
         .stream()
-        .map(notificationMapper ::toDto)
+        .map(notificationMapper::toDto)
         .toList();
 
     return notifications;
@@ -53,7 +52,7 @@ public class BasicNotificationService implements NotificationService {
     Notification notification = notificationRepository.findById(notificationId)
         .orElseThrow(() -> NotificationNotFoundException.withId(notificationId));
 
-    if (notification.getReceiver().getId().equals(receiverId)) {
+    if (!notification.getReceiver().getId().equals(receiverId)) {
       throw new NotificationAccessDeniedException();
     }
     notificationRepository.deleteById(notificationId);
