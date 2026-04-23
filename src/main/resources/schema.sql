@@ -150,5 +150,3 @@ ALTER TABLE notifications
         FOREIGN KEY (receiver_id)
             REFERENCES users (id)
             ON DELETE CASCADE;
-
-select id, status from binary_contents;
