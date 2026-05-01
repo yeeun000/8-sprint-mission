@@ -7,6 +7,7 @@ import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
@@ -51,7 +52,9 @@ public class LocalBinaryContentStorage implements BinaryContentStorage {
     }
   }
 
-  @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 1000, multiplier = 1))
+  @Retryable(retryFor = {UncheckedIOException.class},
+      noRetryFor = {IllegalArgumentException.class},
+      maxAttempts = 3, backoff = @Backoff(delay = 1000, multiplier = 2, maxDelay = 10000))
   public UUID put(UUID binaryContentId, byte[] bytes) {
     try {
       Thread.sleep(3000);
@@ -66,7 +69,7 @@ public class LocalBinaryContentStorage implements BinaryContentStorage {
     try (OutputStream outputStream = Files.newOutputStream(filePath)) {
       outputStream.write(bytes);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
     return binaryContentId;
   }
