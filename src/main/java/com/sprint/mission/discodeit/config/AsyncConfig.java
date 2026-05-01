@@ -10,6 +10,7 @@ import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -47,14 +48,17 @@ public class AsyncConfig implements AsyncConfigurer {
     public Runnable decorate(Runnable runnable) {
 
       Map<String, String> mdcContext = MDC.getCopyOfContextMap();
-      SecurityContext securityContext = SecurityContextHolder.getContext();
+      SecurityContext parentContext = SecurityContextHolder.getContext();
+      Authentication auth = parentContext.getAuthentication();
 
       return () -> {
         try {
           if (mdcContext != null) {
             MDC.setContextMap(mdcContext);
           }
-          SecurityContextHolder.setContext(securityContext);
+          SecurityContext childContext = SecurityContextHolder.createEmptyContext();
+          childContext.setAuthentication(auth);
+          SecurityContextHolder.setContext(childContext);
           runnable.run();
         } finally {
           MDC.clear();
