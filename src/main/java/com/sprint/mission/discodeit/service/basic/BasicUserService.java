@@ -83,7 +83,6 @@ public class BasicUserService implements UserService {
     return userMapper.toDto(user, isOnline(user.getId()));
   }
 
-  @Cacheable(value = "users")
   @Transactional(readOnly = true)
   @Override
   public UserDto find(UUID userId) {
@@ -173,6 +172,7 @@ public class BasicUserService implements UserService {
     log.info("사용자 삭제 완료: id={}", userId);
   }
 
+  @CacheEvict(value = "users", allEntries = true)
   @PreAuthorize("hasRole('ADMIN')")
   @Transactional
   @Override
