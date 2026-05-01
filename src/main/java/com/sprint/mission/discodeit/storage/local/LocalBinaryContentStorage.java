@@ -113,7 +113,6 @@ public class LocalBinaryContentStorage implements BinaryContentStorage {
     }
 
     applicationEventPublisher.publishEvent(new S3UploadFailedEvent(requestId, id, e.getMessage()));
-
-    throw new RuntimeException("upload failed", e);
+    return id;
   }
 }
