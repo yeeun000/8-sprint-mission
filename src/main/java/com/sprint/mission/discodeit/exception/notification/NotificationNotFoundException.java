@@ -6,7 +6,7 @@ import java.util.UUID;
 public class NotificationNotFoundException extends NotificationException {
 
   public NotificationNotFoundException() {
-    super(ErrorCode.Notification_NOT_FOUND);
+    super(ErrorCode.NOTIFICATION_NOT_FOUND);
   }
 
   public static NotificationNotFoundException withId(UUID notificationId) {
