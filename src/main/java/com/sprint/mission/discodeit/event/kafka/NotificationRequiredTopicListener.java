@@ -49,7 +49,6 @@ public class NotificationRequiredTopicListener {
 
     } catch (JsonProcessingException e) {
       log.error("kafka 알림 에러 - MessageCreatedEvent : {}", e.getMessage());
-      throw new RuntimeException(e);
     }
   }
 
@@ -62,7 +61,6 @@ public class NotificationRequiredTopicListener {
       notificationService.create(event.userId(), title, content);
     } catch (JsonProcessingException e) {
       log.error("kafka 알림 에러 - RoleUpdatedEvent : {}", e.getMessage());
-      throw new RuntimeException(e);
     }
   }
 
@@ -82,7 +80,6 @@ public class NotificationRequiredTopicListener {
 
     } catch (JsonProcessingException e) {
       log.error("kafka 알림 에러 - S3UploadFailedEvent : {}", e.getMessage());
-      throw new RuntimeException(e);
     }
   }
 }

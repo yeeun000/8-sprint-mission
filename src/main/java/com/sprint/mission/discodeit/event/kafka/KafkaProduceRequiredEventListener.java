@@ -30,7 +30,6 @@ public class KafkaProduceRequiredEventListener {
       kafkaTemplate.send("discodeit.MessageCreatedEvent", payload);
     } catch (JsonProcessingException e) {
       log.error("kafka 에러 - MessageCreatedEvent : {}", e.getMessage());
-      throw new RuntimeException(e);
     }
 
   }
@@ -43,7 +42,6 @@ public class KafkaProduceRequiredEventListener {
       kafkaTemplate.send("discodeit.RoleUpdatedEvent", payload);
     } catch (JsonProcessingException e) {
       log.error("kafka 에러 - RoleUpdatedEvent : {}", e.getMessage());
-      throw new RuntimeException(e);
     }
   }
 
@@ -55,7 +53,6 @@ public class KafkaProduceRequiredEventListener {
       kafkaTemplate.send("discodeit.S3UploadFailedEvent", payload);
     } catch (JsonProcessingException e) {
       log.error("kafka 에러 - S3UploadFailedEvent : {}", e.getMessage());
-      throw new RuntimeException(e);
     }
   }
 }
