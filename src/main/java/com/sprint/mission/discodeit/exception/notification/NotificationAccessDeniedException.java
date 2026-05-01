@@ -6,7 +6,7 @@ import java.util.UUID;
 public class NotificationAccessDeniedException extends NotificationException {
 
   public NotificationAccessDeniedException() {
-    super(ErrorCode.Notification_NOT_FOUND);
+    super(ErrorCode.NOTIFICATION_ACCESS_DENIED);
   }
 
   public static NotificationAccessDeniedException withId(UUID notificationId) {
