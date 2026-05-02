@@ -34,6 +34,8 @@ services:
     networks:
       - frontend-network
       - backend-network
+    deploy:
+      replicas: 3
     restart: unless-stopped
 
   db:
@@ -92,3 +94,4 @@ networks:
     driver: bridge
   backend-network:
     driver: bridge
+    internal: true

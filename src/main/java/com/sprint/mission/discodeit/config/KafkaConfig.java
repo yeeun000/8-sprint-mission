@@ -24,10 +24,6 @@ public class KafkaConfig {
   @Value("${spring.kafka.bootstrap-servers}")
   private String bootstrapServers;
 
-  @Value("${server.port:8080}")
-  private String serverPort;
-
-
   @Bean
   public ProducerFactory<String, Object> producerFactory() {
     Map<String, Object> config = new HashMap<>();
@@ -49,11 +45,11 @@ public class KafkaConfig {
     config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
     config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-    config.put(ConsumerConfig.GROUP_ID_CONFIG, "discodeit-group-" + serverPort);
 
     config.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
     config.put(JsonDeserializer.VALUE_DEFAULT_TYPE, Object.class);
     config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+    config.put(ConsumerConfig.GROUP_ID_CONFIG, "discodeit-group");
 
     return new DefaultKafkaConsumerFactory<>(config);
   }
