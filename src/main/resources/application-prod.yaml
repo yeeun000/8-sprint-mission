@@ -16,6 +16,19 @@ logging:
     com.sprint.mission.discodeit: info
     org.hibernate.SQL: info
 
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST}
+      port: ${SPRING_DATA_REDIS_PORT}
+
+    kafka:
+      bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+      consumer:
+        group-id: discodeit-group
+        auto-offset-reset: earliest
+      producer:
+        acks: all
+
 management:
   endpoint:
     health:
